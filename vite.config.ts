@@ -48,7 +48,8 @@ function contentSecurityPolicy(): Plugin {
 export default defineConfig(({ mode }) => ({
   base: BASE,
   // Kid play-testing (dev server only): `npm run feedback` / `npm run feedback:lan`.
-  server: { watch: { ignored: ['**/feedback/**'] } },
+  // Only the inbox at the repo root, not src/dev/feedback.
+  server: { watch: { ignored: [`${import.meta.dirname}/feedback/**`] } },
   plugins: [
     react(),
     contentSecurityPolicy(),

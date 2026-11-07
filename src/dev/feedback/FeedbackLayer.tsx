@@ -192,7 +192,7 @@ function TellCard({
   return (
     <div className="fb-card fb-card--tell" role="dialog" aria-modal="true" aria-label={prompt}>
       {shot && (
-        <div className="fb-shot" style={{ aspectRatio: `${vw} / ${vh}` }}>
+        <div className="fb-shot" style={{ ['--ar' as string]: vw / vh }}>
           <img src={shot} alt="" />
           {point && (
             <span
@@ -421,17 +421,20 @@ export function FeedbackLayer() {
       {step.kind === 'capturing' && <div className="fb-flash" aria-hidden="true" />}
 
       {step.kind === 'point' && (
-        <div
-          className="fb-point"
-          role="dialog"
-          aria-modal="true"
-          aria-label={S.point}
-          onPointerDown={(e) => {
-            if (e.target !== e.currentTarget) return;
-            playSfx('place');
-            setStep({ kind: 'tell', shot: step.shot, point: describePoint(e.clientX, e.clientY) });
-          }}
-        >
+        <div className="fb-point" role="dialog" aria-modal="true" aria-label={S.point}>
+          <button
+            type="button"
+            className="fb-point__surface"
+            aria-label={S.point}
+            // On click, not pointerdown: the whole tap ends here, so its click cannot
+            // land on whatever the next card puts under the finger. A keyboard press
+            // (no position) means "all of it".
+            onClick={(e) => {
+              playSfx('place');
+              const at = e.detail > 0 ? describePoint(e.clientX, e.clientY) : null;
+              setStep({ kind: 'tell', shot: step.shot, point: at });
+            }}
+          />
           <span className="fb-point__hint" aria-hidden="true">
             <Icon name="target" size={56} strokeWidth={3} />
           </span>
@@ -474,11 +477,11 @@ export function FeedbackLayer() {
       )}
 
       {step.kind === 'said' && step.text && (
-        <div className="fb-scrim" onPointerDown={close}>
-          <div className="fb-card fb-card--small" role="status">
+        <div className="fb-scrim" role="status">
+          <button type="button" className="fb-card fb-card--small fb-card--said" onClick={close}>
             <Icon name={step.icon} size={64} strokeWidth={3} />
-            <p className="fb-say">{step.text}</p>
-          </div>
+            <span className="fb-say">{step.text}</span>
+          </button>
         </div>
       )}
 
