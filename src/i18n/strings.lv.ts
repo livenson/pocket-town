@@ -117,6 +117,13 @@ export const lv: Strings = {
     'home-bedroom': 'guļamistaba',
     'neighbour-main': 'dzīvojamā istaba',
     'neighbour-bedroom': 'guļamistaba',
+    'home-play': 'rotaļu istaba',
+    'home-bath': 'vannas istaba',
+    'neighbour-kitchen': 'virtuve',
+    'cafe-terrace': 'terase',
+    'library-kids': 'bērnu stūrītis',
+    'musicHall-practice': 'mēģinājumu telpa',
+    'park-pond': 'dīķa dārzs',
   },
 
   decorate: {

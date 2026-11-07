@@ -169,3 +169,8 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 - **How**: `npm run art` copies only the pictures we use from `@iconify-json/fluent-emoji-flat` (dev dependency) into `src/design/thingArt.ts`; each is its own SVG image (data URL, allowed by the CSP), in the drawer, in hand and as a sprite on the stage. Credit in the grown-up area and `docs/THIRD_PARTY.md`.
 - **More things**: 81 in six categories (food, toys, music, books and art, plants, party), each with an effect when given and an offer when placed. Every existing id is kept, so saves still load. Wish bubbles keep simple line icons.
 - **Furniture stays drawn in house style** (no open set matches the flat rooms).
+
+## 2026-11-07: A bigger starter town (owner's request)
+
+- **My house** has four rooms: living room and kitchen, bedroom, playroom (bunk bed, doll's house, play tent, rocking horse), bathroom. **Neighbour house** three: living room, bedroom, kitchen. Each public place gains a second room: the café a garden terrace, the library a children's corner, the music hall a practice room, the park a pond garden (the pond is a round rug painted water).
+- Rooms join in a row by doors, like built houses. Some pieces moved to free the wall for the new doors (bedroom beds, the café window, the library shelves); every id is kept, so saves and decorating still apply.

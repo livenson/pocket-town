@@ -115,6 +115,13 @@ export const et: Strings = {
     'home-bedroom': 'magamistuba',
     'neighbour-main': 'elutuba',
     'neighbour-bedroom': 'magamistuba',
+    'home-play': 'mängutuba',
+    'home-bath': 'vannituba',
+    'neighbour-kitchen': 'köök',
+    'cafe-terrace': 'terrass',
+    'library-kids': 'lastenurk',
+    'musicHall-practice': 'proovituba',
+    'park-pond': 'tiigiaed',
   },
 
   decorate: {

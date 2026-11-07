@@ -117,6 +117,13 @@ export const en = {
     'home-bedroom': 'bedroom',
     'neighbour-main': 'living room',
     'neighbour-bedroom': 'bedroom',
+    'home-play': 'playroom',
+    'home-bath': 'bathroom',
+    'neighbour-kitchen': 'kitchen',
+    'cafe-terrace': 'terrace',
+    'library-kids': "children's corner",
+    'musicHall-practice': 'practice room',
+    'park-pond': 'pond garden',
   } as Record<string, string>,
 
   decorate: {
