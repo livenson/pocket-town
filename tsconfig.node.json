@@ -15,6 +15,7 @@
 
     /* Type safety */
     "strict": true,
+    "noImplicitReturns": true,
 
     /* Linting */
     "noUnusedLocals": true,

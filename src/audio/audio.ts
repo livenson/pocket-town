@@ -1,10 +1,14 @@
 // Audio output. Browsers (iOS Safari in particular) keep audio silent until it is
 // started inside a user gesture, so `installAudioUnlock` resumes the shared
-// AudioContext on the first tap, click or key press.
+// AudioContext (and unlocks speech) on the first tap, click or key press.
 import { ZZFX } from 'zzfx';
+import { useSettings } from '../state/settings';
 import { sfx, type SfxName } from './sfx';
+import { unlockSpeech } from './speech';
 
 const UNLOCK_EVENTS = ['pointerdown', 'touchend', 'mousedown', 'keydown'] as const;
+/** ZzFX's own default master volume; the effects setting scales it. */
+const BASE_VOLUME = 0.3;
 
 function context(): AudioContext {
   return ZZFX.audioContext;
@@ -29,8 +33,13 @@ let installed = false;
 export function installAudioUnlock(target: Window = window): void {
   if (installed) return;
   installed = true;
+  let speechUnlocked = false;
   const handler = (): void => {
     unlock();
+    if (!speechUnlocked) {
+      speechUnlocked = true;
+      unlockSpeech();
+    }
     if (context().state === 'running') {
       for (const type of UNLOCK_EVENTS) target.removeEventListener(type, handler, true);
     }
@@ -42,8 +51,11 @@ export function installAudioUnlock(target: Window = window): void {
 
 /** Play a named sound effect. Never throws: sound is a nice-to-have, not a requirement. */
 export function playSfx(name: SfxName): void {
+  const volume = useSettings.getState().effectsVolume;
+  if (volume <= 0) return;
   try {
     unlock();
+    ZZFX.volume = BASE_VOLUME * volume;
     ZZFX.play(...sfx[name]);
   } catch {
     // Audio unavailable (no device, blocked, etc.): play continues silently.

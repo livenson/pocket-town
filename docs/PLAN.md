@@ -29,15 +29,15 @@ Acceptance: pushing to `main` deploys; the live URL shows the placeholder and th
 
 Goal: the shared look and every reusable control, plus the screen state machine.
 
-- [ ] `src/ui/`: `Button` (primary, secondary, dice, done; pressable "toy" look with a 5–6 px bottom shadow that compresses on press), `IconButton` (64 px tablet / 56 px phone; required `label` prop used for `aria-label`, voice-over and the optional text label), `HoldButton` (press-and-hold with a filling ring, 700 ms, cancels on release or leave, keyboard: hold Space/Enter), `Switch` (tick + position, never colour alone), `Sheet` (bottom sheet with drag handle and close), `Carousel` (paged grid with arrow buttons and page dots; swipe optional, never required), `StepRail` (icon steps in any order, current = tomato, done = teal tick badge), `Toast` (non-blocking, auto-dismiss), `HintHalo` (pulsing marigold ring; off under calm motion).
-- [ ] `Icon` React component rendering paths from `icons.ts` (32×32 viewBox, round caps, stroke 2.6, `currentColor`), plus a Pixi helper that builds a `Graphics` from the same path data.
-- [ ] Voice-over service: `speak(text)`; long-press (touch, 450 ms) and hover (desktop, 600 ms) on any control with a `label` speaks it; respects the voice-over setting.
-- [ ] Optional text labels: shown when the profile's age ≥ 9 or the setting is on.
-- [ ] Settings store (persisted): music, effects and voice volumes; voice-over; text labels; left-handed (mirrors left/right docks); calm motion; bot energy (lively, calm, paused).
-- [ ] App shell: the stage container plus edge docks as in `DESIGN.md` → "Layout". Breakpoints: phone portrait (< 600 px wide), tablet/phone landscape, desktop (≥ 1024 px and a fine pointer). Phone portrait folds docks into a "+" sheet.
-- [ ] Screen state machine in `src/app/` (no URL router; GitHub Pages and SPAs do not mix well): `splash → age → profile → avatarWizard | houseWizard | hub → map → scene`, plus `gate`, `grownUp`, `settings`, `characters`, `photo`. Back/home always available.
-- [ ] Keyboard shortcuts on desktop (see `DESIGN.md`), with a "?" overlay listing them.
-- [ ] Storybook is not needed: add a hidden `#kit` screen (reachable from the grown-up area) that shows every component, for visual checks.
+- [x] `src/ui/`: `Button` (primary, secondary, dice, done; pressable "toy" look with a 5–6 px bottom shadow that compresses on press), `IconButton` (64 px tablet / 56 px phone; required `label` prop used for `aria-label`, voice-over and the optional text label), `HoldButton` (press-and-hold with a filling ring, 700 ms, cancels on release or leave, keyboard: hold Space/Enter), `Switch` (tick + position, never colour alone), `Sheet` (bottom sheet with drag handle and close), `Carousel` (paged grid with arrow buttons and page dots; swipe optional, never required), `StepRail` (icon steps in any order, current = tomato, done = teal tick badge), `Toast` (non-blocking, auto-dismiss), `HintHalo` (pulsing marigold ring; off under calm motion).
+- [x] `Icon` React component rendering paths from `icons.ts` (32×32 viewBox, round caps, stroke 2.6, `currentColor`), plus a Pixi helper that builds a `Graphics` from the same path data.
+- [x] Voice-over service: `speak(text)`; long-press (touch, 450 ms) and hover (desktop, 600 ms) on any control with a `label` speaks it; respects the voice-over setting.
+- [x] Optional text labels: shown when the profile's age ≥ 9 or the setting is on.
+- [x] Settings store (persisted): music, effects and voice volumes; voice-over; text labels; left-handed (mirrors left/right docks); calm motion; bot energy (lively, calm, paused).
+- [x] App shell: the stage container plus edge docks as in `DESIGN.md` → "Layout". Breakpoints: phone portrait (< 600 px wide), tablet/phone landscape, desktop (≥ 1024 px and a fine pointer). Phone portrait folds docks into a "+" sheet.
+- [x] Screen state machine in `src/app/` (no URL router; GitHub Pages and SPAs do not mix well): `splash → age → profile → avatarWizard | houseWizard | hub → map → scene`, plus `gate`, `grownUp`, `settings`, `characters`, `photo`. Back/home always available.
+- [x] Keyboard shortcuts on desktop (see `DESIGN.md`), with a "?" overlay listing them.
+- [x] Storybook is not needed: add a hidden `#kit` screen (reachable from the grown-up area) that shows every component, for visual checks.
 
 Acceptance: every component reachable by keyboard and screen reader; contrast checks pass; calm motion stops all looping animation; e2e test clicks through the empty screens at three viewport sizes.
 
@@ -105,7 +105,7 @@ Goal: from opening the link to playing in under 60 seconds. Match `design-refere
 
 - [ ] Splash (A1): animated town build-up while assets load; continues by itself when ready, or on tap.
 - [ ] Neutral age screen (A2): 4 … 15+ tiles, nothing preselected, question spoken aloud. Age stored on the profile only (on device). Age ≥ 9 turns text labels on.
-- [ ] Parental gate (A3): a random two-digit number written in words ("type forty-seven"); keypad; wrong answer clears gently. Reused for every grown-up entry.
+- [x] Parental gate (A3): a random two-digit number written in words ("type forty-seven"); keypad; wrong answer clears gently. Reused for every grown-up entry. (Built early in M1 so the grown-up area and kit were never reachable without it.)
 - [ ] Profile select (B1): faces only, "new player" tile, up to 6 profiles per device.
 - [ ] Dice avatar: one big dice that rerolls appearance and name; pencil opens the full avatar wizard (M6); tick continues.
 - [ ] Celebration, then land in the furnished starter house with bots already doing things.

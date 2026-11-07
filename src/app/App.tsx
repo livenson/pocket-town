@@ -1,28 +1,81 @@
-import { useState } from 'react';
-import { playSfx } from '../audio/audio';
-import { Icon } from '../ui/Icon';
+import { useEffect, type ReactElement } from 'react';
+import { strings } from '../i18n/strings.en';
+import { useKeyboardShortcuts } from '../input/shortcuts';
+import { useSettings } from '../state/settings';
+import { useUi } from '../state/ui';
+import { Toasts } from '../ui/Toasts';
+import { useShowTextLabels } from '../ui/labels';
+import type { ScreenId } from './machine';
+import { useCalmMotion, useLayoutMode } from './media';
+import { AgeScreen } from './screens/AgeScreen';
+import { GateScreen } from './screens/GateScreen';
+import { GrownUpScreen } from './screens/GrownUpScreen';
+import { HubScreen } from './screens/HubScreen';
+import { KitScreen } from './screens/KitScreen';
+import { MapScreen } from './screens/MapScreen';
+import { PlaceholderScreen } from './screens/PlaceholderScreen';
+import { ProfileScreen } from './screens/ProfileScreen';
+import { SceneScreen } from './screens/SceneScreen';
+import { SettingsScreen } from './screens/SettingsScreen';
+import { SplashScreen } from './screens/SplashScreen';
+import { ShortcutsOverlay } from './ShortcutsOverlay';
 
-/** M0 placeholder: the identity on screen and one button that makes a sound. */
+function renderScreen(screen: ScreenId): ReactElement {
+  switch (screen) {
+    case 'splash':
+      return <SplashScreen />;
+    case 'age':
+      return <AgeScreen />;
+    case 'profile':
+      return <ProfileScreen />;
+    case 'hub':
+      return <HubScreen />;
+    case 'map':
+      return <MapScreen />;
+    case 'scene':
+      return <SceneScreen />;
+    case 'gate':
+      return <GateScreen />;
+    case 'grownUp':
+      return <GrownUpScreen />;
+    case 'settings':
+      return <SettingsScreen />;
+    case 'kit':
+      return <KitScreen />;
+    case 'avatarWizard':
+    case 'houseWizard':
+    case 'characters':
+    case 'photo':
+      return <PlaceholderScreen title={strings.screens[screen]} />;
+  }
+}
+
+/** Reflect layout and preferences as attributes on <html> so CSS can follow them. */
+function useDocumentAttributes(): void {
+  const layout = useLayoutMode();
+  const calm = useCalmMotion();
+  const labels = useShowTextLabels();
+  const leftHanded = useSettings((s) => s.leftHanded);
+  useEffect(() => {
+    const d = document.documentElement.dataset;
+    d.layout = layout;
+    d.calm = String(calm);
+    d.labels = String(labels);
+    d.hand = leftHanded ? 'left' : 'right';
+  }, [layout, calm, labels, leftHanded]);
+}
+
 export function App() {
-  const [pops, setPops] = useState(0);
-
+  const screen = useUi((s) => s.nav.screen);
+  useDocumentAttributes();
+  useKeyboardShortcuts();
   return (
-    <main className="placeholder">
-      <h1 className="placeholder__title">Pocket Town</h1>
-      <button
-        type="button"
-        className="toy-button toy-button--primary"
-        aria-label="Play"
-        onClick={() => {
-          playSfx('pop');
-          setPops((n) => n + 1);
-        }}
-      >
-        {/* Re-keying restarts the little bounce on every tap. */}
-        <span key={pops} className="toy-button__face" data-bounce={pops > 0 || undefined}>
-          <Icon name="play" size={48} strokeWidth={3} />
-        </span>
-      </button>
-    </main>
+    <>
+      <div key={screen} className="screen-transition" data-screen={screen}>
+        {renderScreen(screen)}
+      </div>
+      <ShortcutsOverlay />
+      <Toasts />
+    </>
   );
 }

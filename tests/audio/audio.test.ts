@@ -16,7 +16,7 @@ describe('audio', () => {
   });
 
   it('playing a sound unlocks the audio context', () => {
-    playSfx('pop');
+    playSfx('tap');
     expect(ZZFX.audioContext.state).toBe('running');
   });
 });

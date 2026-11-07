@@ -27,7 +27,7 @@ async function pressPlay(page: Page): Promise<void> {
   else await button.click();
 }
 
-test('shows the placeholder in the Pocket Town identity', async ({ page }) => {
+test('shows the splash in the Pocket Town identity', async ({ page }) => {
   await page.goto('./');
   const title = page.getByRole('heading', { level: 1, name: 'Pocket Town' });
   await expect(title).toBeVisible();

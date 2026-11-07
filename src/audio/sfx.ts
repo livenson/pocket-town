@@ -39,7 +39,7 @@ export function zzfxParams(named: Partial<Record<SfxParam, number>>): ZzfxParams
 
 export const sfx = {
   /** Short, round, rising "pop": the basic tap sound. */
-  pop: zzfxParams({
+  tap: zzfxParams({
     volume: 1.4,
     randomness: 0.05,
     frequency: 330,
@@ -51,6 +51,45 @@ export const sfx = {
     slide: 26,
     sustainVolume: 0.6,
     decay: 0.03,
+  }),
+  /** Wooden rattle for the "surprise me" dice. */
+  dice: zzfxParams({
+    volume: 1,
+    randomness: 0.1,
+    frequency: 180,
+    attack: 0,
+    sustain: 0.05,
+    release: 0.12,
+    shape: 3, // noise-ish square
+    shapeCurve: 0.5,
+    repeatTime: 0.04,
+    noise: 0.4,
+    sustainVolume: 0.5,
+  }),
+  /** Bright two-step chime: a hold-to-confirm finished, or something was done. */
+  confirm: zzfxParams({
+    volume: 1,
+    randomness: 0.02,
+    frequency: 520,
+    attack: 0.01,
+    sustain: 0.06,
+    release: 0.18,
+    shape: 0,
+    shapeCurve: 1.5,
+    pitchJump: 260,
+    pitchJumpTime: 0.07,
+    sustainVolume: 0.7,
+  }),
+  /** Soft low blip: a sheet or overlay closes, a hold was let go early. */
+  soft: zzfxParams({
+    volume: 0.7,
+    randomness: 0.03,
+    frequency: 220,
+    attack: 0,
+    sustain: 0.02,
+    release: 0.08,
+    shape: 0,
+    slide: -6,
   }),
 } satisfies Record<string, ZzfxParams>;
 

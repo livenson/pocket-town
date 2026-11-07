@@ -55,3 +55,13 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 ## 2026-11-07: audio unlock
 
 **Choice:** ZzFX creates its `AudioContext` on import; `installAudioUnlock()` resumes it (and plays a one-sample silent buffer) on the first pointer, touch or key event, which is what iOS Safari requires.
+
+## 2026-11-07: M1 choices
+
+- **Parental gate built in M1, not M5.** The grown-up area and the hidden component kit exist from M1, so the real gate (number in words, keypad, gentle clear on a wrong answer) protects them from the start. The hidden `#kit` URL opens only the kit, which changes nothing.
+- **Screen state machine without a URL router.** `src/app/machine.ts` is a pure reducer (go, back, home, gatePassed), unit-tested. The grown-up area locks again as soon as you leave it, and "back" never re-enters the gate.
+- **Hint halo under calm motion** keeps a still marigold ring and only stops the pulse, so the hint itself is never lost.
+- **Text labels** show when the setting is on or the player picked age 9 or older on the age screen (age kept in memory until profiles arrive in M5).
+- **Voice-over** speaks a control's label on long-press (touch, 450 ms) or hover (mouse, 600 ms). A long-press that spoke does not also press the button, so children can "ask" what a button does. The Web Speech wrapper prefers an on-device voice so text never goes to a network voice.
+- **Lint:** `jsx-a11y/prefer-tag-over-role` is off (`role="group"` and `role="dialog"` on a `div` are valid ARIA, and native `<dialog>` would fight the sheet animation); `typescript/consistent-return` is off in favour of the compiler's `noImplicitReturns`, which understands exhaustive `switch` statements.
+- **Dev dependencies added:** `fake-indexeddb` (unit-test the IndexedDB settings store in jsdom) and `@axe-core/playwright` (WCAG 2.1 AA checks on every screen in e2e). Neither ships to players.
