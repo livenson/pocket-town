@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Avatar wizard steps, phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:18px;box-shadow:0 5px 0 #E3B48F;display:flex;align-items:center;justify-content:center;color:#2A1640;width:56px;height:56px;flex:none}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.ph{position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;box-shadow:0 10px 0 rgba(42,22,64,.12), 0 0 0 1px rgba(42,22,64,.08);flex:none;background:#FFE6CF}
+.lb{display:flex;align-items:center;gap:10px;height:44px;font:800 20px 'Baloo 2',sans-serif;color:#2A1640}
+.lb span{background:#2A1640;color:#fff;border-radius:10px;padding:0 10px;font-size:16px}
+.bar{position:absolute;left:16px;right:16px;top:54px;display:flex;align-items:center;gap:10px}
+.dots{flex:1;display:flex;justify-content:center;gap:6px}
+.dots i{width:12px;height:12px;border-radius:50%;background:#E3B48F}
+.dots b{width:26px;height:12px;border-radius:6px;background:#EF4B2F}
+.card{border-radius:28px;display:flex;align-items:center;gap:16px;padding:0 20px;font:800 24px 'Baloo 2',sans-serif;text-align:left}
+.trait{position:relative;height:150px;border-radius:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font:800 18px 'Baloo 2',sans-serif;color:#2A1640}
+.chip{min-height:56px;border-radius:18px;background:#fff;box-shadow:0 4px 0 #E3B48F;font:800 20px 'Baloo 2',sans-serif;display:flex;align-items:center;justify-content:center}
+</style>
+</helmet>
+<div style="width:1800px;height:1000px;background:#F2DCC8;padding:40px 48px;display:flex;gap:48px;font-family:Nunito,system-ui,sans-serif;color:#2A1640">
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>C1.1</span>Start: three ways in</div>
+    <div class="ph">
+      <div class="bar">
+        <button class="t" aria-label="Home"><dc-import name="Icon" icon="home" size="28" hint-size="28px,28px"></dc-import></button>
+        <div class="dots" aria-label="Step 1 of 9"><b></b><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <button class="t" style="background:#2A1640;color:#fff;box-shadow:0 5px 0 #120A1C" aria-label="Hear: how do you want to start?"><dc-import name="Icon" icon="speaker" size="28" hint-size="28px,28px"></dc-import></button>
+      </div>
+      <div style="position:absolute;left:20px;right:20px;top:150px;display:flex;flex-direction:column;gap:22px">
+        <button class="card" style="height:190px;background:#fff;box-shadow:0 7px 0 #E3B48F">
+          <span style="display:flex;width:120px;height:160px;align-items:flex-end;justify-content:center"><dc-import name="Peg" size="150" hair-style="none" outfit="#D9C3B0" skin="#E8D9CC" label="Blank character" hint-size="93px,150px"></dc-import></span>
+          <span>Start blank</span>
+        </button>
+        <button class="card" style="height:190px;background:#FFB627;box-shadow:0 7px 0 #C98800">
+          <span style="position:relative;display:flex;width:120px;height:160px;align-items:flex-end;justify-content:center"><dc-import name="Peg" size="150" hair-style="puff" outfit="#4F6BF0" skin="#8D5A3B" hair="#FF8FB1" label="Surprise character" hint-size="93px,150px"></dc-import><span style="position:absolute;right:-10px;top:-6px;display:flex;width:52px;height:52px;border-radius:16px;background:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="dice" size="34" hint-size="34px,34px"></dc-import></span></span>
+          <span>Surprise me</span>
+        </button>
+        <button class="card" style="height:190px;background:#fff;box-shadow:0 7px 0 #E3B48F">
+          <span style="position:relative;display:flex;width:120px;height:160px;align-items:flex-end;justify-content:center;gap:2px"><dc-import name="Peg" size="110" hair-style="bob" outfit="#EF4B2F" skin="#E9B48A" label="" hint-size="68px,110px"></dc-import><span style="opacity:.55"><dc-import name="Peg" size="110" hair-style="bob" outfit="#EF4B2F" skin="#E9B48A" label="" hint-size="68px,110px"></dc-import></span></span>
+          <span>Copy one</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>C1.8</span>Personality: pick 3</div>
+    <div class="ph">
+      <div class="bar">
+        <button class="t" aria-label="Back"><dc-import name="Icon" icon="back" size="28" hint-size="28px,28px"></dc-import></button>
+        <div class="dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><b></b><i></i></div>
+        <button class="t" style="background:#FFB627;box-shadow:0 5px 0 #C98800" aria-label="Surprise traits"><dc-import name="Icon" icon="dice" size="30" hint-size="30px,30px"></dc-import></button>
+      </div>
+      <div style="position:absolute;left:20px;right:20px;top:128px;height:150px;border-radius:28px;background:#FFF8F0;display:flex;align-items:center;gap:14px;padding:0 16px">
+        <span style="display:flex;align-items:flex-end;height:130px"><dc-import name="Peg" size="120" hair-style="bun" outfit="#4F6BF0" skin="#C98E62" hair="#5A2E1A" aid="hearing" label="Lumo" hint-size="74px,120px"></dc-import></span>
+        <div style="flex:1;display:flex;gap:10px;justify-content:center">
+          <span style="display:flex;width:64px;height:64px;border-radius:20px;background:#FF8FB1;align-items:center;justify-content:center"><dc-import name="Icon" icon="talk" size="36" hint-size="36px,36px"></dc-import></span>
+          <span style="display:flex;width:64px;height:64px;border-radius:20px;background:#E6CCF0;align-items:center;justify-content:center"><dc-import name="Icon" icon="note" size="36" hint-size="36px,36px"></dc-import></span>
+          <span style="display:flex;width:64px;height:64px;border-radius:20px;border:4px dashed #C9946B"></span>
+        </div>
+      </div>
+      <div style="position:absolute;left:20px;right:20px;top:300px;display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:16px">
+        <button class="trait" style="background:#FFD2AE"><dc-import name="Icon" icon="fork" size="60" hint-size="60px,60px"></dc-import>Snacky</button>
+        <button class="trait" style="background:#D7DDF5"><dc-import name="Icon" icon="zzz" size="60" hint-size="60px,60px"></dc-import>Sleepy</button>
+        <button class="trait" style="background:#FF8FB1;box-shadow:0 0 0 4px #2A1640"><dc-import name="Icon" icon="talk" size="60" hint-size="60px,60px"></dc-import>Chatty<span style="position:absolute;right:10px;top:10px;display:flex;width:34px;height:34px;border-radius:50%;background:#2A1640;color:#fff;align-items:center;justify-content:center;font:900 18px Nunito,sans-serif">1</span></button>
+        <button class="trait" style="background:#E6CCF0;box-shadow:0 0 0 4px #2A1640"><dc-import name="Icon" icon="note" size="60" hint-size="60px,60px"></dc-import>Musical<span style="position:absolute;right:10px;top:10px;display:flex;width:34px;height:34px;border-radius:50%;background:#2A1640;color:#fff;align-items:center;justify-content:center;font:900 18px Nunito,sans-serif">2</span></button>
+        <button class="trait" style="background:#BFE6DC"><dc-import name="Icon" icon="map" size="60" hint-size="60px,60px"></dc-import>Explorer</button>
+        <button class="trait" style="background:#FFE08A"><dc-import name="Icon" icon="sparkle" size="60" hint-size="60px,60px"></dc-import>Tidy</button>
+      </div>
+      <p style="position:absolute;left:24px;right:24px;bottom:30px;margin:0;font-size:14px;font-weight:800;color:#6B4A6E;text-align:center">Traits decide what they choose on their own. Next page: Brave, Gardener, Sporty, Shy.</p>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>C1.9</span>Name: dice or list</div>
+    <div class="ph">
+      <div class="bar">
+        <button class="t" aria-label="Back"><dc-import name="Icon" icon="back" size="28" hint-size="28px,28px"></dc-import></button>
+        <div class="dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><b></b></div>
+        <button class="t" style="background:#0B7A6F;color:#fff;box-shadow:0 5px 0 #075249" aria-label="Done"><dc-import name="Icon" icon="check" size="30" hint-size="30px,30px"></dc-import></button>
+      </div>
+      <div style="position:absolute;left:0;right:0;top:130px;display:flex;flex-direction:column;align-items:center;gap:6px">
+        <dc-import name="Peg" size="170" hair-style="bun" outfit="#4F6BF0" skin="#C98E62" hair="#5A2E1A" aid="hearing" label="Lumo" hint-size="105px,170px"></dc-import>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:6px">
+          <span style="display:flex;align-items:center;gap:10px;background:#fff;border-radius:20px;padding:6px 18px;box-shadow:0 0 0 4px #2A1640"><span class="d" style="font-size:40px">Lumo</span><span style="display:flex;color:#6B4A6E"><dc-import name="Icon" icon="speaker" size="26" hint-size="26px,26px"></dc-import></span></span>
+          <button style="width:72px;height:72px;border-radius:24px;background:#FFB627;box-shadow:0 6px 0 #C98800;display:flex;align-items:center;justify-content:center" aria-label="Roll a name"><dc-import name="Icon" icon="dice" size="42" hint-size="42px,42px"></dc-import></button>
+        </div>
+      </div>
+      <div style="position:absolute;left:20px;right:20px;top:470px;display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:12px">
+        <button class="chip">Bobo</button><button class="chip">Kiki</button><button class="chip" style="box-shadow:0 0 0 4px #2A1640">Lumo</button>
+        <button class="chip">Ziggy</button><button class="chip">Pip</button><button class="chip">Mona</button>
+      </div>
+      <div style="position:absolute;left:20px;right:20px;top:620px;display:flex;align-items:center;justify-content:center;gap:16px">
+        <button class="t" aria-label="Previous names"><dc-import name="Icon" icon="back" size="26" hint-size="26px,26px"></dc-import></button>
+        <span style="display:flex;gap:8px"><span style="width:12px;height:12px;border-radius:50%;background:#2A1640"></span><span style="width:12px;height:12px;border-radius:50%;border:3px solid #2A1640"></span><span style="width:12px;height:12px;border-radius:50%;border:3px solid #2A1640"></span></span>
+        <button class="t" aria-label="More names"><dc-import name="Icon" icon="next" size="26" hint-size="26px,26px"></dc-import></button>
+      </div>
+      <button style="position:absolute;left:20px;right:20px;bottom:34px;height:64px;border-radius:20px;background:#FFF8F0;border:3px dashed #C9946B;display:flex;align-items:center;justify-content:center;gap:10px;font-size:16px;font-weight:800;color:#2A1640">
+        <dc-import name="Icon" icon="keys" size="28" hint-size="28px,28px"></dc-import>Type a name (9+, stays on this device)
+      </button>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>C1.10</span>Celebration</div>
+    <div class="ph" style="background:#EF4B2F;color:#fff">
+      <span style="position:absolute;left:40px;top:120px;width:22px;height:10px;border-radius:3px;background:#FFB627;transform:rotate(30deg)"></span>
+      <span style="position:absolute;left:300px;top:150px;width:22px;height:10px;border-radius:3px;background:#fff;transform:rotate(-20deg)"></span>
+      <span style="position:absolute;left:90px;top:230px;width:14px;height:14px;border-radius:50%;background:#4F6BF0"></span>
+      <span style="position:absolute;left:320px;top:280px;width:22px;height:10px;border-radius:3px;background:#7BC74D;transform:rotate(60deg)"></span>
+      <span style="position:absolute;left:180px;top:110px;width:14px;height:14px;border-radius:50%;background:#FF8FB1"></span>
+      <span style="position:absolute;left:60px;top:400px;width:22px;height:10px;border-radius:3px;background:#FFE08A;transform:rotate(-45deg)"></span>
+      <span style="position:absolute;left:330px;top:420px;width:14px;height:14px;border-radius:50%;background:#FFB627"></span>
+      <div style="position:absolute;left:0;right:0;top:150px;display:flex;justify-content:center;transform:rotate(-4deg)">
+        <dc-import name="Peg" size="250" hair-style="bun" outfit="#4F6BF0" skin="#C98E62" hair="#5A2E1A" aid="hearing" eyes="wow" label="Lumo, jumping for joy" hint-size="155px,250px"></dc-import>
+      </div>
+      <div style="position:absolute;left:115px;right:115px;top:430px;height:24px;border-radius:50%;background:rgba(42,22,64,.25)"></div>
+      <h1 class="d" style="position:absolute;left:0;right:0;top:480px;margin:0;text-align:center;font-size:52px">Hooray, Lumo!</h1>
+      <div style="position:absolute;left:24px;right:24px;bottom:40px;display:flex;flex-direction:column;gap:16px">
+        <button style="height:84px;border-radius:28px;background:#fff;color:#C7341B;box-shadow:0 7px 0 #B8321C;display:flex;align-items:center;justify-content:center;gap:12px;font:800 30px 'Baloo 2',sans-serif"><dc-import name="Icon" icon="play" size="36" hint-size="36px,36px"></dc-import>Play now</button>
+        <button style="height:68px;border-radius:24px;background:rgba(255,255,255,.18);color:#fff;display:flex;align-items:center;justify-content:center;gap:12px;font:800 24px 'Baloo 2',sans-serif"><dc-import name="Icon" icon="plus" size="30" hint-size="30px,30px"></dc-import>Make another</button>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1800,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

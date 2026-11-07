@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Friends lobby</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:20px;box-shadow:0 5px 0 #E3B48F;display:flex;align-items:center;justify-content:center;color:#2A1640;width:64px;height:64px;flex:none}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.vis{display:flex;align-items:center;gap:16px;min-height:112px;border-radius:28px;background:#fff;box-shadow:0 5px 0 #E3B48F;padding:0 18px;text-align:left}
+.vi{display:flex;width:72px;height:72px;border-radius:22px;align-items:center;justify-content:center;flex:none}
+.fr{position:relative;border-radius:30px;background:#FFF8F0;box-shadow:0 6px 0 #EFC39F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.face{position:relative;width:110px;height:110px;border-radius:50%;overflow:hidden}
+.dot{position:absolute;width:30px;height:30px;border-radius:50%;border:5px solid #FFF8F0}
+</style>
+</helmet>
+<div style="position:relative;width:1180px;height:820px;background:#FFE6CF;color:#2A1640;font-family:Nunito,system-ui,sans-serif;padding:28px 32px;display:flex;flex-direction:column;gap:22px;overflow:hidden">
+  <header style="display:flex;align-items:center;gap:14px">
+    <button class="t" aria-label="Home"><dc-import name="Icon" icon="home" size="32" hint-size="32px,32px"></dc-import></button>
+    <button class="t" style="background:#2A1640;color:#fff;box-shadow:0 5px 0 #120A1C" aria-label="Hear: friends"><dc-import name="Icon" icon="speaker" size="30" hint-size="30px,30px"></dc-import></button>
+    <h1 class="d" style="margin:0 0 0 6px;font-size:40px">Friends</h1>
+    <span style="margin-left:auto;display:flex;align-items:center;gap:14px;font-size:14px;font-weight:800;color:#5E3F62">
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:18px;height:18px;border-radius:50%;background:#0FA394;box-shadow:0 0 0 3px #4F6BF0"></span>here now</span>
+      <span style="display:flex;align-items:center;gap:6px"><dc-import name="Icon" icon="hourglass" size="20" hint-size="20px,20px"></dc-import>waiting for a grown-up</span>
+    </span>
+  </header>
+
+  <div style="flex:1;display:flex;gap:26px">
+    <section style="width:410px;flex:none;display:flex;flex-direction:column;gap:14px" aria-label="Who can visit my world">
+      <h2 class="d" style="margin:0;font-size:24px;display:flex;align-items:center;gap:10px"><dc-import name="Icon" icon="house" size="28" hint-size="28px,28px"></dc-import>My world</h2>
+      <button class="vis" role="radio" aria-checked="false">
+        <span class="vi" style="background:#FFE6CF"><dc-import name="Icon" icon="lock" size="40" hint-size="40px,40px"></dc-import></span>
+        <span><span class="d" style="display:block;font-size:22px">Just me</span><span style="font-size:14px;font-weight:700;color:#5E3F62">Nobody can visit</span></span>
+      </button>
+      <button class="vis" style="box-shadow:0 0 0 5px #2A1640;background:#E4E9FF" role="radio" aria-checked="true">
+        <span class="vi" style="background:#4F6BF0;color:#fff"><dc-import name="Icon" icon="people" size="40" hint-size="40px,40px"></dc-import></span>
+        <span><span class="d" style="display:block;font-size:22px">My friends</span><span style="font-size:14px;font-weight:700;color:#5E3F62">Only friends a grown-up said yes to</span></span>
+        <span style="margin-left:auto;display:flex;width:40px;height:40px;border-radius:50%;background:#2A1640;color:#fff;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="check" size="24" weight="4" hint-size="24px,24px"></dc-import></span>
+      </button>
+      <button class="vis" role="radio" aria-checked="false">
+        <span class="vi" style="background:#FFE08A"><dc-import name="Icon" icon="grid4" size="40" hint-size="40px,40px"></dc-import></span>
+        <span><span class="d" style="display:block;font-size:22px">With a picture code</span><span style="font-size:14px;font-weight:700;color:#5E3F62">For 10 minutes, then it closes</span></span>
+      </button>
+      <p style="margin:auto 0 0;font-size:14px;font-weight:700;color:#5E3F62;line-height:1.45;display:flex;gap:10px"><span style="flex:none;display:flex"><dc-import name="Icon" icon="shield" size="24" hint-size="24px,24px"></dc-import></span>Visitors can play and use picture phrases. They can’t take or delete your things.</p>
+    </section>
+
+    <section style="flex:1;display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));grid-template-rows:repeat(2, minmax(0, 1fr));gap:20px" aria-label="My friends">
+      <div class="fr">
+        <div class="face" style="background:#FF8FB1;box-shadow:0 0 0 6px #4F6BF0"><span style="position:absolute;left:4px;top:-6px"><dc-import name="Peg" size="164" hair-style="crop" outfit="#4F6BF0" skin="#E9B48A" hair="#C2552B" label="" hint-size="102px,164px"></dc-import></span></div>
+        <span class="dot" style="left:50%;margin-left:30px;top:96px;background:#0FA394"></span>
+        <span class="d" style="font-size:22px">Zuza</span>
+        <button style="height:52px;padding:0 16px;border-radius:18px;background:#EF4B2F;color:#fff;box-shadow:0 4px 0 #B8321C;display:flex;align-items:center;gap:8px;font:800 18px 'Baloo 2',sans-serif" aria-label="Visit Zuza"><dc-import name="Icon" icon="door" size="24" hint-size="24px,24px"></dc-import>Visit</button>
+      </div>
+      <div class="fr">
+        <div class="face" style="background:#BFE6DC;box-shadow:0 0 0 6px #4F6BF0"><span style="position:absolute;left:4px;top:4px"><dc-import name="Peg" size="164" hair-style="puff" outfit="#0FA394" skin="#5A3725" hair="#2A1640" label="" hint-size="102px,164px"></dc-import></span></div>
+        <span class="dot" style="left:50%;margin-left:30px;top:96px;background:#0FA394"></span>
+        <span class="d" style="font-size:22px">Kai</span>
+        <button style="height:52px;padding:0 16px;border-radius:18px;background:#4F6BF0;color:#fff;box-shadow:0 4px 0 #2F45B5;display:flex;align-items:center;gap:8px;font:800 18px 'Baloo 2',sans-serif" aria-label="Invite Kai to my world"><dc-import name="Icon" icon="mail" size="24" hint-size="24px,24px"></dc-import>Invite</button>
+      </div>
+      <div class="fr">
+        <div class="face" style="background:#E3D9DE;filter:grayscale(.7);opacity:.8"><span style="position:absolute;left:4px;top:-6px"><dc-import name="Peg" size="164" hair-style="bun" outfit="#FFB627" skin="#C98E62" hair="#5A2E1A" label="" hint-size="102px,164px"></dc-import></span></div>
+        <span class="d" style="font-size:22px">Bo</span>
+        <span style="height:52px;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#5E3F62"><dc-import name="Icon" icon="moon" size="22" hint-size="22px,22px"></dc-import>Not playing now</span>
+      </div>
+      <div class="fr" style="background:#FFF1E2">
+        <div class="face" style="background:#E3D9DE;opacity:.7"><span style="position:absolute;left:4px;top:-6px"><dc-import name="Peg" size="164" hair-style="bob" outfit="#8E3CA8" skin="#F6D2B4" hair="#2A1640" label="" hint-size="102px,164px"></dc-import></span></div>
+        <span style="position:absolute;left:50%;margin-left:26px;top:30px;display:flex;width:44px;height:44px;border-radius:50%;background:#fff;align-items:center;justify-content:center;box-shadow:0 3px 0 rgba(42,22,64,.2)"><dc-import name="Icon" icon="hourglass" size="26" hint-size="26px,26px"></dc-import></span>
+        <span class="d" style="font-size:22px">New friend</span>
+        <span style="height:52px;display:flex;align-items:center;font-size:14px;font-weight:800;color:#5E3F62;text-align:center;padding:0 14px">A grown-up needs to say yes</span>
+      </div>
+      <button class="fr" style="background:#EF4B2F;box-shadow:0 6px 0 #B8321C;color:#fff">
+        <dc-import name="Icon" icon="mail" size="64" hint-size="64px,64px"></dc-import>
+        <span class="d" style="font-size:24px">Invite</span>
+      </button>
+      <button class="fr" style="background:#FFB627;box-shadow:0 6px 0 #C98800;color:#2A1640">
+        <dc-import name="Icon" icon="grid4" size="64" hint-size="64px,64px"></dc-import>
+        <span class="d" style="font-size:24px">Join with code</span>
+      </button>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

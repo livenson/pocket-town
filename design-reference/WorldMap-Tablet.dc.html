@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>World map, tablet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:20px;box-shadow:0 5px 0 rgba(42,22,64,.22);display:flex;align-items:center;justify-content:center;color:#2A1640;width:64px;height:64px;flex:none}
+.bld{position:absolute;display:flex;flex-direction:column;align-items:center}
+.body{border:5px solid #2A1640;border-radius:0 0 14px 14px;display:flex;align-items:flex-end;justify-content:center}
+.door{width:26px;height:38px;background:#2A1640;border-radius:13px 13px 0 0}
+.lab{margin-top:6px;background:rgba(255,248,240,.95);border-radius:10px;padding:2px 10px;font:800 15px 'Baloo 2',sans-serif;color:#2A1640}
+.pin{position:absolute;width:58px;height:58px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 4px #fff, 0 6px 0 4px rgba(42,22,64,.2)}
+.tail{position:absolute;width:16px;height:16px;background:#fff;transform:rotate(45deg);border-radius:3px}
+.tree{position:absolute;width:56px;height:56px;border-radius:50%;background:#4E9A2E;box-shadow:inset -6px -6px 0 rgba(42,22,64,.15)}
+</style>
+</helmet>
+<div style="position:relative;width:1180px;height:820px;background:#9AD46F;color:#2A1640;font-family:Nunito,system-ui,sans-serif;overflow:hidden">
+  <div style="position:absolute;left:-20px;right:-20px;top:390px;height:64px;border-radius:32px;background:#F3DDB5"></div>
+  <div style="position:absolute;left:540px;top:-20px;width:64px;bottom:-20px;border-radius:32px;background:#F3DDB5"></div>
+  <div style="position:absolute;left:60px;top:600px;width:230px;height:150px;border-radius:50%;background:#7CC8F0;box-shadow:inset 0 -10px 0 rgba(42,22,64,.1)"></div>
+  <div class="tree" style="left:850px;top:500px"></div><div class="tree" style="left:930px;top:540px;width:70px;height:70px"></div><div class="tree" style="left:1010px;top:490px"></div><div class="tree" style="left:900px;top:620px;width:48px;height:48px"></div>
+  <div style="position:absolute;left:960px;top:670px;width:60px;height:14px;border-radius:7px;background:#B9774A"></div>
+
+  <div class="bld" style="left:150px;top:150px">
+    <div style="width:200px;height:84px;background:#EF4B2F;clip-path:polygon(50% 0, 100% 100%, 0 100%)"></div>
+    <div class="body" style="width:170px;height:110px;background:#FFF8F0"><div class="door"></div></div>
+    <span class="lab">My house</span>
+  </div>
+  <span style="position:absolute;left:310px;top:206px;display:flex;width:40px;height:40px;border-radius:50%;background:#FF8FB1;color:#2A1640;align-items:center;justify-content:center;box-shadow:0 0 0 3px #fff"><dc-import name="Icon" icon="heart" size="24" hint-size="24px,24px"></dc-import></span>
+
+  <div class="bld" style="left:660px;top:140px;transform:translateY(-10px)">
+    <div style="width:190px;height:44px;background:repeating-linear-gradient(90deg, #FFB627 0 24px, #fff 24px 48px);border:5px solid #2A1640;border-radius:14px 14px 6px 6px"></div>
+    <div class="body" style="width:170px;height:120px;background:#FFE6CF;box-shadow:0 18px 0 -4px rgba(42,22,64,.18), 0 0 0 10px rgba(255,182,39,.35)"><div class="door"></div></div>
+    <span class="lab">Café</span>
+  </div>
+
+  <div class="bld" style="left:930px;top:150px">
+    <div style="width:170px;height:76px;background:#4F6BF0;clip-path:polygon(50% 0, 100% 100%, 0 100%)"></div>
+    <div class="body" style="width:144px;height:100px;background:#FFF8F0"><div class="door"></div></div>
+    <span class="lab">Zuza’s house</span>
+  </div>
+
+  <div class="bld" style="left:260px;top:480px">
+    <div style="width:190px;height:70px;background:#0FA394;clip-path:polygon(50% 0, 100% 100%, 0 100%)"></div>
+    <div class="body" style="width:166px;height:110px;background:#FFF8F0;align-items:center"><span style="color:#2A1640;display:flex"><dc-import name="Icon" icon="book" size="40" hint-size="40px,40px"></dc-import></span></div>
+    <span class="lab">Library</span>
+  </div>
+
+  <div class="bld" style="left:640px;top:520px">
+    <div style="width:170px;height:90px;background:#8E3CA8;border:5px solid #2A1640;border-bottom:0;border-radius:85px 85px 0 0"></div>
+    <div class="body" style="width:170px;height:90px;background:#FFF8F0;align-items:center"><span style="color:#8E3CA8;display:flex"><dc-import name="Icon" icon="note" size="40" hint-size="40px,40px"></dc-import></span></div>
+    <span class="lab">Music hall</span>
+  </div>
+  <span class="lab" style="position:absolute;left:900px;top:690px;margin:0">Park</span>
+
+  <div class="pin" style="left:206px;top:70px;background:#FFD2AE"><span style="position:absolute;left:0;top:-4px"><dc-import name="Peg" size="92" hair-style="bob" outfit="#EF4B2F" skin="#E9B48A" label="Moku is home" hint-size="57px,92px"></dc-import></span></div>
+  <div class="pin" style="left:266px;top:84px;background:#CDD6FF;width:50px;height:50px"><span style="position:absolute;left:0;top:-4px"><dc-import name="Peg" size="80" hair-style="bun" outfit="#4F6BF0" skin="#C98E62" hair="#5A2E1A" aid="hearing" label="Lumo is home" hint-size="50px,80px"></dc-import></span></div>
+  <div class="pin" style="left:716px;top:52px;background:#FFE08A"><span style="position:absolute;left:0;top:6px"><dc-import name="Peg" size="92" hair-style="puff" outfit="#FFB627" skin="#8D5A3B" label="Pim is at the café" hint-size="57px,92px"></dc-import></span></div>
+  <div class="pin" style="left:984px;top:60px;background:#FF8FB1;box-shadow:0 0 0 4px #fff, 0 0 0 9px #4F6BF0"><span style="position:absolute;left:0;top:-4px"><dc-import name="Peg" size="92" hair-style="crop" outfit="#4F6BF0" skin="#E9B48A" hair="#C2552B" label="Your friend Zuza is online" hint-size="57px,92px"></dc-import></span></div>
+  <span style="position:absolute;left:1030px;top:96px;width:22px;height:22px;border-radius:50%;background:#0FA394;border:4px solid #fff"></span>
+  <div class="pin" style="left:450px;top:380px;width:52px;height:52px;background:#D9F0C4"><span style="position:absolute;left:0;top:-4px"><dc-import name="Peg" size="84" hair-style="none" outfit="#7BC74D" skin="#F6D2B4" label="Oki is walking to the library" hint-size="52px,84px"></dc-import></span></div>
+  <span style="position:absolute;left:410px;top:440px;width:10px;height:10px;border-radius:50%;background:rgba(42,22,64,.35)"></span><span style="position:absolute;left:390px;top:452px;width:10px;height:10px;border-radius:50%;background:rgba(42,22,64,.25)"></span><span style="position:absolute;left:370px;top:462px;width:10px;height:10px;border-radius:50%;background:rgba(42,22,64,.15)"></span>
+
+  <div style="position:absolute;left:640px;top:330px;width:240px;border-radius:24px;background:#fff;box-shadow:0 6px 0 rgba(42,22,64,.2);padding:12px;display:flex;align-items:center;gap:10px">
+    <span style="position:relative;display:flex;width:44px;height:44px;border-radius:50%;overflow:hidden;background:#FFE08A;flex:none"><span style="position:absolute;left:0;top:4px"><dc-import name="Peg" size="72" hair-style="puff" outfit="#FFB627" skin="#8D5A3B" label="" hint-size="45px,72px"></dc-import></span></span>
+    <span style="display:flex;color:#C7341B"><dc-import name="Icon" icon="cake" size="30" hint-size="30px,30px"></dc-import></span>
+    <button style="margin-left:auto;width:64px;height:56px;border-radius:18px;background:#EF4B2F;color:#fff;box-shadow:0 4px 0 #B8321C;display:flex;align-items:center;justify-content:center" aria-label="Go into the café"><dc-import name="Icon" icon="door" size="30" hint-size="30px,30px"></dc-import></button>
+  </div>
+
+  <button class="t" style="position:absolute;left:24px;top:24px" aria-label="Home"><dc-import name="Icon" icon="home" size="32" hint-size="32px,32px"></dc-import></button>
+  <div style="position:absolute;right:24px;top:24px;width:220px;height:130px;border-radius:28px;background:#FFF8F0;box-shadow:0 6px 0 rgba(42,22,64,.2);padding:14px" role="group" aria-label="Time of day">
+    <div style="position:relative;width:192px;height:96px;border-radius:96px 96px 0 0;background:#BFE3FF;overflow:hidden">
+      <div style="position:absolute;left:96px;top:0;width:96px;height:96px;background:#3B2A63"></div>
+      <span style="position:absolute;left:18px;top:52px;color:#C98800;display:flex"><dc-import name="Icon" icon="sun" size="30" hint-size="30px,30px"></dc-import></span>
+      <span style="position:absolute;right:18px;top:52px;color:#fff;display:flex"><dc-import name="Icon" icon="moon" size="28" hint-size="28px,28px"></dc-import></span>
+      <span style="position:absolute;left:92px;top:96px;width:6px;height:80px;background:#2A1640;border-radius:3px;transform-origin:3px 0;transform:rotate(150deg)"></span>
+    </div>
+    <span style="position:absolute;left:76px;top:30px;width:40px;height:40px;border-radius:50%;background:#FFB627;border:5px solid #2A1640;box-shadow:0 3px 0 rgba(42,22,64,.25)"></span>
+  </div>
+  <div style="position:absolute;right:24px;bottom:24px;display:flex;background:#fff;border-radius:999px;padding:6px;gap:4px;box-shadow:0 5px 0 rgba(42,22,64,.22)" role="group" aria-label="Time">
+    <button style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center" aria-label="Pause"><dc-import name="Icon" icon="pause" size="28" hint-size="28px,28px"></dc-import></button>
+    <button style="width:56px;height:56px;border-radius:50%;background:#2A1640;color:#fff;display:flex;align-items:center;justify-content:center" aria-label="Play, on"><dc-import name="Icon" icon="play" size="28" hint-size="28px,28px"></dc-import></button>
+    <button style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center" aria-label="Faster"><dc-import name="Icon" icon="ff" size="28" hint-size="28px,28px"></dc-import></button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

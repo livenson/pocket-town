@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>House wizard prototype</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:18px;box-shadow:0 5px 0 #E3B48F;display:flex;align-items:center;justify-content:center;color:#2A1640;width:60px;height:60px;flex:none}
+.t:active{transform:translateY(3px);box-shadow:0 2px 0 #E3B48F}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.rail{position:relative;width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex:none}
+.halo{animation:halo 1.3s ease-in-out infinite}
+@keyframes halo{0%,100%{box-shadow:0 0 0 4px #FFB627, 0 0 0 4px rgba(255,182,39,.6)}50%{box-shadow:0 0 0 4px #FFB627, 0 0 0 18px rgba(255,182,39,0)}}
+.pick{height:96px;border-radius:24px;display:flex;align-items:center;justify-content:center;transition:transform .12s}
+.cell{position:relative;border-radius:18px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px}
+.ring{animation:fill .7s linear forwards}
+@keyframes fill{from{stroke-dashoffset:176}to{stroke-dashoffset:0}}
+.pop{animation:pop .3s ease-out}
+@keyframes pop{0%{transform:scale(.7)}100%{transform:scale(1)}}
+.lab{font-size:13px;font-weight:900;color:#5E3F62}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+</style>
+</helmet>
+<div style="position:relative;width:1560px;height:860px;background:#F2DCC8;color:#2A1640;font-family:Nunito,system-ui,sans-serif">
+<div style="position:absolute;left:20px;top:20px;width:1180px;height:820px;border-radius:28px;overflow:hidden;background:#FFE6CF;box-shadow:0 8px 0 rgba(42,22,64,.12)">
+
+  <div style="position:absolute;left:24px;top:20px;display:flex;gap:10px">
+    <button class="t" onClick="{{home}}" aria-label="Home, your house is saved"><dc-import name="Icon" icon="home" size="30" hint-size="30px,30px"></dc-import></button>
+    <button class="t" onClick="{{undo}}" style="opacity:{{undoOp}}" aria-label="Undo"><dc-import name="Icon" icon="undo" size="30" hint-size="30px,30px"></dc-import></button>
+    <button class="t" onClick="{{redo}}" style="opacity:{{redoOp}}" aria-label="Redo"><dc-import name="Icon" icon="redo" size="30" hint-size="30px,30px"></dc-import></button>
+  </div>
+  <nav style="position:absolute;left:252px;top:24px;display:flex;gap:8px" aria-label="House steps, any order">
+    <sc-for list="{{rail}}" as="r" hint-placeholder-count="8">
+      <button class="rail" onClick="{{r.go}}" style="box-shadow:0 4px 0 #EFC39F;{{r.st}}" aria-label="{{r.l}}" aria-current="{{r.cur}}">
+        <dc-import name="Icon" icon="{{r.i}}" size="28" hint-size="28px,28px"></dc-import>
+        <sc-if value="{{r.done}}" hint-placeholder-val="{{false}}"><span style="position:absolute;right:-5px;top:-5px;display:flex;width:22px;height:22px;border-radius:50%;background:#0B7A6F;color:#fff;align-items:center;justify-content:center;border:2px solid #FFE6CF"><dc-import name="Icon" icon="check" size="12" weight="4" hint-size="12px,12px"></dc-import></span></sc-if>
+      </button>
+    </sc-for>
+  </nav>
+  <div style="position:absolute;right:24px;top:20px;display:flex;gap:10px">
+    <button onClick="{{dice}}" style="width:60px;height:60px;border-radius:18px;background:#FFB627;box-shadow:0 5px 0 #C98800;display:flex;align-items:center;justify-content:center;color:#2A1640" aria-label="Surprise me for this step"><dc-import name="Icon" icon="dice" size="34" hint-size="34px,34px"></dc-import></button>
+    <button onClick="{{next}}" style="width:60px;height:60px;border-radius:18px;background:#0B7A6F;box-shadow:0 5px 0 #075249;display:flex;align-items:center;justify-content:center;color:#fff" aria-label="Next step"><dc-import name="Icon" icon="{{nextIcon}}" size="34" hint-size="34px,34px"></dc-import></button>
+  </div>
+
+  <div style="position:absolute;left:24px;top:98px;display:flex;align-items:center;gap:12px">
+    <button onClick="{{sayStep}}" style="width:48px;height:48px;border-radius:50%;background:#2A1640;color:#fff;display:flex;align-items:center;justify-content:center" aria-label="Hear what to do"><dc-import name="Icon" icon="speaker" size="24" hint-size="24px,24px"></dc-import></button>
+    <span class="d" style="font-size:28px">{{title}}</span>
+  </div>
+
+  <sc-if value="{{s1}}" hint-placeholder-val="{{true}}">
+    <div style="position:absolute;left:24px;right:24px;top:156px;bottom:24px;border-radius:30px;background:#9AD46F;overflow:hidden">
+      <div style="position:absolute;left:-10px;right:-10px;top:300px;height:56px;border-radius:28px;background:#F3DDB5"></div>
+      <div style="position:absolute;left:600px;top:-10px;width:56px;bottom:-10px;border-radius:28px;background:#F3DDB5"></div>
+      <div style="position:absolute;left:880px;top:420px;width:70px;height:70px;border-radius:50%;background:#4E9A2E"></div>
+      <div style="position:absolute;left:950px;top:460px;width:56px;height:56px;border-radius:50%;background:#4E9A2E"></div>
+      <div style="position:absolute;left:60px;top:470px;width:200px;height:110px;border-radius:50%;background:#7CC8F0"></div>
+      <div style="position:absolute;left:740px;top:80px;display:flex;flex-direction:column;align-items:center"><div style="width:150px;height:62px;background:#4F6BF0;clip-path:polygon(50% 0, 100% 100%, 0 100%)"></div><div style="width:124px;height:96px;background:#FFF8F0;border:5px solid #2A1640;border-radius:0 0 14px 14px"></div><span class="lab" style="margin-top:6px;background:#FFF8F0;border-radius:8px;padding:2px 8px">Neighbour</span></div>
+      <div style="position:absolute;left:380px;top:400px;display:flex;flex-direction:column;align-items:center"><div style="width:150px;height:62px;background:#0FA394;clip-path:polygon(50% 0, 100% 100%, 0 100%)"></div><div style="width:124px;height:96px;background:#FFF8F0;border:5px solid #2A1640;border-radius:0 0 14px 14px"></div><span class="lab" style="margin-top:6px;background:#FFF8F0;border-radius:8px;padding:2px 8px">Café</span></div>
+      <sc-for list="{{plots}}" as="p" hint-placeholder-count="4">
+        <button onClick="{{p.tap}}" class="{{p.cls}}" style="position:absolute;left:{{p.x}}px;top:{{p.y}}px;width:170px;height:170px;border-radius:30px;border:5px dashed rgba(42,22,64,.5);background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;color:#C7341B;{{p.st}}" aria-label="{{p.l}}" aria-pressed="{{p.sel}}">
+          <sc-if value="{{p.sel}}" hint-placeholder-val="{{false}}"><span class="pop" style="display:flex"><dc-import name="Icon" icon="pin" size="72" hint-size="72px,72px"></dc-import></span></sc-if>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{showHouse}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;left:24px;top:156px;width:640px;height:640px;border-radius:30px;background:#BFE3FF;overflow:hidden">
+      <div style="position:absolute;left:20px;top:550px;width:600px;height:80px;border-radius:50%;background:#9AD46F"></div>
+      <sc-if value="{{chimney}}" hint-placeholder-val="{{true}}"><div style="position:absolute;left:420px;top:80px;width:40px;height:90px;background:#B8321C;border:5px solid #2A1640;border-radius:6px"></div></sc-if>
+      <div style="position:absolute;{{roofOut}}"></div>
+      <div style="position:absolute;{{roofIn}}"></div>
+      <button onClick="{{doorTap}}" class="{{doorCls}}" style="position:absolute;left:30px;top:466px;width:72px;height:94px;background:#B9774A;border:5px solid #2A1640;border-bottom:0;border-radius:36px 36px 0 0" aria-label="Front door"><span style="position:absolute;right:10px;top:46px;width:10px;height:10px;border-radius:50%;background:#FFB627"></span></button>
+      <div style="position:absolute;left:110px;top:230px;width:420px;height:330px;background:#2A1640;border-radius:4px 4px 18px 18px;padding:10px;display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));grid-template-rows:repeat(2, minmax(0, 1fr));gap:10px">
+        <sc-for list="{{slots}}" as="sl" hint-placeholder-count="4">
+          <button onClick="{{sl.tap}}" class="{{sl.cls}}" style="position:relative;border-radius:6px;overflow:hidden;background:{{sl.bg}};display:flex;align-items:center;justify-content:center;{{sl.ring}}" aria-label="{{sl.l}}">
+            <span style="position:absolute;left:0;right:0;bottom:0;height:22px;background:{{sl.fl}}"></span>
+            <sc-if value="{{sl.has}}" hint-placeholder-val="{{false}}"><span class="pop" style="position:relative;display:flex;width:70px;height:70px;border-radius:22px;background:rgba(255,255,255,.75);align-items:center;justify-content:center;color:#2A1640"><dc-import name="Icon" icon="{{sl.ic}}" size="40" hint-size="40px,40px"></dc-import></span></sc-if>
+            <sc-if value="{{sl.empty}}" hint-placeholder-val="{{true}}"><span style="position:relative;display:flex;width:70px;height:70px;border-radius:22px;border:4px dashed rgba(42,22,64,.35);align-items:center;justify-content:center;color:rgba(42,22,64,.5)"><dc-import name="Icon" icon="plus" size="32" hint-size="32px,32px"></dc-import></span></sc-if>
+            <sc-if value="{{sl.hasFace}}" hint-placeholder-val="{{false}}"><span class="pop" style="position:absolute;right:8px;bottom:6px;display:flex"><dc-import name="Peg" size="80" hair-style="{{sl.face.hs}}" outfit="{{sl.face.out}}" skin="{{sl.face.skin}}" hair="{{sl.face.hair}}" aid="{{sl.face.aid}}" label="{{sl.face.name}}" hint-size="62px,80px"></dc-import></span></sc-if>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{s2}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;left:688px;right:24px;top:156px;bottom:24px;display:flex;flex-direction:column;gap:16px">
+      <sc-for list="{{shells}}" as="h" hint-placeholder-count="3">
+        <button onClick="{{h.tap}}" style="flex:1;border-radius:28px;background:#fff;display:flex;align-items:center;gap:20px;padding:0 24px;{{h.st}}" aria-pressed="{{h.sel}}">
+          <span style="width:110px;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">
+            <span style="display:block;{{h.roof}}"></span>
+            <span style="display:block;width:76px;height:52px;background:#FFE6CF;border:4px solid #2A1640;border-radius:0 0 8px 8px"></span>
+          </span>
+          <span class="d" style="font-size:26px">{{h.l}}</span>
+          <sc-if value="{{h.sel}}" hint-placeholder-val="{{false}}"><span style="margin-left:auto;display:flex;width:40px;height:40px;border-radius:50%;background:#2A1640;color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="24" weight="4" hint-size="24px,24px"></dc-import></span></sc-if>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{s3}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;left:24px;right:24px;top:156px;bottom:24px;display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:24px">
+      <button onClick="{{readyPlay}}" style="border-radius:34px;background:#0FA394;box-shadow:0 8px 0 #0A7469;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;overflow:hidden;{{modePlaySt}}">
+        <span style="display:block;width:420px;height:336px"><span style="display:block;transform:scale(.7);transform-origin:0 0"><dc-import name="Diorama" hint-size="600px,480px"></dc-import></span></span>
+        <span class="d" style="display:flex;align-items:center;gap:12px;font-size:34px"><dc-import name="Icon" icon="play" size="36" hint-size="36px,36px"></dc-import>Ready to play</span>
+      </button>
+      <button onClick="{{readyDeco}}" style="border-radius:34px;background:#fff;box-shadow:0 8px 0 #E3B48F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;{{modeDecoSt}}">
+        <span style="display:flex;flex-direction:column;align-items:center"><span style="width:300px;height:110px;background:#2A1640;clip-path:polygon(50% 0, 100% 100%, 0 100%)"></span><span style="width:260px;height:180px;border:7px solid #2A1640;border-top:0;border-radius:0 0 18px 18px;background:#FFF8F0;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px"><span style="border:3px dashed #C9A385;border-radius:8px"></span><span style="border:3px dashed #C9A385;border-radius:8px"></span><span style="border:3px dashed #C9A385;border-radius:8px"></span><span style="border:3px dashed #C9A385;border-radius:8px"></span></span></span>
+        <span class="d" style="display:flex;align-items:center;gap:12px;font-size:34px"><dc-import name="Icon" icon="roller" size="36" hint-size="36px,36px"></dc-import>Ready to decorate</span>
+      </button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{s4}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;left:688px;right:24px;top:156px;bottom:24px;border-radius:30px;background:#FFF8F0;box-shadow:0 6px 0 #EFC39F;padding:22px;display:flex;flex-direction:column;gap:16px">
+      <span class="lab">Room types: tap one, then tap the spaces</span>
+      <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:14px">
+        <sc-for list="{{roomTypes}}" as="rt" hint-placeholder-count="6">
+          <button class="pick {{rt.cls}}" onClick="{{rt.tap}}" style="flex-direction:column;gap:6px;height:120px;background:{{rt.c}};box-shadow:0 5px 0 rgba(42,22,64,.15)" aria-pressed="{{rt.sel}}" aria-label="{{rt.l}}">
+            <dc-import name="Icon" icon="{{rt.i}}" size="44" hint-size="44px,44px"></dc-import>
+            <span class="lab" style="color:#2A1640">{{rt.l}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <p style="margin:auto 0 0;font-size:14px;font-weight:700;color:#5E3F62;line-height:1.45">A picked tile rides on a marigold halo and every space glows. Dragging the tile onto a space does the same.</p>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{s5}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;left:688px;right:24px;top:156px;bottom:24px;border-radius:30px;background:#FFF8F0;box-shadow:0 6px 0 #EFC39F;padding:22px;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;gap:10px">
+        <button onClick="{{surfWalls}}" style="flex:1;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900;{{wallsTab}}" aria-pressed="{{isWalls}}"><dc-import name="Icon" icon="roller" size="26" hint-size="26px,26px"></dc-import>Walls</button>
+        <button onClick="{{surfFloors}}" style="flex:1;height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900;{{floorsTab}}" aria-pressed="{{isFloors}}"><dc-import name="Icon" icon="grid4" size="26" hint-size="26px,26px"></dc-import>Floors</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:12px">
+        <sc-for list="{{swatches}}" as="w" hint-placeholder-count="8">
+          <button onClick="{{w.tap}}" style="height:80px;border-radius:22px;background:{{w.c}};box-shadow:inset 0 -6px 0 rgba(42,22,64,.15), 0 0 0 2px rgba(42,22,64,.08)" aria-label="{{w.l}}"></button>
+        </sc-for>
+      </div>
+      <button onClick="{{selAll}}" style="height:60px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:900;{{allSt}}"><dc-import name="Icon" icon="house" size="26" hint-size="26px,26px"></dc-import>Whole house</button>
+      <p style="margin:auto 0 0;font-size:14px;font-weight:700;color:#5E3F62;line-height:1.45">Tap a room in the house to paint just that one. The marigold ring shows what will change.</p>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{s6}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;left:24px;right:24px;top:156px;height:404px;border-radius:30px;overflow:hidden;box-shadow:0 0 0 6px #2A1640;background:{{rv.wall}}">
+      <div style="position:absolute;left:0;right:0;top:0;height:170px;background:{{rv.wall}}"></div>
+      <div style="position:absolute;left:770px;top:26px;width:150px;height:110px;background:#BFE3FF;border:7px solid #2A1640;border-radius:18px"></div>
+      <div style="position:absolute;left:0;right:0;top:170px;bottom:0;background:{{rv.floor}}"></div>
+      <div style="position:absolute;left:0;right:0;top:164px;height:12px;background:rgba(42,22,64,.25)"></div>
+      <div style="position:absolute;left:16px;top:16px;display:flex;gap:8px" role="tablist" aria-label="Which room">
+        <sc-for list="{{roomTabs}}" as="rb" hint-placeholder-count="4">
+          <button onClick="{{rb.tap}}" role="tab" aria-selected="{{rb.sel}}" style="width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;{{rb.st}}" aria-label="{{rb.l}}"><dc-import name="Icon" icon="{{rb.i}}" size="28" hint-size="28px,28px"></dc-import></button>
+        </sc-for>
+      </div>
+      <sc-if value="{{rv.typed}}" hint-placeholder-val="{{true}}">
+        <div style="position:absolute;left:150px;right:16px;top:182px;bottom:14px;display:grid;grid-template-columns:repeat(6, minmax(0, 1fr));grid-template-rows:repeat(2, minmax(0, 1fr));gap:10px">
+          <sc-for list="{{cells}}" as="c" hint-placeholder-count="12">
+            <button class="cell {{c.cls}}" onClick="{{c.tap}}" style="background:rgba(255,255,255,.08);{{c.st}}" aria-label="{{c.l}}">
+              <sc-if value="{{c.has}}" hint-placeholder-val="{{false}}"><span class="pop" style="display:flex;width:92px;height:72px;border-radius:20px;background:{{c.bg}};color:{{c.fg}};align-items:center;justify-content:center;box-shadow:0 5px 0 rgba(42,22,64,.25);transform:{{c.flip}}"><dc-import name="Icon" icon="{{c.ic}}" size="44" hint-size="44px,44px"></dc-import></span></sc-if>
+              <sc-if value="{{c.bad}}" hint-placeholder-val="{{false}}"><span style="position:absolute;right:6px;top:6px;display:flex;width:30px;height:30px;border-radius:50%;background:#C7341B;color:#fff;align-items:center;justify-content:center;border:3px solid #fff"><dc-import name="Icon" icon="close" size="16" weight="4" hint-size="16px,16px"></dc-import></span></sc-if>
+              <sc-if value="{{c.ok}}" hint-placeholder-val="{{false}}"><span style="position:absolute;right:6px;top:6px;display:flex;width:26px;height:26px;border-radius:50%;background:#0B7A6F;color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="14" weight="4" hint-size="14px,14px"></dc-import></span></sc-if>
+            </button>
+          </sc-for>
+        </div>
+        <sc-if value="{{bot}}" hint-placeholder-val="{{false}}">
+          <div class="pop" style="position:absolute;left:36px;top:220px"><dc-import name="Peg" size="150" hair-style="puff" outfit="#FFB627" skin="#8D5A3B" label="Test bot" hint-size="93px,150px"></dc-import></div>
+          <div style="position:absolute;left:42px;top:150px;width:64px;height:58px;border-radius:28px;background:#fff;box-shadow:0 4px 0 rgba(42,22,64,.2);display:flex;align-items:center;justify-content:center;color:{{botC}}"><dc-import name="Icon" icon="{{botI}}" size="32" hint-size="32px,32px"></dc-import></div>
+        </sc-if>
+      </sc-if>
+      <sc-if value="{{rv.untyped}}" hint-placeholder-val="{{false}}">
+        <div style="position:absolute;left:0;right:0;top:120px;display:flex;flex-direction:column;align-items:center;gap:14px">
+          <span class="d" style="font-size:24px;background:#FFF8F0;border-radius:16px;padding:8px 16px">This space has no room type yet</span>
+          <button onClick="{{toRooms}}" style="height:60px;padding:0 20px;border-radius:18px;background:#EF4B2F;color:#fff;box-shadow:0 5px 0 #B8321C;display:flex;align-items:center;gap:10px;font-weight:900"><dc-import name="Icon" icon="rooms" size="26" hint-size="26px,26px"></dc-import>Choose rooms</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{hasSel}}" hint-placeholder-val="{{false}}">
+        <div style="position:absolute;right:16px;top:16px;display:flex;align-items:center;gap:8px;background:#FFF8F0;border-radius:22px;padding:8px;box-shadow:0 0 0 3px #2A1640">
+          <button onClick="{{turn}}" class="t" style="width:52px;height:52px;box-shadow:0 3px 0 #E3B48F" aria-label="Turn"><dc-import name="Icon" icon="rotate" size="26" hint-size="26px,26px"></dc-import></button>
+          <button onClick="{{copy}}" class="t" style="width:52px;height:52px;box-shadow:0 3px 0 #E3B48F" aria-label="Copy"><dc-import name="Icon" icon="dup" size="26" hint-size="26px,26px"></dc-import></button>
+          <div style="position:relative;width:60px;height:60px">
+            <svg viewBox="0 0 64 64" style="position:absolute;inset:0;width:60px;height:60px" aria-hidden="true"><circle cx="32" cy="32" r="28" style="fill:#fff;stroke:#F3D9C4;stroke-width:6"></circle></svg>
+            <sc-if value="{{holding}}" hint-placeholder-val="{{false}}"><svg viewBox="0 0 64 64" style="position:absolute;inset:0;width:60px;height:60px" aria-hidden="true"><circle class="ring" cx="32" cy="32" r="28" style="fill:none;stroke:#EF4B2F;stroke-width:6;stroke-linecap:round;stroke-dasharray:176 176;stroke-dashoffset:176;transform:rotate(-90deg);transform-origin:32px 32px"></circle></svg></sc-if>
+            <button onPointerDown="{{trashDown}}" onPointerUp="{{trashUp}}" onPointerLeave="{{trashUp}}" style="position:absolute;inset:8px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#C7341B" aria-label="Hold to put away"><dc-import name="Icon" icon="trash" size="26" hint-size="26px,26px"></dc-import></button>
+          </div>
+          <button onClick="{{deselect}}" style="width:44px;height:44px;border-radius:14px;background:#FFE6CF;display:flex;align-items:center;justify-content:center" aria-label="Done with this thing"><dc-import name="Icon" icon="close" size="22" hint-size="22px,22px"></dc-import></button>
+        </div>
+      </sc-if>
+    </div>
+    <div style="position:absolute;right:44px;bottom:170px;display:flex;align-items:center;gap:8px;background:#FFF8F0;border-radius:16px;padding:4px 12px;font-size:13px;font-weight:800;box-shadow:0 4px 0 #EFC39F;z-index:1">
+      <button onClick="{{toggleBot}}" style="height:40px;display:flex;align-items:center;gap:8px;font-weight:900" aria-pressed="{{bot}}"><dc-import name="Icon" icon="peg" size="22" hint-size="22px,22px"></dc-import>Bot test <span style="width:52px;height:30px;border-radius:999px;padding:3px;display:flex;{{botSw}}"><span style="width:24px;height:24px;border-radius:50%;background:#fff"></span></span></button>
+    </div>
+    <section style="position:absolute;left:24px;right:24px;bottom:20px;height:200px" aria-label="Furniture drawer">
+      <div style="display:flex;gap:6px;padding-left:24px">
+        <sc-for list="{{cats}}" as="ct" hint-placeholder-count="4">
+          <button onClick="{{ct.tap}}" style="width:68px;height:52px;border-radius:18px 18px 0 0;display:flex;align-items:center;justify-content:center;{{ct.st}}" aria-label="{{ct.l}}" aria-pressed="{{ct.sel}}"><dc-import name="Icon" icon="{{ct.i}}" size="28" hint-size="28px,28px"></dc-import></button>
+        </sc-for>
+      </div>
+      <div style="height:148px;border-radius:28px;background:#FFF8F0;box-shadow:0 6px 0 #EFC39F;padding:20px;display:grid;grid-template-columns:repeat(6, minmax(0, 1fr));gap:14px">
+        <sc-for list="{{items}}" as="it" hint-placeholder-count="3">
+          <button class="pick {{it.cls}}" onClick="{{it.tap}}" style="height:104px;background:{{it.c}};color:{{it.f}};box-shadow:0 5px 0 rgba(42,22,64,.15)" aria-label="{{it.l}}" aria-pressed="{{it.sel}}"><dc-import name="Icon" icon="{{it.i}}" size="50" hint-size="50px,50px"></dc-import></button>
+        </sc-for>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{s7}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;left:688px;right:24px;top:156px;bottom:24px;border-radius:30px;background:#FFF8F0;box-shadow:0 6px 0 #EFC39F;padding:22px;display:flex;flex-direction:column;gap:16px">
+      <span class="lab">Who lives here? Tap one, then the front door.</span>
+      <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:14px">
+        <sc-for list="{{residents}}" as="rs" hint-placeholder-count="4">
+          <button onClick="{{rs.tap}}" class="{{rs.cls}}" style="position:relative;height:190px;border-radius:26px;background:{{rs.bg}};display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:12px;gap:6px;opacity:{{rs.op}}" aria-label="{{rs.al}}" aria-pressed="{{rs.sel}}">
+            <dc-import name="Peg" size="120" hair-style="{{rs.hs}}" outfit="{{rs.out}}" skin="{{rs.skin}}" hair="{{rs.hair}}" aid="{{rs.aid}}" label="" hint-size="93px,120px"></dc-import>
+            <span class="d" style="font-size:20px">{{rs.name}}</span>
+            <sc-if value="{{rs.in}}" hint-placeholder-val="{{false}}"><span style="position:absolute;right:10px;top:10px;display:flex;width:34px;height:34px;border-radius:50%;background:#0B7A6F;color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="house" size="20" hint-size="20px,20px"></dc-import></span></sc-if>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{s8}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;left:24px;right:24px;top:156px;bottom:24px;border-radius:30px;background:#BFE3FF;overflow:hidden">
+      <span style="position:absolute;left:60px;top:40px;width:26px;height:12px;border-radius:3px;background:#EF4B2F;transform:rotate(30deg)"></span>
+      <span style="position:absolute;left:600px;top:60px;width:26px;height:12px;border-radius:3px;background:#FFB627;transform:rotate(-20deg)"></span>
+      <span style="position:absolute;left:330px;top:24px;width:16px;height:16px;border-radius:50%;background:#FF8FB1"></span>
+      <span style="position:absolute;left:700px;top:200px;width:26px;height:12px;border-radius:3px;background:#4F6BF0;transform:rotate(60deg)"></span>
+      <div class="pop" style="position:absolute;left:30px;top:70px;width:660px;height:528px"><div style="transform:scale(1.1);transform-origin:0 0"><dc-import name="Diorama" visitor="{{true}}" hint-size="600px,480px"></dc-import></div></div>
+      <div style="position:absolute;right:28px;top:40px;width:380px;display:flex;flex-direction:column;gap:16px">
+        <h2 class="d" style="margin:0;font-size:44px">Welcome home!</h2>
+        <div style="background:#FFF8F0;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{summaryRooms}}" as="sr" hint-placeholder-count="4"><span style="display:flex;width:52px;height:52px;border-radius:16px;background:{{sr.c}};align-items:center;justify-content:center"><dc-import name="Icon" icon="{{sr.i}}" size="28" hint-size="28px,28px"></dc-import></span></sc-for>
+          </div>
+          <span style="font-size:15px;font-weight:800;color:#5E3F62">{{summary}}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:#FFF8F0;border-radius:24px;padding:12px 16px">
+          <span style="display:flex;width:48px;height:48px;border-radius:50%;background:#FFB627;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="bell" size="28" hint-size="28px,28px"></dc-import></span>
+          <span style="font-size:15px;font-weight:800;line-height:1.35">Neighbours ring the bell and try out the rooms.</span>
+        </div>
+        <button onClick="{{play}}" style="height:84px;border-radius:28px;background:#EF4B2F;color:#fff;box-shadow:0 7px 0 #B8321C;display:flex;align-items:center;justify-content:center;gap:12px;font:800 30px 'Baloo 2',sans-serif"><dc-import name="Icon" icon="play" size="36" hint-size="36px,36px"></dc-import>Play</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;left:50%;bottom:40px;transform:translateX(-50%);max-width:640px;background:#2A1640;color:#fff;border-radius:20px;padding:12px 20px;font-size:16px;font-weight:800;text-align:center;box-shadow:0 6px 0 rgba(42,22,64,.25)" role="status">{{toast}}</div>
+  </sc-if>
+</div>
+
+<aside style="position:absolute;left:1224px;top:20px;width:316px;bottom:20px;background:#FFF8F0;border-radius:28px;box-shadow:0 5px 0 #E3C2A6;padding:22px;display:flex;flex-direction:column;gap:14px">
+  <h2 class="d" style="margin:0;font-size:26px">House wizard</h2>
+  <p style="margin:0;font-size:14px;font-weight:700;color:#5E3F62;line-height:1.45">Eight steps, any order: use the icon rail. Every step has dice; undo and redo cover everything.</p>
+  <div style="background:#FFE6CF;border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:6px">
+    <span style="font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#5E3F62">Step {{stepN}} · try this</span>
+    <span style="font-size:15px;font-weight:800;line-height:1.45">{{tip}}</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:800">
+    <span style="font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#5E3F62">Saved so far</span>
+    <sc-for list="{{saved}}" as="sv" hint-placeholder-count="5">
+      <span style="display:flex;align-items:center;gap:10px"><span style="display:flex;width:28px;height:28px;border-radius:8px;background:#fff;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="{{sv.i}}" size="18" hint-size="18px,18px"></dc-import></span>{{sv.t}}</span>
+    </sc-for>
+  </div>
+  <button onClick="{{restart}}" style="margin-top:auto;min-height:52px;border-radius:16px;background:#2A1640;color:#fff;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px"><dc-import name="Icon" icon="refresh" size="22" hint-size="22px,22px"></dc-import>Start again</button>
+</aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1560,"height":860}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.timers = [];
+    this.state = this.initial();
+  }
+  initial() {
+    return {
+      d: this.fresh(), past: [], future: [],
+      step: 1, visited: { 1: true }, picked: null, sel: 'all', surf: 'walls', room: 1, fsel: null,
+      bot: false, cat: 'seat', holding: false, bad: null, toast: null
+    };
+  }
+  fresh() {
+    return {
+      plot: null, shell: 'cottage', mode: null, rooms: [null, null, null, null],
+      walls: ['#FFF8F0', '#FFF8F0', '#FFF8F0', '#FFF8F0'], floors: ['#E0A46B', '#E0A46B', '#E0A46B', '#E0A46B'],
+      furn: [], res: []
+    };
+  }
+  componentWillUnmount() { this.timers.forEach((t) => clearTimeout(t)); }
+  later(fn, ms) { const t = setTimeout(fn, ms); this.timers.push(t); return t; }
+  say(t) { try { const s = window.speechSynthesis; if (!s) return; s.cancel(); s.speak(new SpeechSynthesisUtterance(t)); } catch (e) {} }
+  flash(t) { this.setState({ toast: t }); this.later(() => this.setState((s) => (s.toast === t ? { toast: null } : null)), 2600); }
+  commit(nd, extra) {
+    const st = this.state;
+    this.setState(Object.assign({ d: nd, past: st.past.concat([st.d]).slice(-50), future: [] }, extra || {}));
+  }
+  edit(fn, extra) { const nd = JSON.parse(JSON.stringify(this.state.d)); fn(nd); this.commit(nd, extra); }
+  goStep(n) {
+    const v = Object.assign({}, this.state.visited); v[n] = true;
+    this.setState({ step: n, visited: v, picked: null, fsel: null, bad: null, toast: null });
+    this.say(this.meta()[n - 1].t);
+  }
+  meta() {
+    return [
+      { i: 'map', t: 'Pick a spot for your house' }, { i: 'home', t: 'Choose a house shape' },
+      { i: 'sparkle', t: 'Ready to play, or decorate?' }, { i: 'rooms', t: 'Choose a room for each space' },
+      { i: 'roller', t: 'Paint the walls and floors' }, { i: 'sofa', t: 'Add furniture' },
+      { i: 'people', t: 'Move in' }, { i: 'star', t: 'Housewarming!' }
+    ];
+  }
+  lib() {
+    return {
+      ROOM: {
+        kitchen: { i: 'fork', c: '#FFE08A', l: 'Kitchen' }, living: { i: 'sofa', c: '#BFE6DC', l: 'Living' },
+        bed: { i: 'bed', c: '#FAD0DC', l: 'Bedroom' }, bath: { i: 'sparkle', c: '#CDD6FF', l: 'Bath' },
+        music: { i: 'note', c: '#E6CCF0', l: 'Music' }, play: { i: 'ball', c: '#D9F0C4', l: 'Play' }
+      },
+      ITEMS: {
+        sofa: { i: 'sofa', c: '#0FA394', f: '#fff', cat: 'seat', seat: 1, l: 'Sofa' }, bed: { i: 'bed', c: '#FAD0DC', f: '#2A1640', cat: 'seat', seat: 1, l: 'Bed' },
+        bench: { i: 'minus', c: '#4F6BF0', f: '#fff', cat: 'seat', seat: 1, l: 'Bench' },
+        lamp: { i: 'lamp', c: '#FFB627', f: '#2A1640', cat: 'light', l: 'Lamp' }, plant: { i: 'plant', c: '#7BC74D', f: '#2A1640', cat: 'light', l: 'Plant' },
+        star: { i: 'star', c: '#FFE08A', f: '#2A1640', cat: 'light', l: 'Star light' },
+        ball: { i: 'ball', c: '#BFE6DC', f: '#2A1640', cat: 'fun', l: 'Ball' }, book: { i: 'book', c: '#CDD6FF', f: '#2A1640', cat: 'fun', l: 'Books' },
+        note: { i: 'note', c: '#E6CCF0', f: '#2A1640', cat: 'fun', l: 'Music box' },
+        table: { i: 'rooms', c: '#E0A46B', f: '#2A1640', cat: 'kitchen', l: 'Table' }, cake: { i: 'cake', c: '#FFD2AE', f: '#2A1640', cat: 'kitchen', l: 'Cake' },
+        stove: { i: 'grid4', c: '#fff', f: '#2A1640', cat: 'kitchen', l: 'Stove' }
+      },
+      CATS: [['seat', 'sofa', 'Seats and beds'], ['light', 'lamp', 'Lights and plants'], ['fun', 'ball', 'Fun'], ['kitchen', 'fork', 'Kitchen']],
+      WALLS: ['#FFF8F0', '#FFE08A', '#BFE6DC', '#FAD0DC', '#CDD6FF', '#E6CCF0', '#FFD2AE', '#D9F0C4'],
+      FLOORS: ['#E0A46B', '#B9774A', '#F3C99B', '#C9A385', '#9AA3B5', '#FFB627', '#7BC74D', '#EF4B2F'],
+      RES: [
+        { name: 'Moku', hs: 'bob', out: '#EF4B2F', skin: '#E9B48A', hair: '#2A1640', aid: 'none', bg: '#FFD2AE' },
+        { name: 'Pim', hs: 'puff', out: '#FFB627', skin: '#8D5A3B', hair: '#2A1640', aid: 'none', bg: '#FFE08A' },
+        { name: 'Lumo', hs: 'bun', out: '#4F6BF0', skin: '#C98E62', hair: '#5A2E1A', aid: 'hearing', bg: '#CDD6FF' },
+        { name: 'Tavi', hs: 'crop', out: '#0FA394', skin: '#F6D2B4', hair: '#C2552B', aid: 'wheelchair', bg: '#BFE6DC' }
+      ]
+    };
+  }
+  readyPlay() {
+    const nd = this.fresh();
+    Object.assign(nd, {
+      plot: this.state.d.plot === null ? 0 : this.state.d.plot, shell: this.state.d.shell, mode: 'play',
+      rooms: ['kitchen', 'living', 'bed', 'bath'], walls: ['#FFE08A', '#BFE6DC', '#FAD0DC', '#CDD6FF'],
+      furn: [
+        { room: 0, cell: 2, item: 'table', flip: false }, { room: 0, cell: 6, item: 'stove', flip: false },
+        { room: 1, cell: 1, item: 'sofa', flip: false }, { room: 1, cell: 5, item: 'lamp', flip: false }, { room: 1, cell: 8, item: 'plant', flip: false },
+        { room: 2, cell: 1, item: 'bed', flip: false }, { room: 2, cell: 10, item: 'book', flip: false },
+        { room: 3, cell: 3, item: 'plant', flip: false }
+      ]
+    });
+    const v = Object.assign({}, this.state.visited, { 3: true, 4: true, 5: true, 6: true, 7: true });
+    this.commit(nd, { step: 7, visited: v, picked: null });
+    this.flash('Furnished and painted. Now move your characters in.');
+    this.say('Move in');
+  }
+  dice() {
+    const r = (a) => a[Math.floor(Math.random() * a.length)];
+    const L = this.lib();
+    const st = this.state;
+    const n = st.step;
+    if (n === 1) return this.edit((d) => { d.plot = r([0, 1, 2, 3].filter((x) => x !== d.plot)); });
+    if (n === 2) return this.edit((d) => { d.shell = r(['cottage', 'tall', 'dome'].filter((x) => x !== d.shell)); });
+    if (n === 3) return Math.random() < 0.5 ? this.readyPlay() : this.edit((d) => { d.mode = 'decorate'; }, { step: 4, visited: Object.assign({}, st.visited, { 4: true }) });
+    if (n === 4) return this.edit((d) => { d.rooms = d.rooms.map(() => r(Object.keys(L.ROOM))); });
+    if (n === 5) return this.edit((d) => { d.walls = d.walls.map(() => r(L.WALLS)); d.floors = d.floors.map(() => r(L.FLOORS)); });
+    if (n === 6) return this.edit((d) => {
+      const room = st.room;
+      if (!d.rooms[room]) return;
+      d.furn = d.furn.filter((f) => f.room !== room);
+      const cells = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].sort(() => Math.random() - 0.5).slice(0, 4);
+      cells.forEach((c) => d.furn.push({ room, cell: c, item: r(Object.keys(L.ITEMS)), flip: Math.random() < 0.5 }));
+    }, { fsel: null });
+    if (n === 7) return this.edit((d) => { d.res = [0, 1, 2, 3]; });
+    this.flash('Hooray!');
+  }
+  renderVals() {
+    const st = this.state;
+    const d = st.d;
+    const L = this.lib();
+    const M = this.meta();
+    const n = st.step;
+    const pk = st.picked || '';
+    const pickedRoom = pk.indexOf('r:') === 0 ? pk.slice(2) : null;
+    const pickedItem = pk.indexOf('i:') === 0 ? pk.slice(2) : null;
+    const pickedRes = pk.indexOf('p:') === 0 ? Number(pk.slice(2)) : null;
+
+    const done = {
+      1: d.plot !== null, 2: !!st.visited[2], 3: d.mode !== null, 4: d.rooms.every((x) => x),
+      5: !!st.visited[5] && (d.walls.some((w) => w !== '#FFF8F0') || d.floors.some((f) => f !== '#E0A46B')),
+      6: d.furn.length > 0, 7: d.res.length > 0, 8: !!st.visited[8]
+    };
+    const rail = M.map((m, k) => {
+      const num = k + 1;
+      const cur = num === n;
+      return {
+        i: m.i, l: 'Step ' + num + ': ' + m.t, done: done[num] && !cur, cur: cur ? 'step' : 'false',
+        st: cur ? 'background:#EF4B2F;color:#fff;box-shadow:0 4px 0 #B8321C;width:60px;height:60px;' : 'background:#fff;color:#2A1640;',
+        go: () => this.goStep(num)
+      };
+    });
+
+    const plotPos = [[110, 70], [330, 70], [110, 400], [800, 380]];
+    const plots = plotPos.map(([x, y], i) => ({
+      x, y, sel: d.plot === i, l: 'Plot ' + (i + 1),
+      cls: d.plot === null ? 'halo' : '',
+      st: d.plot === i ? 'border:5px solid #2A1640;background:rgba(255,182,39,.55);' : '',
+      tap: () => { this.edit((nd) => { nd.plot = i; }); this.say('Good spot!'); }
+    }));
+
+    const roofs = {
+      cottage: { out: 'left:60px;top:58px;width:520px;height:182px;background:#2A1640;clip-path:polygon(50% 0, 100% 100%, 0 100%);', inn: 'left:80px;top:78px;width:480px;height:156px;background:#EF4B2F;clip-path:polygon(50% 0, 100% 100%, 0 100%);', mini: 'width:104px;height:44px;background:#EF4B2F;clip-path:polygon(50% 0, 100% 100%, 0 100%);' },
+      tall: { out: 'left:100px;top:8px;width:440px;height:232px;background:#2A1640;clip-path:polygon(50% 0, 100% 100%, 0 100%);', inn: 'left:118px;top:30px;width:404px;height:206px;background:#4F6BF0;clip-path:polygon(50% 0, 100% 100%, 0 100%);', mini: 'width:84px;height:58px;background:#4F6BF0;clip-path:polygon(50% 0, 100% 100%, 0 100%);' },
+      dome: { out: 'left:104px;top:88px;width:432px;height:152px;background:#2A1640;border-radius:216px 216px 0 0;', inn: 'left:116px;top:100px;width:408px;height:136px;background:#0FA394;border-radius:204px 204px 0 0;', mini: 'width:88px;height:44px;background:#0FA394;border:4px solid #2A1640;border-bottom:0;border-radius:44px 44px 0 0;' }
+    };
+    const shells = [['cottage', 'Cottage'], ['tall', 'Tall house'], ['dome', 'Round house']].map(([id, l]) => ({
+      l, sel: d.shell === id, roof: roofs[id].mini,
+      st: d.shell === id ? 'box-shadow:0 0 0 5px #2A1640;' : 'box-shadow:0 6px 0 #E3B48F;',
+      tap: () => this.edit((nd) => { nd.shell = id; })
+    }));
+
+    const slots = [0, 1, 2, 3].map((i) => {
+      const type = d.rooms[i];
+      const ri = d.res.indexOf(i) >= 0 ? null : null;
+      const resIdx = d.res[i];
+      const face = resIdx !== undefined ? L.RES[resIdx] : null;
+      const ringOn = n === 5 && (st.sel === i || st.sel === 'all');
+      return {
+        bg: d.walls[i], fl: d.floors[i], has: !!type, empty: !type, ic: type ? L.ROOM[type].i : 'plus',
+        hasFace: n === 7 && !!face, face: face || L.RES[0],
+        l: (type ? L.ROOM[type].l : 'Empty space') + ', space ' + (i + 1),
+        cls: (n === 4 && pickedRoom) ? 'halo' : '',
+        ring: ringOn ? 'box-shadow:inset 0 0 0 6px #FFB627;' : '',
+        tap: () => {
+          if (n === 4) {
+            if (!pickedRoom) return this.flash('Pick a room type first.');
+            return this.edit((nd) => { nd.rooms[i] = pickedRoom; });
+          }
+          if (n === 5) return this.setState({ sel: i });
+          if (n === 7) return this.flash('Tap someone, then the front door.');
+          if (n === 2) return this.flash('Rooms come next: tap the rooms step.');
+        }
+      };
+    });
+
+    const roomTypes = Object.keys(L.ROOM).map((k) => ({
+      l: L.ROOM[k].l, i: L.ROOM[k].i, c: L.ROOM[k].c, sel: pickedRoom === k,
+      cls: pickedRoom === k ? 'halo' : '',
+      tap: () => { this.setState({ picked: pickedRoom === k ? null : 'r:' + k }); this.say(L.ROOM[k].l); }
+    }));
+
+    const swatches = (st.surf === 'walls' ? L.WALLS : L.FLOORS).map((c, k) => ({
+      c, l: (st.surf === 'walls' ? 'Wall colour ' : 'Floor colour ') + (k + 1),
+      tap: () => this.edit((nd) => {
+        const key = st.surf === 'walls' ? 'walls' : 'floors';
+        nd[key] = nd[key].map((v, i) => (st.sel === 'all' || st.sel === i ? c : v));
+      })
+    }));
+
+    const room = st.room;
+    const rType = d.rooms[room];
+    const rv = { wall: d.walls[room], floor: d.floors[room], typed: !!rType, untyped: !rType };
+    const roomTabs = [0, 1, 2, 3].map((i) => ({
+      i: d.rooms[i] ? L.ROOM[d.rooms[i]].i : 'plus', sel: i === room ? 'true' : 'false',
+      l: d.rooms[i] ? L.ROOM[d.rooms[i]].l : 'Empty space',
+      st: i === room ? 'background:#2A1640;color:#fff;' : 'background:rgba(255,248,240,.95);color:#2A1640;',
+      tap: () => this.setState({ room: i, fsel: null, picked: null })
+    }));
+    const furnHere = d.furn.map((f, idx) => Object.assign({ idx }, f)).filter((f) => f.room === room);
+    const cells = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((c) => {
+      const f = furnHere.find((x) => x.cell === c);
+      const it = f ? L.ITEMS[f.item] : null;
+      const isSel = f && st.fsel === f.idx;
+      const target = !f && (pickedItem || st.fsel !== null);
+      return {
+        has: !!f, ic: it ? it.i : 'plus', bg: it ? it.c : '#fff', fg: it ? it.f : '#2A1640',
+        flip: f && f.flip ? 'scaleX(-1)' : 'none',
+        bad: st.bad === c, ok: target,
+        l: f ? it.l + (isSel ? ', selected' : '') : 'Empty spot',
+        cls: target ? 'halo' : '',
+        st: (isSel ? 'box-shadow:inset 0 0 0 4px #2A1640;background:rgba(255,255,255,.35);' : '') + (target ? 'background:rgba(15,163,148,.22);' : ''),
+        tap: () => {
+          if (pickedItem) {
+            if (f) { this.setState({ bad: c }); this.later(() => this.setState((s) => (s.bad === c ? { bad: null } : null)), 900); return; }
+            this.edit((nd) => { nd.furn.push({ room, cell: c, item: pickedItem, flip: false }); }, { picked: null, fsel: d.furn.length });
+            return;
+          }
+          if (f) return this.setState({ fsel: isSel ? null : f.idx });
+          if (st.fsel !== null) return this.edit((nd) => { nd.furn[st.fsel].cell = c; nd.furn[st.fsel].room = room; });
+          this.flash('Pick something from the drawer below.');
+        }
+      };
+    });
+    const cats = L.CATS.map(([id, i, l]) => ({
+      i, l, sel: st.cat === id,
+      st: st.cat === id ? 'background:#FFF8F0;box-shadow:inset 0 -5px 0 #EF4B2F;' : 'background:#F7D9B8;',
+      tap: () => this.setState({ cat: id })
+    }));
+    const items = Object.keys(L.ITEMS).filter((k) => L.ITEMS[k].cat === st.cat).map((k) => ({
+      i: L.ITEMS[k].i, c: L.ITEMS[k].c, f: L.ITEMS[k].f, l: L.ITEMS[k].l, sel: pickedItem === k,
+      cls: pickedItem === k ? 'halo' : '',
+      tap: () => {
+        if (!rType) return this.flash('Choose a room type for this space first.');
+        this.setState({ picked: pickedItem === k ? null : 'i:' + k, fsel: null }); this.say(L.ITEMS[k].l);
+      }
+    }));
+    const seat = furnHere.some((f) => L.ITEMS[f.item].seat);
+    const cakeHere = furnHere.some((f) => f.item === 'cake');
+    const botI = cakeHere ? 'fork' : seat ? 'heart' : 'sofa';
+    const botC = cakeHere ? '#C7341B' : seat ? '#D9416A' : '#6B4A6E';
+
+    const residents = L.RES.map((p, i) => {
+      const inside = d.res.indexOf(i) >= 0;
+      return Object.assign({}, p, {
+        in: inside, sel: pickedRes === i, op: inside ? '.55' : '1',
+        al: p.name + (inside ? ', lives here' : ''),
+        cls: pickedRes === i ? 'halo' : '',
+        tap: () => {
+          if (inside) return this.flash(p.name + ' already lives here.');
+          this.setState({ picked: pickedRes === i ? null : 'p:' + i }); this.say(p.name);
+        }
+      });
+    });
+
+    const summaryRooms = d.rooms.filter((x) => x).map((x) => ({ i: L.ROOM[x].i, c: L.ROOM[x].c }));
+    const shellName = { cottage: 'cottage', tall: 'tall house', dome: 'round house' }[d.shell];
+    const summary = 'A ' + shellName + ' with ' + summaryRooms.length + ' rooms, ' + d.furn.length + ' things and ' + d.res.length + ' residents.';
+
+    const saved = [
+      { i: 'map', t: d.plot === null ? 'No plot yet' : 'Plot ' + (d.plot + 1) },
+      { i: 'home', t: 'Shape: ' + shellName },
+      { i: 'rooms', t: summaryRooms.length + ' of 4 rooms chosen' },
+      { i: 'sofa', t: d.furn.length + ' things placed' },
+      { i: 'people', t: d.res.length + ' living here' },
+      { i: 'undo', t: st.past.length + ' changes you can undo' }
+    ];
+    const tips = [
+      'Tap a dashed plot. The dice picks one for you. The town map is the same one used for the world map.',
+      'Tap a shape on the right and the preview changes straight away.',
+      '“Ready to play” furnishes everything and jumps to moving in. “Ready to decorate” starts with empty spaces.',
+      'Tap a room type, then tap the spaces in the house. You can fill several in a row; undo if you change your mind.',
+      'Tap a room in the house (or “Whole house”), pick walls or floors, then a colour.',
+      'Pick a thing from the drawer: free spots glow. Tap a placed thing for turn, copy and hold-to-delete; tap it then an empty spot to move it. Bot test shows how a bot feels about the room.',
+      'Tap a resident, then the glowing front door. Residents appear in the rooms.',
+      'The diorama shows the finished house with a visitor at the door. Play would open the scene view.'
+    ];
+
+    return {
+      rail, plots, shells, slots, roomTypes, swatches, roomTabs, cells, cats, items, residents, summaryRooms, summary, saved,
+      rv, bot: st.bot, botI, botC, holding: st.holding,
+      title: M[n - 1].t, stepN: n, tip: tips[n - 1],
+      s1: n === 1, s2: n === 2, s3: n === 3, s4: n === 4, s5: n === 5, s6: n === 6, s7: n === 7, s8: n === 8,
+      showHouse: [2, 4, 5, 7].indexOf(n) >= 0,
+      chimney: d.shell === 'cottage',
+      roofOut: roofs[d.shell].out, roofIn: roofs[d.shell].inn,
+      doorCls: n === 7 && pickedRes !== null ? 'halo' : '',
+      modePlaySt: d.mode === 'play' ? 'box-shadow:0 0 0 6px #2A1640;' : '',
+      modeDecoSt: d.mode === 'decorate' ? 'box-shadow:0 0 0 6px #2A1640;' : '',
+      isWalls: st.surf === 'walls', isFloors: st.surf !== 'walls',
+      wallsTab: st.surf === 'walls' ? 'background:#2A1640;color:#fff;' : 'background:#FFE6CF;color:#2A1640;',
+      floorsTab: st.surf !== 'walls' ? 'background:#2A1640;color:#fff;' : 'background:#FFE6CF;color:#2A1640;',
+      allSt: st.sel === 'all' ? 'background:#FFB627;color:#2A1640;box-shadow:0 0 0 4px #2A1640;' : 'background:#FFE6CF;color:#2A1640;',
+      hasSel: n === 6 && st.fsel !== null && !!d.furn[st.fsel],
+      botSw: st.bot ? 'background:#0B7A6F;justify-content:flex-end;' : 'background:#D9C3B0;justify-content:flex-start;',
+      undoOp: st.past.length ? '1' : '.45', redoOp: st.future.length ? '1' : '.45',
+      nextIcon: n === 8 ? 'check' : 'next',
+      hasToast: !!st.toast, toast: st.toast || '',
+      home: () => this.flash('Everything is saved. Home would take you to the hub.'),
+      undo: () => {
+        if (!st.past.length) return this.flash('Nothing to undo yet.');
+        this.setState({ d: st.past[st.past.length - 1], past: st.past.slice(0, -1), future: [st.d].concat(st.future), fsel: null, picked: null });
+      },
+      redo: () => {
+        if (!st.future.length) return;
+        this.setState({ d: st.future[0], future: st.future.slice(1), past: st.past.concat([st.d]), fsel: null, picked: null });
+      },
+      dice: () => this.dice(),
+      next: () => {
+        if (n === 3 && !d.mode) return this.flash('Pick one: ready to play, or decorate.');
+        if (n === 8) return this.flash('All done! This would open your house in play.');
+        this.goStep(n + 1);
+      },
+      sayStep: () => this.say(M[n - 1].t),
+      readyPlay: () => this.readyPlay(),
+      readyDeco: () => { this.edit((nd) => { nd.mode = 'decorate'; }); this.goStep(4); },
+      surfWalls: () => this.setState({ surf: 'walls' }),
+      surfFloors: () => this.setState({ surf: 'floors' }),
+      selAll: () => this.setState({ sel: 'all' }),
+      toRooms: () => this.goStep(4),
+      toggleBot: () => this.setState({ bot: !st.bot }),
+      turn: () => this.edit((nd) => { nd.furn[st.fsel].flip = !nd.furn[st.fsel].flip; }),
+      copy: () => { const f = d.furn[st.fsel]; this.setState({ picked: 'i:' + f.item, fsel: null }); this.flash('Now tap a glowing spot for the copy.'); },
+      deselect: () => this.setState({ fsel: null }),
+      trashDown: () => {
+        this.setState({ holding: true });
+        this.holdT = this.later(() => {
+          const idx = this.state.fsel;
+          if (idx === null) return;
+          this.edit((nd) => { nd.furn.splice(idx, 1); }, { fsel: null, holding: false });
+          this.say('Put away');
+        }, 700);
+      },
+      trashUp: () => { if (this.holdT) clearTimeout(this.holdT); if (this.state.holding) this.setState({ holding: false }); },
+      doorTap: () => {
+        if (n !== 7) return;
+        if (pickedRes === null) return this.flash('Tap someone first, then the door.');
+        this.edit((nd) => { nd.res.push(pickedRes); }, { picked: null });
+        this.say('Welcome, ' + L.RES[pickedRes].name);
+      },
+      play: () => this.flash('This would open your house in the scene view.'),
+      restart: () => { this.timers.forEach((t) => clearTimeout(t)); this.setState(this.initial()); }
+    };
+  }
+}
+</script>
+</body>
+</html>

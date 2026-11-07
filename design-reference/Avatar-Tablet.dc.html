@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Avatar wizard, body step</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:20px;box-shadow:0 5px 0 #E3B48F;display:flex;align-items:center;justify-content:center;color:#2A1640;width:64px;height:64px;flex:none}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.h3{font:800 20px 'Baloo 2',sans-serif;margin:0;display:flex;align-items:center;gap:8px}
+</style>
+</helmet>
+<div style="position:relative;width:1180px;height:820px;background:#FFE6CF;color:#2A1640;font-family:Nunito,system-ui,sans-serif;overflow:hidden">
+
+  <nav style="position:absolute;left:20px;top:20px;bottom:20px;width:96px;background:#FFF8F0;border-radius:32px;box-shadow:0 6px 0 #EFC39F;padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:8px" aria-label="Steps, any order">
+    <sc-for list="{{steps}}" as="s" hint-placeholder-count="9">
+      <button style="position:relative;width:68px;height:68px;border-radius:22px;display:flex;align-items:center;justify-content:center;{{s.st}}" aria-label="{{s.l}}">
+        <dc-import name="Icon" icon="{{s.n}}" size="34" hint-size="34px,34px"></dc-import>
+        <sc-if value="{{s.done}}" hint-placeholder-val="{{false}}"><span style="position:absolute;right:-4px;top:-4px;display:flex;width:24px;height:24px;border-radius:50%;background:#0B7A6F;color:#fff;align-items:center;justify-content:center;border:2px solid #FFF8F0"><dc-import name="Icon" icon="check" size="14" weight="4" hint-size="14px,14px"></dc-import></span></sc-if>
+      </button>
+    </sc-for>
+  </nav>
+
+  <div style="position:absolute;left:140px;top:24px;display:flex;gap:12px">
+    <button class="t" aria-label="Home, your character is saved"><dc-import name="Icon" icon="home" size="32" hint-size="32px,32px"></dc-import></button>
+    <button class="t" aria-label="Undo"><dc-import name="Icon" icon="undo" size="32" hint-size="32px,32px"></dc-import></button>
+    <button class="t" aria-label="Redo"><dc-import name="Icon" icon="redo" size="32" hint-size="32px,32px"></dc-import></button>
+  </div>
+
+  <div style="position:absolute;left:140px;top:110px;width:520px;bottom:24px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">
+    <div style="position:absolute;top:30px;left:50%;margin-left:-160px;width:320px;height:320px;border-radius:50%;background:#FFD2AE"></div>
+    <div style="position:relative;display:flex;align-items:flex-end;justify-content:center;height:420px">
+      <dc-import name="Peg" size="{{pv.size}}" hair-style="bob" outfit="#EF4B2F" skin="{{pv.skin}}" aid="{{pv.aid}}" label="Your character" hint-size="248px,340px"></dc-import>
+    </div>
+    <div style="position:relative;width:360px;height:44px;border-radius:50%;background:#F3C99B;box-shadow:0 8px 0 #E0A46B;margin-top:-18px"></div>
+    <div style="position:relative;margin-top:26px;display:flex;align-items:center;gap:10px;background:#FFF8F0;border-radius:999px;padding:8px 18px 8px 10px;font-weight:800;font-size:15px;color:#6B4A6E">
+      <span style="display:flex;color:#2A1640"><dc-import name="Icon" icon="rotate" size="24" hint-size="24px,24px"></dc-import></span>Drag the stand to spin
+    </div>
+  </div>
+
+  <div style="position:absolute;right:24px;top:24px;display:flex;gap:12px">
+    <button style="width:72px;height:72px;border-radius:24px;background:#FFB627;box-shadow:0 6px 0 #C98800;display:flex;align-items:center;justify-content:center;color:#2A1640" aria-label="Surprise this step"><dc-import name="Icon" icon="dice" size="42" hint-size="42px,42px"></dc-import></button>
+    <button style="width:72px;height:72px;border-radius:24px;background:#0B7A6F;box-shadow:0 6px 0 #075249;display:flex;align-items:center;justify-content:center;color:#fff" aria-label="Done"><dc-import name="Icon" icon="check" size="42" hint-size="42px,42px"></dc-import></button>
+  </div>
+
+  <section style="position:absolute;right:24px;top:118px;bottom:24px;width:452px;background:#FFF8F0;border-radius:34px;box-shadow:0 6px 0 #EFC39F;padding:22px 24px;display:flex;flex-direction:column;gap:14px" aria-label="Body options">
+    <h2 class="h3"><dc-import name="Icon" icon="peg" size="24" hint-size="24px,24px"></dc-import>Shape</h2>
+    <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:12px">
+      <sc-for list="{{shapes}}" as="o" hint-placeholder-count="3">
+        <button onClick="{{o.pick}}" style="position:relative;height:104px;border-radius:22px;background:#fff;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;{{o.ring}}" aria-label="{{o.l}}" aria-pressed="{{o.sel}}">
+          <dc-import name="Peg" size="{{o.mini}}" hair-style="none" outfit="#D9C3B0" skin="#C9AE97" label="" hint-size="50px,80px"></dc-import>
+          <sc-if value="{{o.sel}}" hint-placeholder-val="{{false}}"><span style="position:absolute;right:6px;top:6px;display:flex;width:26px;height:26px;border-radius:50%;background:#2A1640;color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="16" weight="4" hint-size="16px,16px"></dc-import></span></sc-if>
+        </button>
+      </sc-for>
+    </div>
+    <h2 class="h3"><dc-import name="Icon" icon="sparkle" size="24" hint-size="24px,24px"></dc-import>Helpers</h2>
+    <div style="display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:12px">
+      <sc-for list="{{aids}}" as="o" hint-placeholder-count="4">
+        <button onClick="{{o.pick}}" style="position:relative;height:88px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;color:#2A1640;{{o.ring}}" aria-label="{{o.l}}" aria-pressed="{{o.sel}}">
+          <dc-import name="Icon" icon="{{o.n}}" size="42" hint-size="42px,42px"></dc-import>
+          <sc-if value="{{o.sel}}" hint-placeholder-val="{{false}}"><span style="position:absolute;right:6px;top:6px;display:flex;width:26px;height:26px;border-radius:50%;background:#2A1640;color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="16" weight="4" hint-size="16px,16px"></dc-import></span></sc-if>
+        </button>
+      </sc-for>
+    </div>
+    <h2 class="h3"><dc-import name="Icon" icon="palette" size="24" hint-size="24px,24px"></dc-import>Skin</h2>
+    <div style="display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:12px">
+      <sc-for list="{{skins}}" as="o" hint-placeholder-count="8">
+        <button onClick="{{o.pick}}" style="position:relative;height:64px;border-radius:20px;background:{{o.c}};box-shadow:inset 0 -6px 0 rgba(42,22,64,.15);{{o.ring}}" aria-label="{{o.l}}" aria-pressed="{{o.sel}}">
+          <sc-if value="{{o.sel}}" hint-placeholder-val="{{false}}"><span style="position:absolute;left:50%;top:50%;margin:-14px 0 0 -14px;display:flex;width:28px;height:28px;border-radius:50%;background:#fff;color:#2A1640;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="18" weight="4" hint-size="18px,18px"></dc-import></span></sc-if>
+        </button>
+      </sc-for>
+    </div>
+    <div style="margin-top:auto;display:flex;align-items:center;justify-content:center;gap:10px" aria-label="Page 1 of 1"><span style="width:14px;height:14px;border-radius:50%;background:#2A1640"></span></div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { shape: 'mid', aid: 'wheelchair', skin: '#C98E62' };
+  }
+  renderVals() {
+    const s = this.state;
+    const ring = (on) => on ? 'box-shadow:0 0 0 4px #2A1640;' : 'box-shadow:0 4px 0 #EFC39F;';
+    const stepsRaw = [
+      ['peg', 'Start', true], ['peg', 'Body', false, true], ['face', 'Face', true], ['hair', 'Hair', true],
+      ['shirt', 'Clothes', false], ['glasses', 'Accessories', false], ['palette', 'Colours', false],
+      ['heart', 'Personality', false], ['tag', 'Name', false]
+    ];
+    const steps = stepsRaw.map(([n, l, done, cur]) => ({
+      n: l === 'Start' ? 'dice' : n, l, done: !!done,
+      st: cur ? 'background:#EF4B2F;color:#fff;box-shadow:0 5px 0 #B8321C;' : 'background:#fff;color:#2A1640;box-shadow:0 4px 0 #EFC39F;'
+    }));
+    const sizes = { tall: 340, mid: 310, short: 270 };
+    const shapes = [['tall', 'Tall', 84], ['mid', 'Middle', 72], ['short', 'Short', 58]].map(([id, l, mini]) => ({
+      l, mini, sel: s.shape === id, ring: ring(s.shape === id), pick: () => this.setState({ shape: id })
+    }));
+    const aids = [['none', 'No helper', 'close'], ['wheelchair', 'Wheelchair', 'wheelchair'], ['arm', 'Helper arm', 'arm'], ['hearing', 'Hearing aid', 'ear']].map(([id, l, n]) => ({
+      l, n, sel: s.aid === id, ring: ring(s.aid === id), pick: () => this.setState({ aid: id })
+    }));
+    const skins = ['#F6D2B4', '#EDC09A', '#E9B48A', '#D49C6C', '#C98E62', '#A86E46', '#8D5A3B', '#5A3725'].map((c, i) => ({
+      c, l: 'Skin tone ' + (i + 1), sel: s.skin === c, ring: s.skin === c ? 'outline:4px solid #2A1640;outline-offset:3px;' : '', pick: () => this.setState({ skin: c })
+    }));
+    return { steps, shapes, aids, skins, pv: { size: sizes[s.shape], skin: s.skin, aid: s.aid } };
+  }
+}
+</script>
+</body>
+</html>

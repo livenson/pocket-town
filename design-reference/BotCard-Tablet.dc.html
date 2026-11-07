@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bot detail card</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.act{height:92px;border-radius:24px;background:#fff;box-shadow:0 5px 0 #E3B48F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:800 15px 'Baloo 2',sans-serif;color:#2A1640}
+.tr{display:flex;width:52px;height:52px;border-radius:50%;align-items:center;justify-content:center;color:#2A1640}
+.ng{width:60px;height:60px;border-radius:50%;background:#fff;box-shadow:0 4px 0 #E3B48F;display:flex;align-items:center;justify-content:center;color:#2A1640}
+.cap{font-size:12px;font-weight:900;color:#5E3F62;text-transform:uppercase;letter-spacing:.06em}
+</style>
+</helmet>
+<div style="position:relative;width:1180px;height:820px;background:#F3C99B;color:#2A1640;font-family:Nunito,system-ui,sans-serif;overflow:hidden">
+  <div style="position:absolute;left:-180px;top:0;width:1180px;height:734px"><div style="transform:scale(1.311);transform-origin:0 0"><dc-import name="Room" sel="{{true}}" hint-size="900px,560px"></dc-import></div></div>
+  <div style="position:absolute;inset:0;background:rgba(42,22,64,.42)"></div>
+  <div style="position:absolute;left:380px;top:390px;width:180px;height:270px;border-radius:50px;box-shadow:0 0 0 6px #FFB627, 0 0 0 4000px rgba(42,22,64,0)"></div>
+
+  <section style="position:absolute;right:28px;top:28px;bottom:28px;width:540px;border-radius:38px;background:#FFF8F0;box-shadow:0 8px 0 rgba(42,22,64,.3);padding:24px;display:flex;flex-direction:column;gap:16px" aria-label="Pim">
+    <button style="position:absolute;right:18px;top:18px;width:56px;height:56px;border-radius:18px;background:#FFE6CF;display:flex;align-items:center;justify-content:center" aria-label="Close"><dc-import name="Icon" icon="close" size="28" hint-size="28px,28px"></dc-import></button>
+    <div style="display:flex;gap:18px;align-items:center">
+      <div style="position:relative;width:140px;height:140px;border-radius:50%;background:#FFE08A;overflow:hidden;flex:none;box-shadow:0 0 0 5px #fff, 0 0 0 9px #FFB627"><span style="position:absolute;left:12px;top:12px"><dc-import name="Peg" size="190" hair-style="puff" outfit="#FFB627" skin="#8D5A3B" label="Pim" hint-size="118px,190px"></dc-import></span></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <h1 class="d" style="margin:0;font-size:44px">Pim</h1>
+          <button style="width:48px;height:48px;border-radius:50%;background:#2A1640;color:#fff;display:flex;align-items:center;justify-content:center" aria-label="Hear about Pim"><dc-import name="Icon" icon="speaker" size="24" hint-size="24px,24px"></dc-import></button>
+          <span style="display:flex;width:48px;height:48px;border-radius:50%;background:#FFB627;align-items:center;justify-content:center" aria-label="Mood: happy" role="img"><dc-import name="Icon" icon="face" size="30" hint-size="30px,30px"></dc-import></span>
+        </div>
+        <div style="display:flex;gap:10px" aria-label="Traits">
+          <span class="tr" style="background:#FF8FB1" role="img" aria-label="Chatty"><dc-import name="Icon" icon="talk" size="28" hint-size="28px,28px"></dc-import></span>
+          <span class="tr" style="background:#E6CCF0" role="img" aria-label="Musical"><dc-import name="Icon" icon="note" size="28" hint-size="28px,28px"></dc-import></span>
+          <span class="tr" style="background:#BFE6DC" role="img" aria-label="Explorer"><dc-import name="Icon" icon="map" size="28" hint-size="28px,28px"></dc-import></span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:14px;background:#FFE6CF;border-radius:26px;padding:12px 18px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="position:relative;width:76px;height:76px">
+          <svg viewBox="0 0 76 76" style="position:absolute;inset:0;width:76px;height:76px" aria-hidden="true"><circle cx="38" cy="38" r="33" style="fill:#fff;stroke:#F3D9C4;stroke-width:7"></circle><circle cx="38" cy="38" r="33" style="fill:none;stroke:#8E3CA8;stroke-width:7;stroke-linecap:round;stroke-dasharray:135 210;transform:rotate(-90deg);transform-origin:38px 38px"></circle></svg>
+          <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#8E3CA8"><dc-import name="Icon" icon="note" size="36" hint-size="36px,36px"></dc-import></span>
+        </div>
+        <span class="cap">Now</span>
+      </div>
+      <span style="display:flex;color:#6B4A6E"><dc-import name="Icon" icon="next" size="34" hint-size="34px,34px"></dc-import></span>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="width:76px;height:76px;border-radius:50%;border:4px dashed #B98A66;display:flex;align-items:center;justify-content:center;color:#C7341B"><dc-import name="Icon" icon="fork" size="34" hint-size="34px,34px"></dc-import></div>
+        <span class="cap">Next</span>
+      </div>
+      <p style="margin:0 0 0 8px;font-size:15px;font-weight:800;color:#5E3F62;line-height:1.35">Dancing to the record. Snack time after.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:12px">
+      <button class="act"><dc-import name="Icon" icon="eye" size="38" hint-size="38px,38px"></dc-import>Follow</button>
+      <button class="act"><dc-import name="Icon" icon="target" size="38" hint-size="38px,38px"></dc-import>Call here</button>
+      <button class="act" style="background:#FFB627;box-shadow:0 5px 0 #C98800, 0 0 0 4px #2A1640" aria-expanded="true"><dc-import name="Icon" icon="sparkle" size="38" hint-size="38px,38px"></dc-import>Nudge</button>
+      <button class="act"><dc-import name="Icon" icon="hand" size="38" hint-size="38px,38px"></dc-import>Take control</button>
+      <button class="act"><dc-import name="Icon" icon="snow" size="38" hint-size="38px,38px"></dc-import>Freeze</button>
+      <button class="act"><dc-import name="Icon" icon="home" size="38" hint-size="38px,38px"></dc-import>Send home</button>
+    </div>
+
+    <div style="position:relative;background:#2A1640;border-radius:26px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between" role="group" aria-label="Nudge ideas">
+      <span style="position:absolute;right:220px;top:-8px;width:18px;height:18px;background:#2A1640;transform:rotate(45deg);border-radius:3px"></span>
+      <button class="ng" aria-label="Eat"><dc-import name="Icon" icon="fork" size="30" hint-size="30px,30px"></dc-import></button>
+      <button class="ng" aria-label="Nap"><dc-import name="Icon" icon="zzz" size="30" hint-size="30px,30px"></dc-import></button>
+      <button class="ng" aria-label="Play ball"><dc-import name="Icon" icon="ball" size="30" hint-size="30px,30px"></dc-import></button>
+      <button class="ng" aria-label="Read"><dc-import name="Icon" icon="book" size="30" hint-size="30px,30px"></dc-import></button>
+      <button class="ng" aria-label="Go chat"><dc-import name="Icon" icon="talk" size="30" hint-size="30px,30px"></dc-import></button>
+      <button class="ng" aria-label="Tidy up"><dc-import name="Icon" icon="sparkle" size="30" hint-size="30px,30px"></dc-import></button>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

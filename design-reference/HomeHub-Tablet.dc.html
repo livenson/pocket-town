@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home hub, tablet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:20px;box-shadow:0 5px 0 #A9C9E6;display:flex;align-items:center;justify-content:center;color:#2A1640;width:64px;height:64px;flex:none}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.tile{position:relative;border-radius:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font:800 24px 'Baloo 2',sans-serif}
+</style>
+</helmet>
+<div style="position:relative;width:1180px;height:820px;background:#BFE3FF;color:#2A1640;font-family:Nunito,system-ui,sans-serif;overflow:hidden">
+  <div style="position:absolute;left:170px;top:70px;width:150px;height:46px;border-radius:999px;background:#fff;opacity:.85"></div>
+  <div style="position:absolute;left:230px;top:50px;width:70px;height:56px;border-radius:50%;background:#fff;opacity:.85"></div>
+  <div style="position:absolute;left:560px;top:110px;width:120px;height:38px;border-radius:999px;background:#fff;opacity:.7"></div>
+  <div style="position:absolute;left:-40px;top:700px;width:860px;height:200px;border-radius:50%;background:#9AD46F"></div>
+
+  <div style="position:absolute;left:24px;top:150px;width:720px;height:576px">
+    <div style="transform:scale(1.2);transform-origin:0 0"><dc-import name="Diorama" hint-size="600px,480px"></dc-import></div>
+  </div>
+  <div style="position:absolute;left:430px;top:240px;width:200px;height:170px;border-radius:40px;border:5px dashed #FFB627;box-shadow:0 0 0 14px rgba(255,182,39,.25)"></div>
+  <div style="position:absolute;left:590px;top:380px;width:58px;height:58px;border-radius:50%;background:#FFB627;box-shadow:0 4px 0 #C98800;display:flex;align-items:center;justify-content:center;color:#2A1640"><dc-import name="Icon" icon="hand" size="34" hint-size="34px,34px"></dc-import></div>
+
+  <div style="position:absolute;left:28px;top:28px;display:flex;gap:12px;align-items:center">
+    <button style="position:relative;width:72px;height:72px;border-radius:50%;background:#FFD2AE;box-shadow:0 5px 0 #A9C9E6, 0 0 0 4px #fff;overflow:hidden" aria-label="Switch player, now Moku">
+      <span style="position:absolute;left:-1px;top:-6px"><dc-import name="Peg" size="120" hair-style="bob" outfit="#EF4B2F" skin="#E9B48A" label="Moku" hint-size="74px,120px"></dc-import></span>
+    </button>
+  </div>
+  <div style="position:absolute;right:28px;top:28px;display:flex;gap:12px">
+    <button class="t" aria-label="Hear what is on this screen"><dc-import name="Icon" icon="speaker" size="32" hint-size="32px,32px"></dc-import></button>
+    <button class="t" aria-label="Settings"><dc-import name="Icon" icon="sliders" size="32" hint-size="32px,32px"></dc-import></button>
+  </div>
+
+  <nav style="position:absolute;right:36px;top:150px;width:380px;display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:22px" aria-label="Places">
+    <button class="tile" style="height:250px;background:#0FA394;box-shadow:0 8px 0 #0A7469;color:#fff"><dc-import name="Icon" icon="globe" size="86" hint-size="86px,86px"></dc-import>World</button>
+    <button class="tile" style="height:250px;background:#EF4B2F;box-shadow:0 8px 0 #B8321C;color:#fff"><dc-import name="Icon" icon="peg" size="86" hint-size="86px,86px"></dc-import>My characters</button>
+    <button class="tile" style="height:250px;background:#FFB627;box-shadow:0 8px 0 #C98800;color:#2A1640"><dc-import name="Icon" icon="house" size="86" hint-size="86px,86px"></dc-import>My house</button>
+    <button class="tile" style="height:250px;background:#4F6BF0;box-shadow:0 8px 0 #2F45B5;color:#fff"><dc-import name="Icon" icon="people" size="86" hint-size="86px,86px"></dc-import>Friends
+      <span style="position:absolute;right:14px;top:14px;width:56px;height:56px;border-radius:50%;background:#FF8FB1;box-shadow:0 0 0 4px #fff, 0 0 0 8px #0FA394;overflow:hidden">
+        <span style="position:absolute;left:-1px;top:-4px"><dc-import name="Peg" size="92" hair-style="crop" outfit="#4F6BF0" skin="#E9B48A" hair="#C2552B" label="Zuza is online" hint-size="57px,92px"></dc-import></span>
+      </span>
+      <span style="position:absolute;right:10px;top:58px;width:20px;height:20px;border-radius:50%;background:#0FA394;border:3px solid #fff"></span>
+    </button>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

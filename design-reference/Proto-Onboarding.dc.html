@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Onboarding prototype</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:18px;box-shadow:0 5px 0 rgba(42,22,64,.2);display:flex;align-items:center;justify-content:center;color:#2A1640;width:56px;height:56px;flex:none}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.scr{position:absolute;inset:0}
+.num{height:96px;border-radius:26px;background:#fff;box-shadow:0 6px 0 #E3B48F;font:800 44px 'Baloo 2',sans-serif;color:#2A1640;display:flex;align-items:center;justify-content:center;transition:transform .12s}
+.num:active{transform:translateY(4px);box-shadow:0 2px 0 #E3B48F}
+.key{height:60px;border-radius:18px;background:#fff;box-shadow:0 4px 0 #D9C3B0;font:800 26px Nunito,sans-serif;color:#2A1640;display:flex;align-items:center;justify-content:center}
+.key:active{transform:translateY(3px);box-shadow:0 1px 0 #D9C3B0}
+.halo{animation:halo 1.3s ease-in-out infinite}
+@keyframes halo{0%,100%{box-shadow:0 0 0 4px #FFB627, 0 0 0 4px rgba(255,182,39,.6)}50%{box-shadow:0 0 0 4px #FFB627, 0 0 0 20px rgba(255,182,39,0)}}
+.hop1,.hop2,.hop3{animation:hop .9s ease-in-out infinite}
+.hop2{animation-delay:.15s}.hop3{animation-delay:.3s}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-22px)}}
+.spinA{animation:spinA .5s ease-out}.spinB{animation:spinB .5s ease-out}
+@keyframes spinA{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes spinB{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.popA{animation:popA .35s ease-out}.popB{animation:popB .35s ease-out}
+@keyframes popA{0%{transform:scale(.7);opacity:.2}100%{transform:scale(1);opacity:1}}
+@keyframes popB{0%{transform:scale(.7);opacity:.2}100%{transform:scale(1);opacity:1}}
+.rise{animation:rise 1.4s ease-out infinite}
+@keyframes rise{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-50px);opacity:0}}
+.eat{animation:eat 1.4s linear forwards}
+@keyframes eat{from{stroke-dashoffset:170}to{stroke-dashoffset:0}}
+.st{display:flex;align-items:center;gap:12px;min-height:52px;border-radius:16px;padding:0 12px;text-align:left;font-weight:800;font-size:15px;width:100%}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+</style>
+</helmet>
+<div style="position:relative;width:820px;height:900px;background:#F2DCC8;color:#2A1640;font-family:Nunito,system-ui,sans-serif">
+
+  <div style="position:absolute;left:28px;top:28px;width:390px;height:844px;border-radius:44px;overflow:hidden;box-shadow:0 10px 0 rgba(42,22,64,.14), 0 0 0 1px rgba(42,22,64,.08);background:#FFE6CF">
+
+    <sc-if value="{{s.splash}}" hint-placeholder-val="{{true}}">
+      <button class="scr" onClick="{{toAge}}" style="background:#EF4B2F;color:#fff" aria-label="Pocket Town is loading. Tap to start.">
+        <span style="position:absolute;left:0;right:0;top:220px;display:flex;justify-content:center;align-items:flex-end;gap:10px">
+          <span style="display:flex;flex-direction:column;align-items:center"><span style="width:84px;height:48px;background:#FFB627;clip-path:polygon(50% 0, 100% 100%, 0 100%)"></span><span style="width:70px;height:62px;background:#fff;border-radius:0 0 12px 12px"></span></span>
+          <span style="display:flex;flex-direction:column;align-items:center"><span style="width:110px;height:64px;background:#0FA394;clip-path:polygon(50% 0, 100% 100%, 0 100%)"></span><span style="width:92px;height:96px;background:#FFF8F0;border-radius:0 0 14px 14px"></span></span>
+          <span style="display:flex;flex-direction:column;align-items:center"><span style="width:84px;height:48px;background:#4F6BF0;clip-path:polygon(50% 0, 100% 100%, 0 100%)"></span><span style="width:70px;height:62px;background:#fff;border-radius:0 0 12px 12px"></span></span>
+        </span>
+        <span style="position:absolute;left:30px;right:30px;top:398px;height:14px;border-radius:7px;background:#B8321C"></span>
+        <span class="d" style="position:absolute;left:0;right:0;top:450px;text-align:center;font-size:62px">Pocket Town</span>
+        <span style="position:absolute;left:0;right:0;top:600px;display:flex;justify-content:center;align-items:flex-end;gap:18px;height:90px">
+          <span class="hop1"><dc-import name="Peg" size="60" hair-style="bob" outfit="#FFB627" skin="#E9B48A" label="" hint-size="37px,60px"></dc-import></span>
+          <span class="hop2"><dc-import name="Peg" size="60" hair-style="puff" outfit="#0FA394" skin="#8D5A3B" label="" hint-size="37px,60px"></dc-import></span>
+          <span class="hop3"><dc-import name="Peg" size="60" hair-style="bun" outfit="#4F6BF0" skin="#C98E62" hair="#5A2E1A" label="" hint-size="37px,60px"></dc-import></span>
+        </span>
+        <span style="position:absolute;left:0;right:0;top:720px;text-align:center;font-size:20px;font-weight:900">Building your town…</span>
+      </button>
+    </sc-if>
+
+    <sc-if value="{{s.age}}" hint-placeholder-val="{{false}}">
+      <div class="scr">
+        <div style="position:absolute;left:24px;right:24px;top:56px;display:flex;align-items:center;gap:14px">
+          <button class="t" onClick="{{sayAge}}" style="background:#2A1640;color:#fff;box-shadow:0 5px 0 #120A1C" aria-label="Hear the question"><dc-import name="Icon" icon="speaker" size="30" hint-size="30px,30px"></dc-import></button>
+          <h1 class="d" style="margin:0;font-size:34px">How old are you?</h1>
+        </div>
+        <div style="position:absolute;left:24px;right:24px;top:140px;height:78px;border-radius:24px;background:#FFF8F0;display:flex;align-items:center;justify-content:center;gap:16px">
+          <dc-import name="Icon" icon="cake" size="44" hint-size="44px,44px"></dc-import>
+          <span style="display:flex;gap:6px"><span style="width:10px;height:26px;border-radius:5px;background:#EF4B2F"></span><span style="width:10px;height:26px;border-radius:5px;background:#FFB627"></span><span style="width:10px;height:26px;border-radius:5px;background:#0FA394"></span><span style="width:10px;height:26px;border-radius:5px;background:#4F6BF0"></span></span>
+        </div>
+        <div style="position:absolute;left:24px;right:24px;top:246px;display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:18px 16px">
+          <sc-for list="{{ages}}" as="a" hint-placeholder-count="12">
+            <button class="num" onClick="{{a.pick}}" style="outline-offset:3px;{{a.st}}">{{a.l}}</button>
+          </sc-for>
+        </div>
+        <button onClick="{{toGate}}" style="position:absolute;left:24px;right:24px;bottom:36px;height:60px;border-radius:20px;background:#FFF8F0;display:flex;align-items:center;justify-content:center;gap:10px;font-size:17px;font-weight:800"><dc-import name="Icon" icon="lock" size="24" hint-size="24px,24px"></dc-import>Grown-up? Set up here</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s.gate}}" hint-placeholder-val="{{false}}">
+      <div class="scr" style="background:#3D2A55">
+        <button class="t" onClick="{{toAge}}" style="position:absolute;left:24px;top:52px" aria-label="Back to play"><dc-import name="Icon" icon="close" size="30" hint-size="30px,30px"></dc-import></button>
+        <div style="position:absolute;left:20px;right:20px;top:126px;bottom:36px;border-radius:34px;background:#FFF8F0;padding:26px 22px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="display:flex;width:52px;height:52px;border-radius:16px;background:#2A1640;color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="lock" size="30" hint-size="30px,30px"></dc-import></span>
+            <h1 class="d" style="margin:0;font-size:32px">Grown-ups only</h1>
+          </div>
+          <p style="margin:0;font-size:17px;font-weight:700;line-height:1.4">To continue, type the number <strong style="font-weight:900">forty-seven</strong>.</p>
+          <div style="display:flex;gap:12px;justify-content:center">
+            <div style="width:72px;height:80px;border-radius:18px;background:#fff;border:3px solid #2A1640;display:flex;align-items:center;justify-content:center;font:800 42px 'Baloo 2',sans-serif">{{g0}}</div>
+            <div style="width:72px;height:80px;border-radius:18px;background:#fff;border:3px solid #2A1640;display:flex;align-items:center;justify-content:center;font:800 42px 'Baloo 2',sans-serif">{{g1}}</div>
+          </div>
+          <sc-if value="{{gateErr}}" hint-placeholder-val="{{false}}"><p style="margin:0;text-align:center;font-size:15px;font-weight:800;color:#8E2312" role="alert">That’s not it. Try again.</p></sc-if>
+          <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:12px">
+            <sc-for list="{{keys}}" as="k" hint-placeholder-count="12">
+              <button class="key" onClick="{{k.press}}" style="outline-offset:3px;{{k.st}}" aria-label="{{k.al}}">
+                <sc-if value="{{k.dig}}" hint-placeholder-val="{{true}}">{{k.l}}</sc-if>
+                <sc-if value="{{k.ico}}" hint-placeholder-val="{{false}}"><dc-import name="Icon" icon="{{k.i}}" size="26" hint-size="26px,26px"></dc-import></sc-if>
+              </button>
+            </sc-for>
+          </div>
+          <p style="margin:auto 0 0;font-size:13px;font-weight:700;color:#6B4A6E;line-height:1.4">The number changes every time and is written as words.</p>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s.grown}}" hint-placeholder-val="{{false}}">
+      <div class="scr" style="background:#FFF8F0;padding:60px 24px 36px;display:flex;flex-direction:column;gap:16px">
+        <span style="display:flex;width:64px;height:64px;border-radius:20px;background:#0B7A6F;color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="38" hint-size="38px,38px"></dc-import></span>
+        <h1 class="d" style="margin:0;font-size:32px">Welcome, grown-up</h1>
+        <p style="margin:0;font-size:16px;font-weight:700;line-height:1.5">Friends are off. Nothing leaves this device until you set up an account in the grown-up area.</p>
+        <div style="background:#fff;border-radius:20px;padding:16px;box-shadow:0 0 0 1px #EBD9C8;font-size:15px;font-weight:700;line-height:1.5;color:#5E3F62">In the full flow this is the consent and setup screen (A4): plain-language notice, consent, friends, phrases and a PIN.</div>
+        <button onClick="{{toProfile}}" style="margin-top:auto;min-height:64px;border-radius:20px;background:#C7341B;color:#fff;box-shadow:0 5px 0 #8E2312;font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:10px">Hand back to your child<dc-import name="Icon" icon="next" size="22" hint-size="22px,22px"></dc-import></button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s.profile}}" hint-placeholder-val="{{false}}">
+      <div class="scr">
+        <div style="position:absolute;left:24px;right:24px;top:56px;display:flex;align-items:center;gap:14px">
+          <button class="t" onClick="{{sayProfile}}" style="background:#2A1640;color:#fff;box-shadow:0 5px 0 #120A1C" aria-label="Hear: who is playing?"><dc-import name="Icon" icon="speaker" size="30" hint-size="30px,30px"></dc-import></button>
+          <h1 class="d" style="margin:0;font-size:34px">Who’s playing?</h1>
+        </div>
+        <button class="halo" onClick="{{toAvatar}}" style="position:absolute;left:40px;right:40px;top:190px;height:380px;border-radius:40px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px" aria-label="New player">
+          <span style="display:flex;width:170px;height:170px;border-radius:50%;background:#FFB627;box-shadow:0 8px 0 #C98800;align-items:center;justify-content:center"><dc-import name="Icon" icon="plus" size="96" hint-size="96px,96px"></dc-import></span>
+          <sc-if value="{{lbl}}" hint-placeholder-val="{{true}}"><span class="d" style="font-size:30px">New player</span></sc-if>
+        </button>
+        <p style="position:absolute;left:24px;right:24px;top:620px;margin:0;font-size:14px;font-weight:700;color:#6B4A6E;text-align:center">First time on this device: one big face to tap. No passwords.</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s.avatar}}" hint-placeholder-val="{{false}}">
+      <div class="scr">
+        <div style="position:absolute;left:16px;right:16px;top:52px;display:flex;align-items:center;gap:10px">
+          <button class="t" onClick="{{toProfile}}" aria-label="Back"><dc-import name="Icon" icon="back" size="28" hint-size="28px,28px"></dc-import></button>
+          <span style="flex:1"></span>
+          <button class="t" onClick="{{sayAvatar}}" style="background:#2A1640;color:#fff;box-shadow:0 5px 0 #120A1C" aria-label="Hear what to do"><dc-import name="Icon" icon="speaker" size="28" hint-size="28px,28px"></dc-import></button>
+        </div>
+        <div style="position:absolute;left:55px;top:140px;width:280px;height:280px;border-radius:50%;background:#FFD2AE"></div>
+        <div style="position:absolute;left:0;right:0;top:110px;height:360px;display:flex;align-items:flex-end;justify-content:center">
+          <span class="{{popCls}}" style="display:flex"><dc-import name="Peg" size="300" hair-style="{{look.hs}}" outfit="{{look.out}}" skin="{{look.skin}}" hair="{{look.hair}}" aid="{{look.aid}}" label="Your character" hint-size="233px,300px"></dc-import></span>
+        </div>
+        <div style="position:absolute;left:85px;width:220px;top:456px;height:30px;border-radius:50%;background:#F3C99B;box-shadow:0 6px 0 #E0A46B"></div>
+        <div style="position:absolute;left:0;right:0;top:510px;display:flex;justify-content:center">
+          <span style="display:flex;align-items:center;gap:10px;background:#fff;border-radius:20px;padding:6px 18px;box-shadow:0 0 0 4px #2A1640"><span class="d" style="font-size:38px">{{name}}</span></span>
+        </div>
+        <div style="position:absolute;left:24px;right:24px;bottom:44px;display:flex;align-items:center;justify-content:center;gap:22px">
+          <button onClick="{{changeDetails}}" class="t" style="width:72px;height:72px;border-radius:24px" aria-label="Change details"><dc-import name="Icon" icon="pencil" size="36" hint-size="36px,36px"></dc-import></button>
+          <button onClick="{{roll}}" style="width:120px;height:120px;border-radius:36px;background:#FFB627;box-shadow:0 8px 0 #C98800;display:flex;align-items:center;justify-content:center;color:#2A1640" aria-label="Roll a new character"><span class="{{spinCls}}" style="display:flex"><dc-import name="Icon" icon="dice" size="70" hint-size="70px,70px"></dc-import></span></button>
+          <button onClick="{{toHooray}}" style="width:72px;height:72px;border-radius:24px;background:#0B7A6F;box-shadow:0 6px 0 #075249;color:#fff;display:flex;align-items:center;justify-content:center" aria-label="Done"><dc-import name="Icon" icon="check" size="40" hint-size="40px,40px"></dc-import></button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s.hooray}}" hint-placeholder-val="{{false}}">
+      <div class="scr" style="background:#EF4B2F;color:#fff">
+        <span style="position:absolute;left:40px;top:120px;width:22px;height:10px;border-radius:3px;background:#FFB627;transform:rotate(30deg)"></span>
+        <span style="position:absolute;left:300px;top:150px;width:22px;height:10px;border-radius:3px;background:#fff;transform:rotate(-20deg)"></span>
+        <span style="position:absolute;left:90px;top:230px;width:14px;height:14px;border-radius:50%;background:#4F6BF0"></span>
+        <span style="position:absolute;left:320px;top:280px;width:22px;height:10px;border-radius:3px;background:#7BC74D;transform:rotate(60deg)"></span>
+        <span style="position:absolute;left:180px;top:110px;width:14px;height:14px;border-radius:50%;background:#FF8FB1"></span>
+        <span style="position:absolute;left:60px;top:400px;width:22px;height:10px;border-radius:3px;background:#FFE08A;transform:rotate(-45deg)"></span>
+        <div style="position:absolute;left:0;right:0;top:150px;display:flex;justify-content:center"><span class="hop1" style="display:flex"><dc-import name="Peg" size="250" hair-style="{{look.hs}}" outfit="{{look.out}}" skin="{{look.skin}}" hair="{{look.hair}}" aid="{{look.aid}}" eyes="wow" label="Your character, jumping for joy" hint-size="194px,250px"></dc-import></span></div>
+        <div style="position:absolute;left:115px;right:115px;top:430px;height:24px;border-radius:50%;background:rgba(42,22,64,.25)"></div>
+        <h1 class="d" style="position:absolute;left:0;right:0;top:480px;margin:0;text-align:center;font-size:48px">Hooray, {{name}}!</h1>
+        <button onClick="{{toPlay}}" class="halo" style="position:absolute;left:24px;right:24px;bottom:56px;height:92px;border-radius:30px;background:#fff;color:#C7341B;display:flex;align-items:center;justify-content:center;gap:12px;font:800 32px 'Baloo 2',sans-serif"><dc-import name="Icon" icon="play" size="40" hint-size="40px,40px"></dc-import>Play</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s.play}}" hint-placeholder-val="{{false}}">
+      <div class="scr" style="background:#F3C99B">
+        <div style="position:absolute;left:-215px;top:140px;width:900px;height:560px"><div style="transform:scale(.8);transform-origin:0 0"><dc-import name="Room" hint-size="900px,560px"></dc-import></div></div>
+        <div style="position:absolute;left:254px;top:556px;width:92px;height:26px;border-radius:50%;border:4px solid #EF4B2F;background:rgba(239,75,47,.2)"></div>
+        <div style="position:absolute;left:268px;top:470px"><dc-import name="Peg" size="104" hair-style="{{look.hs}}" outfit="{{look.out}}" skin="{{look.skin}}" hair="{{look.hair}}" aid="{{look.aid}}" label="You" hint-size="81px,104px"></dc-import></div>
+
+        <sc-if value="{{holding}}" hint-placeholder-val="{{false}}">
+          <button onClick="{{feed}}" class="halo" style="position:absolute;left:136px;top:376px;width:112px;height:146px;border-radius:44px;border:4px dashed #0B7A6F;background:rgba(15,163,148,.18)" aria-label="Give the cake to Pim"></button>
+        </sc-if>
+        <sc-if value="{{fed}}" hint-placeholder-val="{{false}}">
+          <div style="position:absolute;left:160px;top:330px;width:60px;height:60px">
+            <svg viewBox="0 0 60 60" style="position:absolute;inset:0;width:60px;height:60px" aria-hidden="true"><circle cx="30" cy="30" r="27" style="fill:#fff;stroke:#F3D9C4;stroke-width:5"></circle><circle class="eat" cx="30" cy="30" r="27" style="fill:none;stroke:#C7341B;stroke-width:5;stroke-linecap:round;stroke-dasharray:170 170;stroke-dashoffset:0;transform:rotate(-90deg);transform-origin:30px 30px"></circle></svg>
+            <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#C7341B"><dc-import name="Icon" icon="cake" size="30" hint-size="30px,30px"></dc-import></span>
+          </div>
+          <span class="rise" style="position:absolute;left:230px;top:350px;color:#D9416A;display:flex"><dc-import name="Icon" icon="heart" size="30" hint-size="30px,30px"></dc-import></span>
+          <span class="rise" style="position:absolute;left:120px;top:370px;color:#D9416A;display:flex;animation-delay:.5s"><dc-import name="Icon" icon="heart" size="24" hint-size="24px,24px"></dc-import></span>
+        </sc-if>
+
+        <div style="position:absolute;left:14px;right:14px;top:50px;display:flex;gap:8px">
+          <button class="t" onClick="{{notHere}}" aria-label="Home"><dc-import name="Icon" icon="home" size="28" hint-size="28px,28px"></dc-import></button>
+          <button class="t" onClick="{{undo}}" aria-label="Undo"><dc-import name="Icon" icon="undo" size="28" hint-size="28px,28px"></dc-import></button>
+          <span style="flex:1"></span>
+          <button class="t {{mapCls}}" onClick="{{mapTap}}" aria-label="Map"><dc-import name="Icon" icon="map" size="28" hint-size="28px,28px"></dc-import></button>
+          <button class="t" onClick="{{notHere}}" aria-label="Edit"><dc-import name="Icon" icon="pencil" size="28" hint-size="28px,28px"></dc-import></button>
+        </div>
+
+        <button onClick="{{sayHint}}" style="position:absolute;left:16px;top:122px;max-width:358px;display:flex;align-items:center;gap:10px;background:rgba(42,22,64,.9);color:#fff;border-radius:999px;padding:6px 16px 6px 6px;font-size:15px;font-weight:800;text-align:left" aria-label="Hear the hint">
+          <span style="display:flex;width:40px;height:40px;border-radius:50%;background:#FFB627;color:#2A1640;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="{{hint.i}}" size="24" hint-size="24px,24px"></dc-import></span>
+          <sc-if value="{{lbl}}" hint-placeholder-val="{{true}}"><span>{{hint.t}}</span></sc-if>
+          <span style="display:flex;flex:none"><dc-import name="Icon" icon="speaker" size="20" hint-size="20px,20px"></dc-import></span>
+        </button>
+
+        <sc-if value="{{holding}}" hint-placeholder-val="{{false}}">
+          <div style="position:absolute;left:16px;top:180px;display:flex;align-items:center;gap:8px;background:#fff;border-radius:22px;padding:6px 8px 6px 6px;box-shadow:0 0 0 4px #FFB627, 0 6px 0 rgba(42,22,64,.2)">
+            <span style="display:flex;width:52px;height:52px;border-radius:16px;background:#FFD2AE;align-items:center;justify-content:center"><dc-import name="Icon" icon="cake" size="32" hint-size="32px,32px"></dc-import></span>
+            <button onClick="{{drop}}" style="width:44px;height:44px;border-radius:14px;background:#FFE6CF;display:flex;align-items:center;justify-content:center" aria-label="Put the cake back"><dc-import name="Icon" icon="close" size="22" hint-size="22px,22px"></dc-import></button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{plusShown}}" hint-placeholder-val="{{true}}">
+          <button onClick="{{openSheet}}" class="{{plusCls}}" style="position:absolute;left:163px;bottom:34px;width:64px;height:64px;border-radius:22px;background:#EF4B2F;color:#fff;box-shadow:0 5px 0 #B8321C;display:flex;align-items:center;justify-content:center" aria-label="Add things"><dc-import name="Icon" icon="plus" size="36" hint-size="36px,36px"></dc-import></button>
+        </sc-if>
+
+        <sc-if value="{{sheet}}" hint-placeholder-val="{{false}}">
+          <section style="position:absolute;left:0;right:0;bottom:0;height:300px;background:#FFF8F0;border-radius:34px 34px 0 0;box-shadow:0 -6px 0 rgba(42,22,64,.12);padding:14px 18px 34px;display:flex;flex-direction:column;gap:14px" aria-label="Things">
+            <div style="display:flex;gap:10px">
+              <span style="flex:1;height:52px;border-radius:18px;background:#FFE6CF;display:flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="peg" size="28" hint-size="28px,28px"></dc-import></span>
+              <span style="flex:1;height:52px;border-radius:18px;background:#2A1640;color:#fff;display:flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="ball" size="28" hint-size="28px,28px"></dc-import></span>
+              <button onClick="{{closeSheet}}" style="width:52px;height:52px;border-radius:18px;background:#EF4B2F;color:#fff;display:flex;align-items:center;justify-content:center;flex:none" aria-label="Close"><dc-import name="Icon" icon="close" size="26" hint-size="26px,26px"></dc-import></button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:12px">
+              <button onClick="{{pickCake}}" class="halo" style="height:110px;border-radius:24px;background:#FFD2AE;display:flex;align-items:center;justify-content:center" aria-label="Cake"><dc-import name="Icon" icon="cake" size="56" hint-size="56px,56px"></dc-import></button>
+              <button onClick="{{notHere}}" style="height:110px;border-radius:24px;background:#BFE6DC;box-shadow:0 5px 0 rgba(42,22,64,.12);display:flex;align-items:center;justify-content:center" aria-label="Ball"><dc-import name="Icon" icon="ball" size="56" hint-size="56px,56px"></dc-import></button>
+              <button onClick="{{notHere}}" style="height:110px;border-radius:24px;background:#FFE08A;box-shadow:0 5px 0 rgba(42,22,64,.12);display:flex;align-items:center;justify-content:center" aria-label="Star cookie"><dc-import name="Icon" icon="star" size="56" hint-size="56px,56px"></dc-import></button>
+            </div>
+          </section>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+      <div style="position:absolute;left:24px;right:24px;bottom:120px;background:#2A1640;color:#fff;border-radius:20px;padding:12px 16px;font-size:15px;font-weight:800;text-align:center;box-shadow:0 6px 0 rgba(42,22,64,.25)" role="status">{{toast}}</div>
+    </sc-if>
+  </div>
+
+  <aside style="position:absolute;left:450px;top:28px;width:342px;bottom:28px;background:#FFF8F0;border-radius:30px;box-shadow:0 5px 0 #E3C2A6;padding:22px;display:flex;flex-direction:column;gap:12px">
+    <h2 class="d" style="margin:0;font-size:26px">First-time onboarding</h2>
+    <p style="margin:0;font-size:14px;font-weight:700;color:#5E3F62;line-height:1.45">Tap through the phone like a child would, or jump to any stage below. Speakers use your browser’s voice.</p>
+    <nav style="display:flex;flex-direction:column;gap:4px" aria-label="Stages">
+      <sc-for list="{{stages}}" as="g" hint-placeholder-count="7">
+        <button class="st" onClick="{{g.go}}" style="outline-offset:3px;{{g.st}}" aria-current="{{g.cur}}">
+          <span style="display:flex;width:32px;height:32px;border-radius:50%;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex:none;{{g.badge}}">{{g.n}}</span>{{g.l}}
+        </button>
+      </sc-for>
+    </nav>
+    <div style="background:#FFE6CF;border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:6px">
+      <span style="font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#5E3F62">Try this</span>
+      <span style="font-size:15px;font-weight:800;line-height:1.45">{{tip}}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:800;color:#5E3F62">
+      <span style="display:flex;width:28px;height:28px;border-radius:8px;background:{{lblBg}};color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="tag" size="18" hint-size="18px,18px"></dc-import></span>{{lblNote}}
+    </div>
+    <button onClick="{{restart}}" style="margin-top:auto;min-height:52px;border-radius:16px;background:#2A1640;color:#fff;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px"><dc-import name="Icon" icon="refresh" size="22" hint-size="22px,22px"></dc-import>Start again</button>
+  </aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":820,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.timers = [];
+    this.state = {
+      step: 'splash', age: null, rolls: 0, gate: '', gateErr: false,
+      look: { hs: 'bob', out: '#EF4B2F', skin: '#E9B48A', hair: '#2A1640', aid: 'none' }, name: 'Moku',
+      sheet: false, holding: false, fed: false, done: false, toast: null
+    };
+  }
+  componentDidMount() { this.splashTimer(); }
+  componentWillUnmount() { this.timers.forEach((t) => clearTimeout(t)); }
+  later(fn, ms) { this.timers.push(setTimeout(fn, ms)); }
+  splashTimer() { this.later(() => { if (this.state.step === 'splash') this.go('age'); }, 2600); }
+  say(t) {
+    try { const s = window.speechSynthesis; if (!s) return; s.cancel(); s.speak(new SpeechSynthesisUtterance(t)); } catch (e) {}
+  }
+  flash(t) {
+    this.setState({ toast: t });
+    this.later(() => this.setState((s) => (s.toast === t ? { toast: null } : null)), 2400);
+  }
+  go(step) {
+    const patch = { step, toast: null, gateErr: false };
+    if (step === 'splash') Object.assign(patch, { age: null, gate: '', rolls: 0 });
+    if (step === 'gate') patch.gate = '';
+    if (step === 'play') Object.assign(patch, { sheet: false, holding: false, fed: false, done: false });
+    this.setState(patch);
+    if (step === 'splash') this.splashTimer();
+    if (step === 'age') this.say('How old are you?');
+    if (step === 'profile') this.say('Who is playing?');
+  }
+  roll() {
+    const r = (a) => a[Math.floor(Math.random() * a.length)];
+    const look = {
+      hs: r(['bob', 'puff', 'bun', 'crop', 'none']),
+      out: r(['#EF4B2F', '#FFB627', '#0FA394', '#4F6BF0', '#FF8FB1', '#7BC74D', '#8E3CA8']),
+      skin: r(['#F6D2B4', '#EDC09A', '#E9B48A', '#D49C6C', '#C98E62', '#A86E46', '#8D5A3B', '#5A3725']),
+      hair: r(['#2A1640', '#5A2E1A', '#C2552B', '#FFB627', '#FF8FB1']),
+      aid: r(['none', 'none', 'none', 'wheelchair', 'hearing', 'arm'])
+    };
+    let name = r(['Moku', 'Pim', 'Lumo', 'Tavi', 'Nella', 'Oki', 'Zeb', 'Bobo', 'Kiki', 'Ziggy', 'Mona', 'Pip']);
+    if (name === this.state.name) name = 'Bippa';
+    this.setState({ look, name, rolls: this.state.rolls + 1 });
+  }
+  pressKey(k) {
+    const g = this.state.gate;
+    if (k === 'del') return this.setState({ gate: g.slice(0, -1), gateErr: false });
+    if (k === 'ok') {
+      if (g === '47') return this.go('grown');
+      return this.setState({ gate: '', gateErr: true });
+    }
+    if (g.length < 2) this.setState({ gate: g + k, gateErr: false });
+  }
+  renderVals() {
+    const st = this.state;
+    const s = {};
+    ['splash', 'age', 'gate', 'grown', 'profile', 'avatar', 'hooray', 'play'].forEach((k) => { s[k] = st.step === k; });
+    const lbl = st.age !== null && st.age >= 9;
+
+    const ages = ['4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15+'].map((l) => {
+      const v = parseInt(l, 10);
+      const sel = st.age === v;
+      return {
+        l, st: (sel ? 'box-shadow:0 0 0 5px #2A1640;background:#FFE08A;' : '') + (l === '15+' ? 'font-size:38px;' : ''),
+        pick: () => { this.setState({ age: v }); this.later(() => this.go('profile'), 380); }
+      };
+    });
+
+    const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'del', '0', 'ok'].map((k) => ({
+      l: k, dig: k !== 'del' && k !== 'ok', ico: k === 'del' || k === 'ok', i: k === 'del' ? 'back' : 'check',
+      al: k === 'del' ? 'Delete digit' : k === 'ok' ? 'Check' : k,
+      st: k === 'ok' ? 'background:#0B7A6F;color:#fff;box-shadow:0 4px 0 #075249;' : '',
+      press: () => this.pressKey(k)
+    }));
+
+    let hint = { i: 'plus', t: 'Tap the plus to find things' };
+    if (st.sheet) hint = { i: 'cake', t: 'Pick the cake' };
+    if (st.holding) hint = { i: 'hand', t: 'Give it to Pim: tap the glowing spot' };
+    if (st.fed) hint = { i: 'heart', t: 'Bippa! Pim loves it.' };
+    if (st.done) hint = { i: 'map', t: 'Now try the map' };
+
+    const order = [
+      ['splash', '1', 'Splash'], ['age', '2', 'Age'], ['gate', '2b', 'Grown-up gate (branch)'],
+      ['profile', '3', 'Profile'], ['avatar', '4', 'Dice avatar'], ['hooray', '5', 'Hooray'], ['play', '6', 'First play, with hints']
+    ];
+    const stages = order.map(([id, n, l]) => {
+      const cur = st.step === id || (id === 'gate' && st.step === 'grown');
+      return {
+        n, l, cur: cur ? 'step' : 'false',
+        st: cur ? 'background:#2A1640;color:#fff;' : 'color:#2A1640;',
+        badge: cur ? 'background:#FFB627;color:#2A1640;' : 'background:#FFE6CF;color:#2A1640;',
+        go: () => this.go(id)
+      };
+    });
+
+    const tips = {
+      splash: 'Wait 2–3 seconds, or tap anywhere. The town builds itself while the game loads.',
+      age: 'Tap any number. No age is preselected. 9 and up switches on the word labels later on.',
+      gate: 'Type 4 then 7 and tick. A wrong answer just clears gently.',
+      grown: 'This stands in for parent consent (A4). Hand the device back to continue.',
+      profile: 'One big “new player” face. Faces are the login: no passwords.',
+      avatar: 'Roll the dice as often as you like. The pencil would open the full wizard. Tick when happy.',
+      hooray: 'A short celebration, then straight into play.',
+      play: 'Follow the hint bubble: plus, then cake, then Pim. Undo takes the cake back.'
+    };
+
+    return {
+      s, lbl, ages, keys, hint, stages,
+      tip: tips[st.step],
+      lblNote: lbl ? 'Word labels on (age 9+)' : 'Icons and voice only (pre-reader mode)',
+      lblBg: lbl ? '#4F6BF0' : '#B9A3B9',
+      g0: st.gate[0] || '', g1: st.gate[1] || '', gateErr: st.gateErr,
+      look: st.look, name: st.name,
+      popCls: st.rolls % 2 ? 'popA' : 'popB', spinCls: st.rolls === 0 ? '' : (st.rolls % 2 ? 'spinA' : 'spinB'),
+      sheet: st.sheet, holding: st.holding, fed: st.fed,
+      plusShown: !st.sheet,
+      plusCls: !st.sheet && !st.holding && !st.fed ? 'halo' : '',
+      mapCls: st.done ? 'halo' : '',
+      hasToast: !!st.toast, toast: st.toast || '',
+      toAge: () => this.go('age'),
+      toGate: () => this.go('gate'),
+      toProfile: () => this.go('profile'),
+      toAvatar: () => { this.go('avatar'); if (st.rolls === 0) this.roll(); this.say('Roll the dice, or tick when you like it.'); },
+      toHooray: () => { this.go('hooray'); this.say('Hooray, ' + st.name + '!'); },
+      toPlay: () => this.go('play'),
+      restart: () => this.go('splash'),
+      roll: () => this.roll(),
+      sayAge: () => this.say('How old are you?'),
+      sayProfile: () => this.say('Who is playing? Tap the plus to make a new player.'),
+      sayAvatar: () => this.say('Roll the dice, or tick when you like it.'),
+      sayHint: () => this.say(hint.t),
+      changeDetails: () => this.flash('This opens the full avatar wizard.'),
+      notHere: () => this.flash('Not part of this prototype.'),
+      mapTap: () => this.flash(st.done ? 'Next stop: the world map (flow 4).' : 'Not part of this prototype.'),
+      openSheet: () => { if (st.holding || st.fed) return this.flash('You can find more things later.'); this.setState({ sheet: true }); this.say('Pick the cake'); },
+      closeSheet: () => this.setState({ sheet: false }),
+      pickCake: () => { this.setState({ sheet: false, holding: true }); this.say('Give it to Pim'); },
+      drop: () => this.setState({ holding: false }),
+      feed: () => {
+        this.setState({ holding: false, fed: true });
+        this.say('Bippa!');
+        this.later(() => { if (this.state.fed) this.setState({ done: true }); }, 1600);
+      },
+      undo: () => {
+        if (st.fed) return this.setState({ fed: false, done: false, holding: true });
+        if (st.holding) return this.setState({ holding: false });
+        this.flash('Nothing to undo yet.');
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

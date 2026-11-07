@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Friends and safety screens, phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:18px;box-shadow:0 5px 0 #E3B48F;display:flex;align-items:center;justify-content:center;color:#2A1640;width:56px;height:56px;flex:none}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.ph{position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;box-shadow:0 10px 0 rgba(42,22,64,.12), 0 0 0 1px rgba(42,22,64,.08);flex:none;background:#FFE6CF}
+.lb{display:flex;align-items:center;gap:10px;height:44px;font:800 20px 'Baloo 2',sans-serif;color:#2A1640}
+.lb span{background:#2A1640;color:#fff;border-radius:10px;padding:0 10px;font-size:16px}
+.bar{position:absolute;left:16px;right:16px;top:54px;display:flex;align-items:center;gap:12px}
+.code{height:140px;border-radius:30px;background:#fff;box-shadow:0 6px 0 #E3B48F;display:flex;align-items:center;justify-content:center;color:#2A1640}
+.key{height:72px;border-radius:22px;background:#fff;box-shadow:0 5px 0 #E3B48F;display:flex;align-items:center;justify-content:center;color:#2A1640}
+.slot{width:72px;height:72px;border-radius:22px;background:#fff;display:flex;align-items:center;justify-content:center;color:#2A1640;box-shadow:0 0 0 3px #2A1640}
+.why{height:150px;border-radius:28px;background:#fff;box-shadow:0 5px 0 #E3B48F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font:800 17px 'Baloo 2',sans-serif;color:#2A1640}
+.row{display:flex;align-items:center;gap:12px;min-height:64px;border-radius:20px;background:#fff;padding:0 12px}
+.ri{display:flex;width:44px;height:44px;border-radius:14px;background:#FFE6CF;align-items:center;justify-content:center;flex:none;color:#2A1640}
+.sl{flex:1;height:16px;border-radius:8px;background:#F3D9C4;position:relative}
+.sl b{position:absolute;left:0;top:0;bottom:0;border-radius:8px;background:#0B7A6F}
+.sl i{position:absolute;top:50%;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #0B7A6F, 0 3px 0 rgba(42,22,64,.2)}
+.sw{margin-left:auto;width:72px;height:44px;border-radius:999px;padding:4px;display:flex;flex:none}
+.sw span{display:flex;width:36px;height:36px;border-radius:50%;background:#fff;align-items:center;justify-content:center}
+</style>
+</helmet>
+<div style="width:2238px;height:1000px;background:#F2DCC8;padding:40px 48px;display:flex;gap:48px;font-family:Nunito,system-ui,sans-serif;color:#2A1640">
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>E1</span>Friends, locked</div>
+    <div class="ph">
+      <div class="bar"><button class="t" aria-label="Home"><dc-import name="Icon" icon="home" size="28" hint-size="28px,28px"></dc-import></button><span class="d" style="font-size:30px">Friends</span></div>
+      <div style="position:absolute;left:30px;right:30px;top:170px;display:flex;justify-content:center;gap:14px;opacity:.35;filter:grayscale(1)">
+        <span style="position:relative;display:flex;width:90px;height:90px;border-radius:50%;background:#E3D9DE;overflow:hidden"><span style="position:absolute;left:4px;top:-4px"><dc-import name="Peg" size="140" hair-style="crop" outfit="#4F6BF0" skin="#E9B48A" label="" hint-size="87px,140px"></dc-import></span></span>
+        <span style="position:relative;display:flex;width:90px;height:90px;border-radius:50%;background:#E3D9DE;overflow:hidden"><span style="position:absolute;left:4px;top:4px"><dc-import name="Peg" size="140" hair-style="puff" outfit="#0FA394" skin="#5A3725" label="" hint-size="87px,140px"></dc-import></span></span>
+        <span style="position:relative;display:flex;width:90px;height:90px;border-radius:50%;background:#E3D9DE;overflow:hidden"><span style="position:absolute;left:4px;top:-4px"><dc-import name="Peg" size="140" hair-style="bun" outfit="#FFB627" skin="#C98E62" label="" hint-size="87px,140px"></dc-import></span></span>
+      </div>
+      <div style="position:absolute;left:50%;top:300px;margin-left:-80px;width:160px;height:180px;display:flex;flex-direction:column;align-items:center">
+        <div style="width:96px;height:80px;border:16px solid #2A1640;border-bottom:0;border-radius:48px 48px 0 0;margin-bottom:-4px"></div>
+        <div style="width:160px;height:110px;border-radius:28px;background:#FFB627;box-shadow:0 8px 0 #C98800;display:flex;align-items:center;justify-content:center"><span style="width:22px;height:40px;border-radius:11px;background:#2A1640"></span></div>
+      </div>
+      <p class="d" style="position:absolute;left:24px;right:24px;top:520px;margin:0;text-align:center;font-size:28px">Friends need a grown-up first</p>
+      <button style="position:absolute;left:24px;right:24px;bottom:120px;height:84px;border-radius:28px;background:#EF4B2F;color:#fff;box-shadow:0 7px 0 #B8321C;display:flex;align-items:center;justify-content:center;gap:12px;font:800 26px 'Baloo 2',sans-serif"><dc-import name="Icon" icon="lock" size="32" hint-size="32px,32px"></dc-import>Ask a grown-up</button>
+      <button style="position:absolute;left:24px;right:24px;bottom:40px;height:60px;border-radius:20px;background:#FFF8F0;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:900;font-size:16px"><dc-import name="Icon" icon="speaker" size="24" hint-size="24px,24px"></dc-import>Hear why</button>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>E2</span>Invite: picture code</div>
+    <div class="ph">
+      <div class="bar"><button class="t" aria-label="Back"><dc-import name="Icon" icon="back" size="28" hint-size="28px,28px"></dc-import></button><span class="d" style="font-size:30px">Invite</span></div>
+      <div style="position:absolute;left:20px;right:20px;top:130px;display:flex;gap:10px">
+        <button style="flex:1;height:60px;border-radius:20px;background:#FFF8F0;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900"><dc-import name="Icon" icon="people" size="26" hint-size="26px,26px"></dc-import>A friend</button>
+        <button style="flex:1;height:60px;border-radius:20px;background:#2A1640;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:900" aria-pressed="true"><dc-import name="Icon" icon="grid4" size="26" hint-size="26px,26px"></dc-import>Code</button>
+      </div>
+      <div style="position:absolute;left:20px;right:20px;top:220px;display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:16px">
+        <div class="code" style="background:#FFE08A" role="img" aria-label="Star"><dc-import name="Icon" icon="star" size="84" hint-size="84px,84px"></dc-import></div>
+        <div class="code" style="background:#FFD2AE" role="img" aria-label="Cake"><dc-import name="Icon" icon="cake" size="84" hint-size="84px,84px"></dc-import></div>
+        <div class="code" style="background:#BFE6DC" role="img" aria-label="Ball"><dc-import name="Icon" icon="ball" size="84" hint-size="84px,84px"></dc-import></div>
+        <div class="code" style="background:#CDD6FF" role="img" aria-label="Moon"><dc-import name="Icon" icon="moon" size="84" hint-size="84px,84px"></dc-import></div>
+      </div>
+      <div style="position:absolute;left:20px;right:20px;top:560px;display:flex;align-items:center;gap:14px;background:#FFF8F0;border-radius:24px;padding:14px 16px">
+        <div style="position:relative;width:64px;height:64px;flex:none">
+          <svg viewBox="0 0 64 64" style="position:absolute;inset:0;width:64px;height:64px" aria-hidden="true"><circle cx="32" cy="32" r="28" style="fill:#fff;stroke:#F3D9C4;stroke-width:6"></circle><circle cx="32" cy="32" r="28" style="fill:none;stroke:#0B7A6F;stroke-width:6;stroke-linecap:round;stroke-dasharray:130 176;transform:rotate(-90deg);transform-origin:32px 32px"></circle></svg>
+          <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="hourglass" size="28" hint-size="28px,28px"></dc-import></span>
+        </div>
+        <span style="font-size:15px;font-weight:800;line-height:1.35">Show these four pictures to your friend. The code melts away soon.</span>
+      </div>
+      <button style="position:absolute;left:20px;right:20px;bottom:40px;height:64px;border-radius:22px;background:#fff;box-shadow:0 5px 0 #E3B48F;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:900;font-size:17px"><dc-import name="Icon" icon="close" size="24" hint-size="24px,24px"></dc-import>Close the code</button>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>E3</span>Join with a code</div>
+    <div class="ph">
+      <div class="bar"><button class="t" aria-label="Back"><dc-import name="Icon" icon="back" size="28" hint-size="28px,28px"></dc-import></button><span class="d" style="font-size:30px">Join</span><button class="t" style="margin-left:auto;background:#2A1640;color:#fff;box-shadow:0 5px 0 #120A1C" aria-label="Hear: tap the four pictures"><dc-import name="Icon" icon="speaker" size="28" hint-size="28px,28px"></dc-import></button></div>
+      <div style="position:absolute;left:20px;right:20px;top:140px;display:flex;justify-content:space-between">
+        <span class="slot" style="background:#FFE08A"><dc-import name="Icon" icon="star" size="42" hint-size="42px,42px"></dc-import></span>
+        <span class="slot" style="background:#FFD2AE"><dc-import name="Icon" icon="cake" size="42" hint-size="42px,42px"></dc-import></span>
+        <span class="slot" style="background:#BFE6DC"><dc-import name="Icon" icon="ball" size="42" hint-size="42px,42px"></dc-import></span>
+        <span class="slot" style="box-shadow:0 0 0 4px #EF4B2F;background:#FFF8F0"></span>
+      </div>
+      <div style="position:absolute;left:20px;right:20px;top:250px;display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:12px">
+        <button class="key" aria-label="Star"><dc-import name="Icon" icon="star" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="key" aria-label="Cake"><dc-import name="Icon" icon="cake" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="key" aria-label="Ball"><dc-import name="Icon" icon="ball" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="key" aria-label="Moon"><dc-import name="Icon" icon="moon" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="key" aria-label="Heart"><dc-import name="Icon" icon="heart" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="key" aria-label="Tree"><dc-import name="Icon" icon="tree" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="key" aria-label="Note"><dc-import name="Icon" icon="note" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="key" aria-label="Sun"><dc-import name="Icon" icon="sun" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="key" aria-label="Book"><dc-import name="Icon" icon="book" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="key" aria-label="Bell"><dc-import name="Icon" icon="bell" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="key" aria-label="House"><dc-import name="Icon" icon="home" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="key" style="background:#FFE6CF" aria-label="Remove last picture"><dc-import name="Icon" icon="back" size="36" hint-size="36px,36px"></dc-import></button>
+      </div>
+      <div style="position:absolute;left:20px;right:20px;bottom:40px;border-radius:26px;background:#FFF8F0;padding:16px;display:flex;align-items:center;gap:14px">
+        <span style="display:flex;width:56px;height:56px;border-radius:18px;background:#E4E9FF;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="hourglass" size="32" hint-size="32px,32px"></dc-import></span>
+        <span style="font-size:15px;font-weight:800;line-height:1.35">If this is a new friend, a grown-up says yes first. You’ll see them in Friends after that.</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>E5</span>Report and block</div>
+    <div class="ph" style="background:#4A3A5E">
+      <div style="position:absolute;left:0;right:0;bottom:0;height:740px;background:#FFF8F0;border-radius:36px 36px 0 0;padding:20px;display:flex;flex-direction:column;gap:16px">
+        <div style="align-self:center;width:56px;height:6px;border-radius:3px;background:#D9C3B0"></div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="position:relative;display:flex;width:60px;height:60px;border-radius:50%;background:#FF8FB1;overflow:hidden;flex:none"><span style="position:absolute;left:1px;top:-5px"><dc-import name="Peg" size="96" hair-style="crop" outfit="#4F6BF0" skin="#E9B48A" hair="#C2552B" label="Zuza" hint-size="60px,96px"></dc-import></span></span>
+          <span class="d" style="font-size:26px">What happened?</span>
+          <button class="t" style="margin-left:auto;background:#2A1640;color:#fff;box-shadow:0 5px 0 #120A1C" aria-label="Hear the choices"><dc-import name="Icon" icon="speaker" size="26" hint-size="26px,26px"></dc-import></button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:14px">
+          <button class="why" style="box-shadow:0 0 0 4px #2A1640"><span style="display:flex;width:64px;height:64px;border-radius:20px;background:#FAD0DC;align-items:center;justify-content:center"><dc-import name="Icon" icon="talk" size="40" hint-size="40px,40px"></dc-import></span>Unkind words</button>
+          <button class="why"><span style="display:flex;width:64px;height:64px;border-radius:20px;background:#FFE08A;align-items:center;justify-content:center"><dc-import name="Icon" icon="hand" size="40" hint-size="40px,40px"></dc-import></span>Took my things</button>
+          <button class="why"><span style="display:flex;width:64px;height:64px;border-radius:20px;background:#CDD6FF;align-items:center;justify-content:center"><dc-import name="Icon" icon="eye" size="40" hint-size="40px,40px"></dc-import></span>Kept following me</button>
+          <button class="why"><span style="display:flex;width:64px;height:64px;border-radius:20px;background:#E6CCF0;align-items:center;justify-content:center"><dc-import name="Icon" icon="flag" size="40" hint-size="40px,40px"></dc-import></span>Something else</button>
+        </div>
+        <div class="row" style="background:#FFE6CF">
+          <span class="ri" style="background:#fff;color:#C7341B"><dc-import name="Icon" icon="block" size="28" hint-size="28px,28px"></dc-import></span>
+          <span style="font-size:16px;font-weight:900">Block Zuza</span>
+          <span class="sw" style="background:#0B7A6F;justify-content:flex-end"><span style="color:#0B7A6F"><dc-import name="Icon" icon="check" size="20" weight="4" hint-size="20px,20px"></dc-import></span></span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;background:#E4F5F2;border-radius:22px;padding:14px">
+          <span style="display:flex;width:44px;height:44px;border-radius:50%;background:#0B7A6F;color:#fff;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="heart" size="24" hint-size="24px,24px"></dc-import></span>
+          <span style="font-size:15px;font-weight:800;line-height:1.35">Thank you for telling. You’re safe; they can’t visit now. A grown-up will see this.</span>
+        </div>
+        <button style="margin-top:auto;height:76px;border-radius:26px;background:#EF4B2F;color:#fff;box-shadow:0 6px 0 #B8321C;display:flex;align-items:center;justify-content:center;gap:12px;font:800 26px 'Baloo 2',sans-serif"><dc-import name="Icon" icon="check" size="32" hint-size="32px,32px"></dc-import>Send</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>E6</span>My settings</div>
+    <div class="ph">
+      <div class="bar"><button class="t" aria-label="Back"><dc-import name="Icon" icon="back" size="28" hint-size="28px,28px"></dc-import></button><span class="d" style="font-size:30px">Settings</span></div>
+      <div style="position:absolute;left:16px;right:16px;top:132px;display:flex;flex-direction:column;gap:10px">
+        <div class="row"><span class="ri"><dc-import name="Icon" icon="note" size="26" hint-size="26px,26px"></dc-import></span><span class="sl" role="img" aria-label="Music volume, high"><b style="width:70%"></b><i style="left:70%"></i></span></div>
+        <div class="row"><span class="ri"><dc-import name="Icon" icon="sparkle" size="26" hint-size="26px,26px"></dc-import></span><span class="sl" role="img" aria-label="Sound effects volume, medium"><b style="width:50%"></b><i style="left:50%"></i></span></div>
+        <div class="row"><span class="ri"><dc-import name="Icon" icon="talk" size="26" hint-size="26px,26px"></dc-import></span><span class="sl" role="img" aria-label="Voices volume, high"><b style="width:85%"></b><i style="left:85%"></i></span></div>
+        <div class="row"><span class="ri"><dc-import name="Icon" icon="speaker" size="26" hint-size="26px,26px"></dc-import></span><span style="font-weight:900;font-size:15px">Read to me</span><span class="sw" style="background:#0B7A6F;justify-content:flex-end"><span style="color:#0B7A6F"><dc-import name="Icon" icon="check" size="20" weight="4" hint-size="20px,20px"></dc-import></span></span></div>
+        <div class="row"><span class="ri"><dc-import name="Icon" icon="tag" size="26" hint-size="26px,26px"></dc-import></span><span style="font-weight:900;font-size:15px">Word labels</span><span class="sw" style="background:#D9C3B0"><span></span></span></div>
+        <div class="row"><span class="ri"><dc-import name="Icon" icon="hand" size="26" hint-size="26px,26px"></dc-import></span><span style="font-weight:900;font-size:15px">Left-handed</span><span class="sw" style="background:#D9C3B0"><span></span></span></div>
+        <div class="row"><span class="ri"><dc-import name="Icon" icon="wave" size="26" hint-size="26px,26px"></dc-import></span><span style="font-weight:900;font-size:15px">Calm motion</span><span class="sw" style="background:#D9C3B0"><span></span></span></div>
+        <div class="row" style="flex-direction:column;align-items:stretch;padding:12px;gap:10px">
+          <span style="display:flex;align-items:center;gap:12px"><span class="ri"><dc-import name="Icon" icon="peg" size="26" hint-size="26px,26px"></dc-import></span><span style="font-weight:900;font-size:15px">Bots</span></span>
+          <span style="display:flex;gap:8px" role="radiogroup" aria-label="Bot energy">
+            <button style="flex:1;height:52px;border-radius:16px;background:#2A1640;color:#fff;display:flex;align-items:center;justify-content:center" role="radio" aria-checked="true" aria-label="Lively"><dc-import name="Icon" icon="sparkle" size="26" hint-size="26px,26px"></dc-import></button>
+            <button style="flex:1;height:52px;border-radius:16px;background:#FFE6CF;display:flex;align-items:center;justify-content:center" role="radio" aria-checked="false" aria-label="Calm"><dc-import name="Icon" icon="zzz" size="26" hint-size="26px,26px"></dc-import></button>
+            <button style="flex:1;height:52px;border-radius:16px;background:#FFE6CF;display:flex;align-items:center;justify-content:center" role="radio" aria-checked="false" aria-label="Paused"><dc-import name="Icon" icon="pause" size="26" hint-size="26px,26px"></dc-import></button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2238,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

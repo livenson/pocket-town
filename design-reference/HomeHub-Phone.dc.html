@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home hub, phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:18px;box-shadow:0 5px 0 #A9C9E6;display:flex;align-items:center;justify-content:center;color:#2A1640;width:58px;height:58px;flex:none}
+.tile{position:relative;border-radius:32px;display:flex;align-items:center;justify-content:center}
+</style>
+</helmet>
+<div style="position:relative;width:390px;height:844px;background:#BFE3FF;color:#2A1640;font-family:Nunito,system-ui,sans-serif;overflow:hidden">
+  <div style="position:absolute;left:60px;top:130px;width:110px;height:34px;border-radius:999px;background:#fff;opacity:.85"></div>
+  <button style="position:absolute;left:20px;top:56px;width:62px;height:62px;border-radius:50%;background:#FFD2AE;box-shadow:0 5px 0 #A9C9E6, 0 0 0 4px #fff;overflow:hidden" aria-label="Switch player, now Moku">
+    <span style="position:absolute;left:-6px;top:-8px"><dc-import name="Peg" size="110" hair-style="bob" outfit="#EF4B2F" skin="#E9B48A" label="Moku" hint-size="68px,110px"></dc-import></span>
+  </button>
+  <button class="t" style="position:absolute;right:20px;top:58px" aria-label="Settings"><dc-import name="Icon" icon="sliders" size="30" hint-size="30px,30px"></dc-import></button>
+
+  <div style="position:absolute;left:15px;top:150px;width:360px;height:288px">
+    <div style="transform:scale(.6);transform-origin:0 0"><dc-import name="Diorama" hint-size="600px,480px"></dc-import></div>
+  </div>
+
+  <nav style="position:absolute;left:0;right:0;bottom:0;height:400px;background:#FFE6CF;border-radius:36px 36px 0 0;padding:26px 20px 44px;display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:18px" aria-label="Places">
+    <button class="tile" style="background:#0FA394;box-shadow:0 7px 0 #0A7469;color:#fff" aria-label="World"><dc-import name="Icon" icon="globe" size="76" hint-size="76px,76px"></dc-import></button>
+    <button class="tile" style="background:#EF4B2F;box-shadow:0 7px 0 #B8321C;color:#fff" aria-label="My characters"><dc-import name="Icon" icon="peg" size="76" hint-size="76px,76px"></dc-import></button>
+    <button class="tile" style="background:#FFB627;box-shadow:0 7px 0 #C98800;color:#2A1640" aria-label="My house"><dc-import name="Icon" icon="house" size="76" hint-size="76px,76px"></dc-import></button>
+    <button class="tile" style="background:#4F6BF0;box-shadow:0 7px 0 #2F45B5;color:#fff" aria-label="Friends, Zuza is online">
+      <dc-import name="Icon" icon="people" size="76" hint-size="76px,76px"></dc-import>
+      <span style="position:absolute;right:12px;top:12px;width:44px;height:44px;border-radius:50%;background:#FF8FB1;box-shadow:0 0 0 3px #fff, 0 0 0 7px #0FA394;overflow:hidden"><span style="position:absolute;left:-1px;top:-3px"><dc-import name="Peg" size="74" hair-style="crop" outfit="#4F6BF0" skin="#E9B48A" hair="#C2552B" label="Zuza" hint-size="46px,74px"></dc-import></span></span>
+    </button>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

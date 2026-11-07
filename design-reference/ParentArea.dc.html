@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grown-up area</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0;background:#FFF8F0}
+*{box-sizing:border-box}
+button,select{font:inherit;color:inherit}
+button{border:0;padding:0;cursor:pointer;background:none}
+a{color:#C7341B;font-weight:800}a:hover{color:#8E2312}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.1}
+.card{background:#fff;border-radius:22px;padding:20px 22px;box-shadow:0 0 0 1px #EBD9C8;display:flex;flex-direction:column;gap:14px;min-width:0}
+.mi{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 14px;border-radius:14px;font-weight:800;font-size:15px;color:#2A1640;text-decoration:none}
+.opt{display:flex;align-items:center;gap:10px;min-height:52px;padding:0 14px;border-radius:14px;border:2px solid #D9C3B0;font-size:15px;font-weight:800;text-align:left;width:100%}
+.on{border:3px solid #2A1640;background:#FFF1E2}
+.btn{min-height:48px;padding:0 16px;border-radius:14px;font-weight:900;font-size:15px;display:inline-flex;align-items:center;gap:8px}
+.muted{font-size:14px;font-weight:700;color:#6B4A6E;margin:0;line-height:1.45}
+</style>
+</helmet>
+<div style="min-height:1000px;background:#FFF8F0;color:#2A1640;font-family:Nunito,system-ui,sans-serif">
+  <header style="background:#2A1640;color:#fff">
+    <div style="max-width:1320px;margin:0 auto;padding:16px 24px;display:flex;flex-wrap:wrap;align-items:center;gap:14px">
+      <span style="display:flex;width:44px;height:44px;border-radius:14px;background:#EF4B2F;align-items:center;justify-content:center"><dc-import name="Icon" icon="lock" size="26" hint-size="26px,26px"></dc-import></span>
+      <h1 class="d" style="margin:0;font-size:28px">Grown-up area</h1>
+      <div style="display:flex;gap:6px;margin-left:12px;flex-wrap:wrap" role="tablist" aria-label="Child profile">
+        <button role="tab" aria-selected="true" class="btn" style="background:#fff;color:#2A1640">Moku</button>
+        <button role="tab" aria-selected="false" class="btn" style="background:rgba(255,255,255,.12);color:#fff">Pim</button>
+        <button role="tab" aria-selected="false" class="btn" style="background:rgba(255,255,255,.12);color:#fff">Tavi</button>
+      </div>
+      <button class="btn" style="margin-left:auto;background:#FFB627;color:#2A1640"><dc-import name="Icon" icon="play" size="20" hint-size="20px,20px"></dc-import>Back to play</button>
+    </div>
+  </header>
+
+  <div style="max-width:1320px;margin:0 auto;padding:24px;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+    <nav style="flex:1 1 220px;max-width:260px;display:flex;flex-direction:column;gap:4px" aria-label="Sections">
+      <a class="mi" href="#social" style="background:#FFE6CF"><dc-import name="Icon" icon="people" size="22" hint-size="22px,22px"></dc-import>Friends and sharing</a>
+      <a class="mi" href="#phrases"><dc-import name="Icon" icon="talk" size="22" hint-size="22px,22px"></dc-import>Phrases</a>
+      <a class="mi" href="#time"><dc-import name="Icon" icon="clock" size="22" hint-size="22px,22px"></dc-import>Play time</a>
+      <a class="mi" href="#activity"><dc-import name="Icon" icon="bars" size="22" hint-size="22px,22px"></dc-import>Activity</a>
+      <a class="mi" href="#data"><dc-import name="Icon" icon="shield" size="22" hint-size="22px,22px"></dc-import>Data and consent</a>
+    </nav>
+
+    <main style="flex:999 1 560px;min-width:0;display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:20px">
+      <section id="social" class="card">
+        <h2 class="d" style="margin:0;font-size:22px">Friends and sharing</h2>
+        <div style="display:flex;flex-direction:column;gap:8px" role="radiogroup" aria-label="Friends">
+          <button class="opt" role="radio" aria-checked="false"><dc-import name="Icon" icon="lock" size="22" hint-size="22px,22px"></dc-import>Off: plays alone, offline-friendly</button>
+          <button class="opt on" role="radio" aria-checked="true"><dc-import name="Icon" icon="people" size="22" hint-size="22px,22px"></dc-import>Friends you approve, invite only</button>
+        </div>
+        <label style="display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800"><input type="checkbox" checked style="width:24px;height:24px;accent-color:#0B7A6F">Allow picture-code invites</label>
+        <p class="muted">Children never see free text or voice from others. Report and block are always one tap away.</p>
+      </section>
+
+      <section class="card" style="background:#FFF1E2">
+        <h2 class="d" style="margin:0;font-size:22px;display:flex;align-items:center;gap:10px">Waiting for you <span style="background:#C7341B;color:#fff;border-radius:999px;padding:0 10px;font:900 15px Nunito,sans-serif">2</span></h2>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:#fff;border-radius:16px;padding:12px">
+          <span style="position:relative;display:flex;width:48px;height:48px;border-radius:50%;background:#FAD0DC;overflow:hidden;flex:none"><span style="position:absolute;left:0;top:-4px"><dc-import name="Peg" size="78" hair-style="bob" outfit="#8E3CA8" skin="#F6D2B4" label="" hint-size="48px,78px"></dc-import></span></span>
+          <span style="flex:1;min-width:140px;font-size:15px;font-weight:800">New friend “Bibi” <span class="muted" style="display:block">Met by picture code · [date]</span></span>
+          <button class="btn" style="background:#0B7A6F;color:#fff">Approve</button>
+          <button class="btn" style="box-shadow:inset 0 0 0 2px #D9C3B0">Decline</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:#fff;border-radius:16px;padding:12px">
+          <span style="display:flex;width:48px;height:48px;border-radius:14px;background:#FFE08A;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="talk" size="26" hint-size="26px,26px"></dc-import></span>
+          <span style="flex:1;min-width:140px;font-size:15px;font-weight:800">Moku asked for word phrases <span class="muted" style="display:block">From the in-game “Ask a grown-up”</span></span>
+          <button class="btn" style="background:#0B7A6F;color:#fff">Allow</button>
+          <button class="btn" style="box-shadow:inset 0 0 0 2px #D9C3B0">Not now</button>
+        </div>
+      </section>
+
+      <section id="phrases" class="card">
+        <h2 class="d" style="margin:0;font-size:22px">Phrases</h2>
+        <div style="display:flex;flex-direction:column;gap:8px" role="radiogroup" aria-label="Phrase level">
+          <button class="opt on" role="radio" aria-checked="true"><dc-import name="Icon" icon="face" size="22" hint-size="22px,22px"></dc-import>Pictures and emotes (spoken aloud)</button>
+          <button class="opt" role="radio" aria-checked="false"><dc-import name="Icon" icon="talk" size="22" hint-size="22px,22px"></dc-import>Adds short set word phrases</button>
+        </div>
+        <p class="muted">Both lists are fixed and reviewed. Nobody can type their own message.</p>
+      </section>
+
+      <section id="time" class="card">
+        <h2 class="d" style="margin:0;font-size:22px">Play time</h2>
+        <label for="limit" style="font-size:15px;font-weight:800">Daily limit</label>
+        <select id="limit" style="min-height:52px;border-radius:14px;border:2px solid #B9A3B9;padding:0 12px;font-weight:800;background:#FFF8F0">
+          <option>No limit</option><option>30 minutes</option><option selected>45 minutes</option><option>1 hour</option><option>Custom…</option>
+        </select>
+        <label style="display:flex;align-items:flex-start;gap:10px;font-size:15px;font-weight:700;line-height:1.4"><input type="checkbox" checked style="width:24px;height:24px;margin:0;accent-color:#0B7A6F;flex:none">Wind down: 5 minutes before the end, bots yawn and head home so stopping feels natural</label>
+        <p class="muted">No streaks, rewards for coming back, or “don’t leave” messages, ever.</p>
+      </section>
+
+      <section id="activity" class="card">
+        <h2 class="d" style="margin:0;font-size:22px">This week</h2>
+        <dl style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:15px">
+          <dt style="font-weight:700;color:#6B4A6E">Time played</dt><dd style="margin:0;font-weight:900">[from play log]</dd>
+          <dt style="font-weight:700;color:#6B4A6E">Visits</dt><dd style="margin:0;font-weight:900">[friends visited / hosted]</dd>
+          <dt style="font-weight:700;color:#6B4A6E">Made</dt><dd style="margin:0;font-weight:900">[characters, rooms]</dd>
+          <dt style="font-weight:700;color:#6B4A6E">Reports</dt><dd style="margin:0;font-weight:900">[none / details]</dd>
+        </dl>
+      </section>
+
+      <section id="data" class="card">
+        <h2 class="d" style="margin:0;font-size:22px">Data and consent</h2>
+        <p class="muted">Consent given by [parent email] on [date]. Photos and recordings never leave the device.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px">
+          <button class="btn" style="box-shadow:inset 0 0 0 2px #2A1640">Download our data</button>
+          <button class="btn" style="box-shadow:inset 0 0 0 2px #2A1640">Change email or PIN</button>
+          <button class="btn" style="background:#FDE3DD;color:#8E2312">Hold to withdraw consent and delete</button>
+        </div>
+        <a href="#notice">Read the full privacy notice</a>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

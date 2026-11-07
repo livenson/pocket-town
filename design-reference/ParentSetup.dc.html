@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Parent consent and setup</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+a{color:#C7341B;font-weight:800}a:hover{color:#8E2312}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.card{background:#fff;border-radius:22px;padding:18px 20px;box-shadow:0 0 0 1px #EBD9C8}
+.seg{flex:1;min-height:56px;border-radius:16px;border:2px solid #D9C3B0;background:#fff;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:15px;font-weight:800;color:#2A1640;text-align:left}
+.on{border:3px solid #2A1640;background:#FFF1E2}
+</style>
+</helmet>
+<div style="width:1180px;height:820px;background:#FFF8F0;color:#2A1640;font-family:Nunito,system-ui,sans-serif;display:flex">
+  <aside style="width:300px;flex:none;background:#2A1640;color:#fff;padding:40px 28px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="display:flex;width:48px;height:48px;border-radius:16px;background:#EF4B2F;align-items:center;justify-content:center"><dc-import name="Icon" icon="house" size="28" hint-size="28px,28px"></dc-import></span>
+      <span class="d" style="font-size:24px">Grown-up setup</span>
+    </div>
+    <ol style="list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:16px;font-weight:800">
+      <li style="display:flex;align-items:center;gap:12px;min-height:48px;color:#CFC2DE"><span style="display:flex;width:32px;height:32px;border-radius:50%;background:#0FA394;color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="check" size="20" hint-size="20px,20px"></dc-import></span>What the game is</li>
+      <li style="display:flex;align-items:center;gap:12px;min-height:48px;background:rgba(255,255,255,.12);border-radius:14px;padding:0 10px;margin:0 -10px"><span style="display:flex;width:32px;height:32px;border-radius:50%;background:#fff;color:#2A1640;align-items:center;justify-content:center;font-weight:900">2</span>Consent and friends</li>
+      <li style="display:flex;align-items:center;gap:12px;min-height:48px;color:#CFC2DE"><span style="display:flex;width:32px;height:32px;border-radius:50%;border:2px solid #CFC2DE;align-items:center;justify-content:center;font-weight:900">3</span>Grown-up PIN</li>
+      <li style="display:flex;align-items:center;gap:12px;min-height:48px;color:#CFC2DE"><span style="display:flex;width:32px;height:32px;border-radius:50%;border:2px solid #CFC2DE;align-items:center;justify-content:center;font-weight:900">4</span>Hand back to your child</li>
+    </ol>
+    <div style="margin-top:auto;background:rgba(255,255,255,.08);border-radius:18px;padding:16px;font-size:14px;font-weight:700;line-height:1.45;color:#E8DFF2">
+      You can skip all of this. Without an account, Pocket Town plays on this device only: no friends, nothing leaves the tablet.
+      <button style="display:block;margin-top:12px;min-height:44px;padding:0 14px;border-radius:12px;background:#fff;color:#2A1640;font-weight:900">Play without an account</button>
+    </div>
+  </aside>
+
+  <main style="flex:1;padding:36px 40px;display:flex;flex-direction:column;gap:18px;overflow:hidden">
+    <div>
+      <h1 class="d" style="margin:0;font-size:38px">Before your child plays online</h1>
+      <p style="margin:6px 0 0;font-size:16px;font-weight:700;color:#6B4A6E">Plain-language summary. The full notice is at <a href="#notice">[privacy notice link]</a>.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:16px">
+      <section class="card">
+        <h2 style="margin:0 0 10px;font-size:17px;font-weight:900;display:flex;align-items:center;gap:8px"><span style="color:#0B7A6F;display:flex"><dc-import name="Icon" icon="check" size="22" hint-size="22px,22px"></dc-import></span>What we keep</h2>
+        <ul style="margin:0;padding-left:18px;font-size:15px;font-weight:700;line-height:1.55">
+          <li>Characters, houses and a made-up name</li>
+          <li>Your email, to confirm consent and send approvals</li>
+          <li>Settings you choose here</li>
+        </ul>
+      </section>
+      <section class="card">
+        <h2 style="margin:0 0 10px;font-size:17px;font-weight:900;display:flex;align-items:center;gap:8px"><span style="color:#C7341B;display:flex"><dc-import name="Icon" icon="block" size="22" hint-size="22px,22px"></dc-import></span>What we never ask for</h2>
+        <ul style="margin:0;padding-left:18px;font-size:15px;font-weight:700;line-height:1.55">
+          <li>Real names, photos, voice or location</li>
+          <li>Free-text chat: children only use picture phrases</li>
+          <li>Photos and recordings stay on the device</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="card" style="display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-size:17px;font-weight:900">Friends and sharing</h2>
+      <div style="display:flex;gap:12px" role="radiogroup" aria-label="Friends">
+        <button class="seg on" role="radio" aria-checked="true"><span style="display:flex"><dc-import name="Icon" icon="lock" size="24" hint-size="24px,24px"></dc-import></span>Off (starting point)</button>
+        <button class="seg" role="radio" aria-checked="false"><span style="display:flex"><dc-import name="Icon" icon="people" size="24" hint-size="24px,24px"></dc-import></span>Friends I approve, invite only</button>
+      </div>
+      <div style="display:flex;gap:12px" role="radiogroup" aria-label="Phrases">
+        <button class="seg on" role="radio" aria-checked="true"><span style="display:flex"><dc-import name="Icon" icon="face" size="24" hint-size="24px,24px"></dc-import></span>Picture phrases and emotes</button>
+        <button class="seg" role="radio" aria-checked="false"><span style="display:flex"><dc-import name="Icon" icon="talk" size="24" hint-size="24px,24px"></dc-import></span>Adds short word phrases (9+)</button>
+      </div>
+      <p style="margin:0;font-size:13px;font-weight:700;color:#6B4A6E">Every new friend still needs your yes in the grown-up area. You can change all of this later.</p>
+    </section>
+
+    <section class="card" style="display:flex;align-items:flex-end;gap:16px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+        <label for="pemail" style="font-size:15px;font-weight:900">Your email</label>
+        <input id="pemail" type="email" placeholder="you@example.com" style="height:52px;border-radius:14px;border:2px solid #B9A3B9;padding:0 14px;font:700 16px Nunito,sans-serif;color:#2A1640;background:#FFF8F0">
+      </div>
+      <div style="flex:1.4;display:flex;align-items:flex-start;gap:12px;padding-bottom:4px">
+        <input id="pconsent" type="checkbox" checked style="width:28px;height:28px;margin:2px 0 0;accent-color:#0B7A6F;flex:none">
+        <label for="pconsent" style="font-size:15px;font-weight:700;line-height:1.4">I’m this child’s parent or guardian and I agree to the privacy notice. We’ll email you to confirm <span style="color:#6B4A6E">[consent method]</span>.</label>
+      </div>
+    </section>
+
+    <div style="margin-top:auto;display:flex;justify-content:space-between;align-items:center">
+      <button style="min-height:56px;padding:0 22px;border-radius:18px;background:#fff;box-shadow:0 0 0 2px #D9C3B0;font-size:16px;font-weight:900;display:flex;align-items:center;gap:8px"><dc-import name="Icon" icon="back" size="22" hint-size="22px,22px"></dc-import>Back</button>
+      <button style="min-height:60px;padding:0 28px;border-radius:20px;background:#C7341B;color:#fff;box-shadow:0 5px 0 #8E2312;font-size:18px;font-weight:900;display:flex;align-items:center;gap:10px">Agree and continue<dc-import name="Icon" icon="next" size="22" hint-size="22px,22px"></dc-import></button>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

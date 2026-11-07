@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scene view, phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:18px;box-shadow:0 5px 0 rgba(42,22,64,.22);display:flex;align-items:center;justify-content:center;color:#2A1640;width:56px;height:56px;flex:none}
+.it{height:96px;border-radius:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 0 rgba(42,22,64,.12);color:#2A1640}
+</style>
+</helmet>
+<div style="position:relative;width:390px;height:844px;background:#F3C99B;color:#2A1640;font-family:Nunito,system-ui,sans-serif;overflow:hidden">
+  <div style="position:absolute;left:-215px;top:40px;width:900px;height:560px"><div style="transform:scale(.8);transform-origin:0 0"><dc-import name="Room" hint-size="900px,560px"></dc-import></div></div>
+
+  <div style="position:absolute;left:14px;right:14px;top:50px;display:flex;gap:8px">
+    <button class="t" aria-label="Home"><dc-import name="Icon" icon="home" size="28" hint-size="28px,28px"></dc-import></button>
+    <button class="t" aria-label="Undo"><dc-import name="Icon" icon="undo" size="28" hint-size="28px,28px"></dc-import></button>
+    <span style="flex:1"></span>
+    <button class="t" aria-label="Map"><dc-import name="Icon" icon="map" size="28" hint-size="28px,28px"></dc-import></button>
+    <button class="t" aria-label="Edit"><dc-import name="Icon" icon="pencil" size="28" hint-size="28px,28px"></dc-import></button>
+  </div>
+
+  <div style="position:absolute;right:14px;top:396px;display:flex;gap:8px;align-items:center">
+    <button class="t" aria-label="Camera"><dc-import name="Icon" icon="camera" size="28" hint-size="28px,28px"></dc-import></button>
+    <div style="display:flex;background:#fff;border-radius:999px;padding:4px;gap:2px;box-shadow:0 5px 0 rgba(42,22,64,.22)" role="group" aria-label="Time">
+      <button style="width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center" aria-label="Pause"><dc-import name="Icon" icon="pause" size="24" hint-size="24px,24px"></dc-import></button>
+      <button style="width:50px;height:50px;border-radius:50%;background:#2A1640;color:#fff;display:flex;align-items:center;justify-content:center" aria-label="Play, on" aria-pressed="true"><dc-import name="Icon" icon="play" size="24" hint-size="24px,24px"></dc-import></button>
+      <button style="width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center" aria-label="Faster"><dc-import name="Icon" icon="ff" size="24" hint-size="24px,24px"></dc-import></button>
+    </div>
+  </div>
+
+  <section style="position:absolute;left:0;right:0;bottom:0;height:372px;background:#FFF8F0;border-radius:34px 34px 0 0;box-shadow:0 -6px 0 rgba(42,22,64,.12);padding:12px 18px 34px;display:flex;flex-direction:column;gap:14px" aria-label="Add sheet">
+    <div style="align-self:center;width:56px;height:6px;border-radius:3px;background:#D9C3B0"></div>
+    <div style="display:flex;gap:10px">
+      <button style="flex:1;height:56px;border-radius:18px;background:#FFE6CF;display:flex;align-items:center;justify-content:center" aria-label="Characters"><dc-import name="Icon" icon="peg" size="30" hint-size="30px,30px"></dc-import></button>
+      <button style="flex:1;height:56px;border-radius:18px;background:#2A1640;color:#fff;display:flex;align-items:center;justify-content:center" aria-label="Things, open"><dc-import name="Icon" icon="ball" size="30" hint-size="30px,30px"></dc-import></button>
+      <button style="width:56px;height:56px;border-radius:18px;background:#EF4B2F;color:#fff;display:flex;align-items:center;justify-content:center;flex:none" aria-label="Close sheet"><dc-import name="Icon" icon="close" size="28" hint-size="28px,28px"></dc-import></button>
+    </div>
+    <div style="display:flex;gap:8px;overflow:hidden">
+      <span style="display:flex;height:40px;padding:0 12px;border-radius:12px;background:#FFE6CF;align-items:center;box-shadow:inset 0 -4px 0 #EF4B2F"><dc-import name="Icon" icon="fork" size="22" hint-size="22px,22px"></dc-import></span>
+      <span style="display:flex;height:40px;padding:0 12px;border-radius:12px;align-items:center"><dc-import name="Icon" icon="ball" size="22" hint-size="22px,22px"></dc-import></span>
+      <span style="display:flex;height:40px;padding:0 12px;border-radius:12px;align-items:center"><dc-import name="Icon" icon="note" size="22" hint-size="22px,22px"></dc-import></span>
+      <span style="display:flex;height:40px;padding:0 12px;border-radius:12px;align-items:center"><dc-import name="Icon" icon="book" size="22" hint-size="22px,22px"></dc-import></span>
+      <span style="display:flex;height:40px;padding:0 12px;border-radius:12px;align-items:center"><dc-import name="Icon" icon="plant" size="22" hint-size="22px,22px"></dc-import></span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:12px">
+      <button class="it" style="background:#FFD2AE;box-shadow:0 0 0 4px #FFB627" aria-label="Cake, picked up"><dc-import name="Icon" icon="cake" size="46" hint-size="46px,46px"></dc-import></button>
+      <button class="it" style="background:#FFE08A" aria-label="Star cookie"><dc-import name="Icon" icon="star" size="46" hint-size="46px,46px"></dc-import></button>
+      <button class="it" style="background:#D9F0C4" aria-label="Salad"><dc-import name="Icon" icon="plant" size="46" hint-size="46px,46px"></dc-import></button>
+    </div>
+    <div style="display:flex;justify-content:center;gap:8px"><span style="width:12px;height:12px;border-radius:50%;background:#2A1640"></span><span style="width:12px;height:12px;border-radius:50%;border:3px solid #2A1640"></span><span style="width:12px;height:12px;border-radius:50%;border:3px solid #2A1640"></span></div>
+  </section>
+  <div style="position:absolute;left:30px;top:426px;width:120px;height:32px;border-radius:50%;border:4px dashed #0B7A6F;background:rgba(15,163,148,.18)"></div>
+  <div style="position:absolute;left:24px;top:150px;display:flex;align-items:center;gap:8px;background:rgba(42,22,64,.86);color:#fff;border-radius:999px;padding:6px 14px 6px 6px;font-size:13px;font-weight:800">
+    <span style="display:flex;width:32px;height:32px;border-radius:50%;background:#FFB627;align-items:center;justify-content:center;color:#2A1640"><dc-import name="Icon" icon="hand" size="20" hint-size="20px,20px"></dc-import></span>Now tap a glowing spot or a bot
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

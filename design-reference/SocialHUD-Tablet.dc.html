@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Social HUD with phrase wheel</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:20px;box-shadow:0 5px 0 rgba(42,22,64,.22);display:flex;align-items:center;justify-content:center;color:#2A1640;width:64px;height:64px;flex:none}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.w{position:absolute;width:92px;height:92px;border-radius:50%;background:#fff;box-shadow:0 5px 0 rgba(42,22,64,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#2A1640;font:800 12px Nunito,sans-serif}
+.chip{position:relative;width:56px;height:56px;border-radius:50%;overflow:hidden;flex:none}
+</style>
+</helmet>
+<div style="position:relative;width:1180px;height:820px;background:#F3C99B;color:#2A1640;font-family:Nunito,system-ui,sans-serif;overflow:hidden">
+  <div style="position:absolute;left:0;top:0;width:1180px;height:734px"><div style="transform:scale(1.311);transform-origin:0 0"><dc-import name="Room" friend="{{true}}" hint-size="900px,560px"></dc-import></div></div>
+
+  <div style="position:absolute;left:300px;top:330px;width:76px;height:76px;border-radius:50%;background:#FFB627;box-shadow:0 0 0 8px rgba(255,182,39,.35), 0 5px 0 #C98800;display:flex;align-items:center;justify-content:center;color:#2A1640" role="img" aria-label="High-five together: tap when you are close"><dc-import name="Icon" icon="hands" size="44" hint-size="44px,44px"></dc-import></div>
+  <div style="position:absolute;left:170px;top:380px;display:flex;align-items:center;gap:8px;background:#fff;border-radius:22px;padding:8px 14px 8px 8px;box-shadow:0 0 0 4px #4F6BF0, 0 5px 0 rgba(42,22,64,.2)">
+    <span style="display:flex;width:44px;height:44px;border-radius:14px;background:#BFE6DC;align-items:center;justify-content:center"><dc-import name="Icon" icon="ball" size="28" hint-size="28px,28px"></dc-import></span>
+    <span class="d" style="font-size:18px">Let’s play!</span>
+  </div>
+
+  <button class="t" style="position:absolute;left:24px;top:24px" aria-label="Home"><dc-import name="Icon" icon="home" size="32" hint-size="32px,32px"></dc-import></button>
+  <div style="position:absolute;left:50%;top:28px;transform:translateX(-50%);display:flex;gap:10px;background:rgba(255,248,240,.95);border-radius:999px;padding:6px 10px;box-shadow:0 5px 0 rgba(42,22,64,.2)" aria-label="Who is here">
+    <span class="chip" style="background:#FFD2AE;box-shadow:inset 0 0 0 4px #EF4B2F"><span style="position:absolute;left:-2px;top:-6px"><dc-import name="Peg" size="96" hair-style="bob" outfit="#EF4B2F" skin="#E9B48A" label="Moku, you, host" hint-size="60px,96px"></dc-import></span></span>
+    <span style="position:relative;display:flex"><span class="chip" style="background:#FF8FB1;box-shadow:inset 0 0 0 4px #4F6BF0"><span style="position:absolute;left:-2px;top:-6px"><dc-import name="Peg" size="96" hair-style="crop" outfit="#4F6BF0" skin="#E9B48A" hair="#C2552B" label="Zuza, visiting" hint-size="60px,96px"></dc-import></span></span><span style="position:absolute;right:-2px;bottom:-2px;width:20px;height:20px;border-radius:50%;background:#0FA394;border:3px solid #fff"></span></span>
+    <span style="display:flex;align-items:center;padding:0 4px;color:#C98800"><dc-import name="Icon" icon="crown" size="26" hint-size="26px,26px"></dc-import></span>
+  </div>
+  <div style="position:absolute;right:24px;top:24px;display:flex;gap:10px">
+    <button class="t" aria-label="Lock my house, on" aria-pressed="true" style="background:#2A1640;color:#fff"><dc-import name="Icon" icon="lock" size="30" hint-size="30px,30px"></dc-import></button>
+    <div style="position:relative;width:64px;height:64px">
+      <svg viewBox="0 0 64 64" style="position:absolute;inset:0;width:64px;height:64px" aria-hidden="true"><circle cx="32" cy="32" r="29" style="fill:#fff;stroke:#F3D9C4;stroke-width:5"></circle><circle cx="32" cy="32" r="29" style="fill:none;stroke:#EF4B2F;stroke-width:5;stroke-linecap:round;stroke-dasharray:40 200;transform:rotate(-90deg);transform-origin:32px 32px"></circle></svg>
+      <button style="position:absolute;inset:8px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#C7341B" aria-label="Hold to end visit"><dc-import name="Icon" icon="door" size="28" hint-size="28px,28px"></dc-import></button>
+    </div>
+    <button class="t" style="background:#FFF8F0;color:#C7341B" aria-label="Report or block"><dc-import name="Icon" icon="flag" size="30" hint-size="30px,30px"></dc-import></button>
+  </div>
+
+  <div style="position:absolute;left:580px;top:180px;width:440px;height:440px;border-radius:50%;background:rgba(42,22,64,.62)"></div>
+  <button class="w" style="left:754px;top:194px" aria-label="Hi!"><dc-import name="Icon" icon="hand" size="40" hint-size="40px,40px"></dc-import>Hi!</button>
+  <button class="w" style="left:867px;top:241px" aria-label="Come here"><dc-import name="Icon" icon="target" size="40" hint-size="40px,40px"></dc-import>Come here</button>
+  <button class="w" style="left:914px;top:354px;box-shadow:0 0 0 5px #FFB627, 0 5px 0 rgba(42,22,64,.3)" aria-label="Let's play, playing voice"><dc-import name="Icon" icon="ball" size="40" hint-size="40px,40px"></dc-import>Let’s play</button>
+  <button class="w" style="left:867px;top:467px" aria-label="Look!"><dc-import name="Icon" icon="eye" size="40" hint-size="40px,40px"></dc-import>Look!</button>
+  <button class="w" style="left:754px;top:514px" aria-label="Yummy"><dc-import name="Icon" icon="cake" size="40" hint-size="40px,40px"></dc-import>Yummy</button>
+  <button class="w" style="left:641px;top:467px" aria-label="Thank you"><dc-import name="Icon" icon="heart" size="40" hint-size="40px,40px"></dc-import>Thank you</button>
+  <button class="w" style="left:594px;top:354px" aria-label="Wow"><dc-import name="Icon" icon="sparkle" size="40" hint-size="40px,40px"></dc-import>Wow</button>
+  <button class="w" style="left:641px;top:241px" aria-label="Bye"><dc-import name="Icon" icon="wave" size="40" hint-size="40px,40px"></dc-import>Bye</button>
+  <button style="position:absolute;left:745px;top:345px;width:110px;height:110px;border-radius:50%;background:#4F6BF0;color:#fff;box-shadow:0 6px 0 #2F45B5;display:flex;align-items:center;justify-content:center" aria-label="Close phrases"><dc-import name="Icon" icon="close" size="44" hint-size="44px,44px"></dc-import></button>
+  <div style="position:absolute;left:640px;top:636px;width:320px;text-align:center;background:#2A1640;color:#fff;border-radius:16px;padding:8px 12px;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px"><dc-import name="Icon" icon="speaker" size="20" hint-size="20px,20px"></dc-import>Hold a picture to hear it first</div>
+
+  <div style="position:absolute;left:24px;bottom:24px;display:flex;gap:12px">
+    <button style="width:84px;height:84px;border-radius:28px;background:#4F6BF0;color:#fff;box-shadow:0 6px 0 #2F45B5, 0 0 0 4px #fff;display:flex;align-items:center;justify-content:center" aria-label="Phrases, open" aria-expanded="true"><dc-import name="Icon" icon="talk" size="46" hint-size="46px,46px"></dc-import></button>
+    <button style="width:84px;height:84px;border-radius:28px;background:#FFB627;color:#2A1640;box-shadow:0 6px 0 #C98800;display:flex;align-items:center;justify-content:center" aria-label="Emotes"><dc-import name="Icon" icon="face" size="46" hint-size="46px,46px"></dc-import></button>
+  </div>
+  <div style="position:absolute;right:24px;bottom:24px;display:flex;background:#fff;border-radius:999px;padding:6px;gap:4px;box-shadow:0 5px 0 rgba(42,22,64,.22)" role="group" aria-label="Time, shared with host">
+    <button style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center" aria-label="Pause"><dc-import name="Icon" icon="pause" size="28" hint-size="28px,28px"></dc-import></button>
+    <button style="width:56px;height:56px;border-radius:50%;background:#2A1640;color:#fff;display:flex;align-items:center;justify-content:center" aria-label="Play, on"><dc-import name="Icon" icon="play" size="28" hint-size="28px,28px"></dc-import></button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

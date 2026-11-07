@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Storyboards</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+</style>
+</helmet>
+<div style="width:2400px;height:1640px;background:#FFE6CF;color:#2A1640;font-family:Nunito,system-ui,sans-serif;padding:40px 56px;display:flex;flex-direction:column;gap:18px;overflow:hidden">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px">
+    <h1 class="d" style="margin:0;font-size:46px">Six key flows</h1>
+    <p style="margin:0;font-size:16px;font-weight:800;color:#5E3F62">Every step has a way out: dice, done or home. Setup is never required to reach play.</p>
+  </div>
+  <sc-for list="{{flows}}" as="f" hint-placeholder-count="6">
+    <section style="display:flex;align-items:center;gap:24px;background:#FFF8F0;border-radius:30px;padding:16px 20px;box-shadow:0 5px 0 #EFC39F">
+      <div style="width:250px;flex:none;display:flex;flex-direction:column;gap:6px">
+        <span style="display:flex;width:44px;height:44px;border-radius:14px;background:#2A1640;color:#fff;align-items:center;justify-content:center;font:800 22px 'Baloo 2',sans-serif">{{f.n}}</span>
+        <h2 class="d" style="margin:0;font-size:24px">{{f.t}}</h2>
+        <span style="font-size:13px;font-weight:800;color:#5E3F62">{{f.s}}</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:0">
+        <sc-for list="{{f.steps}}" as="s" hint-placeholder-count="6">
+          <div style="display:flex;align-items:flex-start">
+            <div style="width:124px;display:flex;flex-direction:column;align-items:center;gap:8px">
+              <div style="width:96px;height:150px;border-radius:22px;background:{{s.bg}};box-shadow:0 0 0 4px #2A1640;display:flex;align-items:center;justify-content:center;color:{{s.fg}}"><dc-import name="Icon" icon="{{s.i}}" size="50" hint-size="50px,50px"></dc-import></div>
+              <span style="font-size:13px;font-weight:800;text-align:center;line-height:1.25">{{s.c}}</span>
+            </div>
+            <sc-if value="{{s.more}}" hint-placeholder-val="{{true}}">
+              <div style="height:150px;display:flex;align-items:center;color:#B98A66"><dc-import name="Icon" icon="next" size="26" hint-size="26px,26px"></dc-import></div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2400,"height":1640}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const C = {
+      tomato: ['#EF4B2F', '#fff'], mari: ['#FFB627', '#2A1640'], teal: ['#0FA394', '#fff'], corn: ['#4F6BF0', '#fff'],
+      ink: ['#2A1640', '#fff'], peach: ['#FFD2AE', '#2A1640'], mint: ['#BFE6DC', '#2A1640'], pink: ['#FAD0DC', '#2A1640'], blue: ['#CDD6FF', '#2A1640']
+    };
+    const mk = (n, t, s, steps) => ({
+      n, t, s,
+      steps: steps.map(([i, c, k], idx) => ({ i, c, bg: C[k][0], fg: C[k][1], more: idx < steps.length - 1 }))
+    });
+    return {
+      flows: [
+        mk(1, 'First time', 'Splash to play in under a minute', [
+          ['house', 'Splash builds the town', 'tomato'], ['cake', 'Tap your age', 'peach'], ['plus', 'New player face', 'mari'],
+          ['dice', 'Roll an avatar', 'mari'], ['home', 'Land in a ready house with bots', 'teal'], ['hand', 'Hint halos show what to touch', 'peach']
+        ]),
+        mk(2, 'Create an avatar', 'Any order; dice on every step', [
+          ['dice', 'Start: blank, dice or copy', 'mari'], ['wheelchair', 'Body and helpers', 'peach'], ['face', 'Face', 'pink'],
+          ['hair', 'Hair', 'blue'], ['shirt', 'Clothes', 'mint'], ['palette', 'Colours', 'peach'], ['heart', 'Pick 3 traits', 'pink'],
+          ['tag', 'Name from dice or list', 'blue'], ['star', 'Celebration', 'tomato']
+        ]),
+        mk(3, 'Build and furnish a house', 'Ready to play skips straight to move-in', [
+          ['pin', 'Pick a plot', 'teal'], ['home', 'House shape', 'peach'], ['sparkle', 'Ready or empty', 'mari'], ['rooms', 'Drag room types', 'mint'],
+          ['roller', 'Walls and floors', 'pink'], ['sofa', 'Furniture with ghost preview', 'teal'], ['peg', 'Bot test walks through', 'blue'],
+          ['people', 'Move residents in', 'peach'], ['bell', 'Housewarming visit', 'tomato']
+        ]),
+        mk(4, 'Explore and steer a bot', 'Watch first, then nudge, then hand things over', [
+          ['map', 'Open the map', 'teal'], ['shop', 'Tap the café', 'mari'], ['eye', 'Watch Pim dance', 'blue'], ['pin', 'Follow across places', 'mint'],
+          ['peg', 'Open Pim’s card', 'peach'], ['sparkle', 'Nudge: snack time', 'mari'], ['cake', 'Drag cake onto Pim', 'peach'], ['fork', 'Pim eats, ring fills', 'tomato']
+        ]),
+        mk(5, 'Play with a friend', 'Parent turns it on once; children never type', [
+          ['lock', 'Parent passes the gate', 'ink'], ['shield', 'Friends: invite only', 'corn'], ['grid4', 'Child shows picture code', 'mari'],
+          ['keys', 'Friend taps the code', 'blue'], ['hourglass', 'New friend: grown-up says yes', 'peach'], ['bell', 'Friend rings and arrives', 'teal'],
+          ['talk', 'Phrase and emote wheels', 'corn'], ['hands', 'Co-op high-five when close', 'mari'], ['door', 'Host holds to end visit', 'tomato']
+        ]),
+        mk(6, 'Coming back', 'A 5–10 second recap, always skippable', [
+          ['face', 'Tap your face', 'peach'], ['photo', 'Postcard: what bots did while you were away', 'mint'], ['next', 'Tap anywhere to skip', 'mari'], ['play', 'Back where you left off', 'tomato']
+        ])
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

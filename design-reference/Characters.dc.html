@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My characters</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:20px;box-shadow:0 5px 0 #E3B48F;display:flex;align-items:center;justify-content:center;color:#2A1640;width:64px;height:64px;flex:none}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+</style>
+</helmet>
+<div style="position:relative;width:1180px;height:820px;background:#FFE6CF;color:#2A1640;font-family:Nunito,system-ui,sans-serif;padding:28px 36px;display:flex;flex-direction:column;gap:22px;overflow:hidden">
+  <header style="display:flex;align-items:center;gap:14px">
+    <button class="t" aria-label="Home"><dc-import name="Icon" icon="home" size="32" hint-size="32px,32px"></dc-import></button>
+    <button class="t" style="background:#2A1640;color:#fff;box-shadow:0 5px 0 #120A1C" aria-label="Hear: my characters"><dc-import name="Icon" icon="speaker" size="30" hint-size="30px,30px"></dc-import></button>
+    <h1 class="d" style="margin:0 0 0 6px;font-size:40px">My characters</h1>
+    <button style="margin-left:auto;width:72px;height:72px;border-radius:24px;background:#FFB627;box-shadow:0 6px 0 #C98800;display:flex;align-items:center;justify-content:center;color:#2A1640" aria-label="Surprise character"><dc-import name="Icon" icon="dice" size="42" hint-size="42px,42px"></dc-import></button>
+  </header>
+
+  <div style="flex:1;display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));grid-template-rows:repeat(2, minmax(0, 1fr));gap:22px">
+    <button style="border-radius:32px;border:5px dashed #C9946B;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px" aria-label="Make a new character">
+      <span style="display:flex;width:104px;height:104px;border-radius:50%;background:#EF4B2F;box-shadow:0 7px 0 #B8321C;color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="plus" size="58" hint-size="58px,58px"></dc-import></span>
+      <span class="d" style="font-size:22px">New</span>
+    </button>
+    <sc-for list="{{chars}}" as="c" hint-placeholder-count="7">
+      <button style="position:relative;border-radius:32px;background:#FFF8F0;box-shadow:0 7px 0 #EFC39F;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 0 16px;gap:8px;overflow:hidden">
+        <span style="position:absolute;left:0;right:0;top:0;height:60%;background:{{c.bg}}"></span>
+        <span style="position:relative;display:flex;align-items:flex-end;height:160px"><dc-import name="Peg" size="150" hair-style="{{c.hs}}" outfit="{{c.out}}" skin="{{c.skin}}" hair="{{c.hair}}" aid="{{c.aid}}" eyes="{{c.eyes}}" label="{{c.name}}" hint-size="116px,150px"></dc-import></span>
+        <span style="position:relative;width:70%;height:10px;border-radius:5px;background:#F3C99B;margin-top:-6px"></span>
+        <span class="d" style="position:relative;font-size:22px">{{c.name}}</span>
+        <span style="position:absolute;right:12px;top:12px;display:flex;width:44px;height:44px;border-radius:14px;background:#fff;align-items:center;justify-content:center;color:{{c.homeC}}" aria-hidden="true"><dc-import name="Icon" icon="{{c.home}}" size="26" hint-size="26px,26px"></dc-import></span>
+      </button>
+    </sc-for>
+  </div>
+
+  <footer style="display:flex;align-items:center;justify-content:center;gap:24px">
+    <button class="t" style="opacity:.45" aria-label="Previous page" disabled><dc-import name="Icon" icon="back" size="32" hint-size="32px,32px"></dc-import></button>
+    <div style="display:flex;gap:12px" aria-label="Page 1 of 2"><span style="width:18px;height:18px;border-radius:50%;background:#2A1640"></span><span style="width:18px;height:18px;border-radius:50%;border:3px solid #2A1640"></span></div>
+    <button class="t" aria-label="Next page"><dc-import name="Icon" icon="next" size="32" hint-size="32px,32px"></dc-import></button>
+    <span style="position:absolute;left:36px;bottom:40px;font-size:14px;font-weight:800;color:#6B4A6E;display:flex;align-items:center;gap:8px"><dc-import name="Icon" icon="hand" size="20" hint-size="20px,20px"></dc-import>Hold a card: edit, copy, move house, or hold longer to remove</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      chars: [
+        { name: 'Moku', hs: 'bob', out: '#EF4B2F', skin: '#E9B48A', hair: '#2A1640', aid: 'none', eyes: 'open', bg: '#FFD2AE', home: 'house', homeC: '#C7341B' },
+        { name: 'Pim', hs: 'puff', out: '#FFB627', skin: '#8D5A3B', hair: '#2A1640', aid: 'none', eyes: 'open', bg: '#BFE6DC', home: 'house', homeC: '#C7341B' },
+        { name: 'Tavi', hs: 'crop', out: '#0FA394', skin: '#F6D2B4', hair: '#C2552B', aid: 'wheelchair', eyes: 'open', bg: '#CDD6FF', home: 'shop', homeC: '#0B7A6F' },
+        { name: 'Lumo', hs: 'bun', out: '#4F6BF0', skin: '#C98E62', hair: '#5A2E1A', aid: 'hearing', eyes: 'open', bg: '#FAD0DC', home: 'house', homeC: '#C7341B' },
+        { name: 'Nella', hs: 'bob', out: '#FF8FB1', skin: '#5A3725', hair: '#FFB627', aid: 'arm', eyes: 'wow', bg: '#FFE08A', home: 'tree', homeC: '#0B7A6F' },
+        { name: 'Oki', hs: 'none', out: '#7BC74D', skin: '#F6D2B4', hair: '#2A1640', aid: 'none', eyes: 'sleep', bg: '#D7DDF5', home: 'house', homeC: '#C7341B' },
+        { name: 'Zeb', hs: 'puff', out: '#8E3CA8', skin: '#E9B48A', hair: '#FF8FB1', aid: 'none', eyes: 'open', bg: '#FFD2AE', home: 'shop', homeC: '#0B7A6F' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

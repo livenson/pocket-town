@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Screen states, phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:18px;box-shadow:0 5px 0 rgba(42,22,64,.22);display:flex;align-items:center;justify-content:center;color:#2A1640;width:56px;height:56px;flex:none}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.ph{position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;box-shadow:0 10px 0 rgba(42,22,64,.12), 0 0 0 1px rgba(42,22,64,.08);flex:none;background:#FFE6CF}
+.lb{display:flex;align-items:center;gap:10px;height:44px;font:800 20px 'Baloo 2',sans-serif;color:#2A1640}
+.lb span{background:#2A1640;color:#fff;border-radius:10px;padding:0 10px;font-size:16px}
+.puff{position:absolute;border-radius:50%;background:#fff}
+.blk{width:56px;height:40px;border-radius:10px;box-shadow:inset 0 -6px 0 rgba(42,22,64,.18)}
+.note{position:absolute;left:20px;right:20px;bottom:30px;font-size:14px;font-weight:800;color:#5E3F62;text-align:center;line-height:1.4}
+</style>
+</helmet>
+<div style="width:2676px;height:1000px;background:#F2DCC8;padding:40px 48px;display:flex;gap:48px;font-family:Nunito,system-ui,sans-serif;color:#2A1640">
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>Empty</span>Room fills itself</div>
+    <div class="ph" style="background:#FFEFD9">
+      <div style="position:absolute;left:0;right:0;top:470px;bottom:0;background:#F3C99B"></div>
+      <div style="position:absolute;left:0;right:0;top:462px;height:12px;background:#E0A46B"></div>
+      <div style="position:absolute;left:36px;top:250px;width:110px;height:220px;background:#B9774A;border:6px solid #2A1640;border-bottom:0;border-radius:55px 55px 0 0"></div>
+      <div style="position:absolute;left:220px;top:150px;width:130px;height:110px;background:#BFE3FF;border:7px solid #2A1640;border-radius:18px"></div>
+      <div class="puff" style="left:40px;top:330px;width:70px;height:70px;opacity:.9"></div><div class="puff" style="left:90px;top:300px;width:50px;height:50px;opacity:.8"></div><div class="puff" style="left:20px;top:380px;width:44px;height:44px;opacity:.7"></div>
+      <div style="position:absolute;left:52px;top:350px"><dc-import name="Peg" size="120" hair-style="puff" outfit="#FFB627" skin="#8D5A3B" eyes="wow" label="Pim arriving" hint-size="74px,120px"></dc-import></div>
+      <div style="position:absolute;left:190px;top:330px;color:#C98800"><dc-import name="Icon" icon="sparkle" size="40" hint-size="40px,40px"></dc-import></div>
+      <div style="position:absolute;left:230px;top:360px"><dc-import name="Peg" size="120" hair-style="bob" outfit="#EF4B2F" skin="#E9B48A" label="Moku arriving" hint-size="74px,120px"></dc-import></div>
+      <div style="position:absolute;left:300px;top:300px;color:#C98800"><dc-import name="Icon" icon="sparkle" size="28" hint-size="28px,28px"></dc-import></div>
+      <button class="t" style="position:absolute;left:16px;top:54px" aria-label="Home"><dc-import name="Icon" icon="home" size="28" hint-size="28px,28px"></dc-import></button>
+      <p class="note">A room is never empty for long: bots wander in with a poof, so there’s always something to watch.</p>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>Loading</span>Busy builders, no spinner</div>
+    <div class="ph" style="background:#BFE3FF">
+      <div style="position:absolute;left:0;right:0;top:560px;bottom:0;background:#9AD46F"></div>
+      <div style="position:absolute;left:115px;top:300px;display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div class="blk" style="background:#FFF8F0;border:3px dashed #2A1640;box-shadow:none"></div>
+        <div style="display:flex;gap:6px"><div class="blk" style="background:#0FA394"></div><div class="blk" style="background:#4F6BF0"></div></div>
+        <div style="display:flex;gap:6px"><div class="blk" style="background:#EF4B2F"></div><div class="blk" style="background:#FFB627"></div><div class="blk" style="background:#FF8FB1"></div></div>
+      </div>
+      <div style="position:absolute;left:30px;top:440px;display:flex;flex-direction:column;align-items:center"><div class="blk" style="background:#7BC74D;transform:rotate(-8deg)"></div><dc-import name="Peg" size="110" hair-style="crop" outfit="#4F6BF0" skin="#F6D2B4" hair="#C2552B" label="" hint-size="68px,110px"></dc-import></div>
+      <div style="position:absolute;left:280px;top:450px;display:flex;flex-direction:column;align-items:center"><dc-import name="Peg" size="110" hair-style="bob" outfit="#EF4B2F" skin="#E9B48A" label="" hint-size="68px,110px"></dc-import></div>
+      <div style="position:absolute;left:0;right:0;top:640px;display:flex;justify-content:center;gap:10px" aria-label="Loading, step 3 of 5"><span style="width:16px;height:16px;border-radius:5px;background:#2A1640"></span><span style="width:16px;height:16px;border-radius:5px;background:#2A1640"></span><span style="width:16px;height:16px;border-radius:5px;background:#2A1640"></span><span style="width:16px;height:16px;border-radius:5px;border:3px solid #2A1640"></span><span style="width:16px;height:16px;border-radius:5px;border:3px solid #2A1640"></span></div>
+      <p class="note">Peg-folk stack blocks while things load. Each finished step drops one block; reduce-motion swaps the walk for a gentle fade.</p>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>Error</span>Fixing it, then retry by itself</div>
+    <div class="ph">
+      <div style="position:absolute;left:60px;top:170px;width:270px;height:140px;border-radius:70px;background:#fff;box-shadow:0 6px 0 rgba(42,22,64,.12)"></div>
+      <div style="position:absolute;left:110px;top:130px;width:120px;height:120px;border-radius:50%;background:#fff"></div>
+      <div style="position:absolute;left:150px;top:200px;color:#2A1640"><dc-import name="Icon" icon="refresh" size="80" hint-size="80px,80px"></dc-import></div>
+      <div style="position:absolute;left:150px;top:350px;display:flex;align-items:flex-end;gap:8px">
+        <dc-import name="Peg" size="150" hair-style="bun" outfit="#4F6BF0" skin="#C98E62" hair="#5A2E1A" aid="hearing" label="Lumo fixing things" hint-size="93px,150px"></dc-import>
+        <span style="display:flex;width:56px;height:56px;border-radius:50%;background:#FFB627;align-items:center;justify-content:center;margin-bottom:60px"><dc-import name="Icon" icon="wrench" size="32" hint-size="32px,32px"></dc-import></span>
+      </div>
+      <p class="d" style="position:absolute;left:20px;right:20px;top:540px;margin:0;text-align:center;font-size:28px">Trying again…</p>
+      <button style="position:absolute;left:24px;right:24px;bottom:110px;height:72px;border-radius:24px;background:#EF4B2F;color:#fff;box-shadow:0 6px 0 #B8321C;display:flex;align-items:center;justify-content:center;gap:12px;font:800 24px 'Baloo 2',sans-serif"><dc-import name="Icon" icon="play" size="30" hint-size="30px,30px"></dc-import>Keep playing</button>
+      <p class="note">Never “you did something wrong”. Retries happen on their own; play continues on the device meanwhile.</p>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>Offline</span>Local play continues</div>
+    <div class="ph" style="background:#F3C99B">
+      <div style="position:absolute;left:-215px;top:120px;width:900px;height:560px"><div style="transform:scale(.8);transform-origin:0 0"><dc-import name="Room" hint-size="900px,560px"></dc-import></div></div>
+      <div style="position:absolute;left:14px;right:14px;top:50px;display:flex;align-items:center;gap:10px;background:#2A1640;color:#fff;border-radius:22px;padding:8px 12px 8px 8px">
+        <span style="display:flex;width:44px;height:44px;border-radius:14px;background:#fff;color:#2A1640;align-items:center;justify-content:center;flex:none"><dc-import name="Icon" icon="offline" size="28" hint-size="28px,28px"></dc-import></span>
+        <span style="font-size:14px;font-weight:800">Playing here. Friends are resting.</span>
+      </div>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:150px;background:#FFF8F0;border-radius:32px 32px 0 0;display:flex;align-items:center;justify-content:space-around;padding:0 20px">
+        <button class="t" style="width:72px;height:72px" aria-label="Things"><dc-import name="Icon" icon="plus" size="36" hint-size="36px,36px"></dc-import></button>
+        <button class="t" style="width:72px;height:72px" aria-label="Camera, saves on device"><dc-import name="Icon" icon="camera" size="36" hint-size="36px,36px"></dc-import></button>
+        <button style="position:relative;width:72px;height:72px;border-radius:22px;background:#E1E4F2;color:#6A7096;display:flex;align-items:center;justify-content:center" aria-label="Friends, waiting for the internet"><dc-import name="Icon" icon="people" size="36" hint-size="36px,36px"></dc-import><span style="position:absolute;right:-6px;top:-6px;display:flex;width:30px;height:30px;border-radius:50%;background:#2A1640;color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="offline" size="18" hint-size="18px,18px"></dc-import></span></button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>Friend online</span>Dot + ring + wave</div>
+    <div class="ph" style="background:#BFE3FF">
+      <div style="position:absolute;left:15px;top:200px;width:360px;height:288px"><div style="transform:scale(.6);transform-origin:0 0"><dc-import name="Diorama" hint-size="600px,480px"></dc-import></div></div>
+      <div style="position:absolute;left:16px;right:16px;top:54px;border-radius:26px;background:#fff;box-shadow:0 0 0 4px #4F6BF0, 0 6px 0 rgba(42,22,64,.2);padding:12px;display:flex;align-items:center;gap:12px">
+        <span style="position:relative;display:flex;width:64px;height:64px;flex:none"><span style="position:relative;display:flex;width:64px;height:64px;border-radius:50%;background:#FF8FB1;overflow:hidden;box-shadow:inset 0 0 0 4px #4F6BF0"><span style="position:absolute;left:1px;top:-6px"><dc-import name="Peg" size="104" hair-style="crop" outfit="#4F6BF0" skin="#E9B48A" hair="#C2552B" label="Zuza" hint-size="64px,104px"></dc-import></span></span><span style="position:absolute;right:-2px;bottom:-2px;width:22px;height:22px;border-radius:50%;background:#0FA394;border:4px solid #fff"></span></span>
+        <span style="display:flex;color:#4F6BF0"><dc-import name="Icon" icon="hand" size="32" hint-size="32px,32px"></dc-import></span>
+        <span class="d" style="font-size:22px">Zuza is here</span>
+        <button style="margin-left:auto;width:60px;height:56px;border-radius:18px;background:#EF4B2F;color:#fff;box-shadow:0 4px 0 #B8321C;display:flex;align-items:center;justify-content:center" aria-label="Visit Zuza"><dc-import name="Icon" icon="door" size="28" hint-size="28px,28px"></dc-import></button>
+      </div>
+      <p class="note" style="bottom:80px">Presence always uses three cues together: a green dot, the friend’s colour ring and a little wave. Never colour alone.</p>
+      <p class="note" style="bottom:30px;font-weight:700">The toast slides away after a few seconds and never interrupts play.</p>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>Locked</span>Padlock + ask a grown-up</div>
+    <div class="ph" style="background:#4A3A5E">
+      <div style="position:absolute;left:0;right:0;bottom:0;height:560px;background:#FFF8F0;border-radius:36px 36px 0 0;padding:24px;display:flex;flex-direction:column;align-items:center;gap:18px">
+        <div style="position:relative;width:150px;height:150px;border-radius:40px;background:#E6CCF0;display:flex;align-items:center;justify-content:center;color:#2A1640">
+          <dc-import name="Icon" icon="mail" size="80" hint-size="80px,80px"></dc-import>
+          <span style="position:absolute;right:-14px;bottom:-14px;display:flex;width:64px;height:64px;border-radius:50%;background:#FFB627;box-shadow:0 0 0 5px #FFF8F0;align-items:center;justify-content:center"><dc-import name="Icon" icon="lock" size="36" hint-size="36px,36px"></dc-import></span>
+        </div>
+        <p class="d" style="margin:0;font-size:28px;text-align:center">This one needs a grown-up</p>
+        <button style="width:100%;height:80px;border-radius:26px;background:#EF4B2F;color:#fff;box-shadow:0 6px 0 #B8321C;display:flex;align-items:center;justify-content:center;gap:12px;font:800 26px 'Baloo 2',sans-serif"><dc-import name="Icon" icon="people" size="32" hint-size="32px,32px"></dc-import>Ask a grown-up</button>
+        <button style="width:100%;height:64px;border-radius:22px;background:#FFE6CF;display:flex;align-items:center;justify-content:center;gap:10px;font:800 22px 'Baloo 2',sans-serif"><dc-import name="Icon" icon="back" size="26" hint-size="26px,26px"></dc-import>Not now</button>
+        <p style="margin:auto 0 0;font-size:14px;font-weight:800;color:#5E3F62;text-align:center;line-height:1.4">Same pattern for links, friends, word phrases and anything that leaves the device. “Ask” opens the parental gate.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2676,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Peg character</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position:relative;flex:none;width:{{RW}};height:{{H}}" role="img" aria-label="{{label}}">
+  <sc-if value="{{wc}}" hint-placeholder-val="{{false}}"><div style="position:absolute;{{g.handle}}"></div></sc-if>
+  <sc-if value="{{top}}" hint-placeholder-val="{{false}}"><div style="position:absolute;{{g.top}}"></div></sc-if>
+  <div style="position:absolute;{{g.body}}"></div>
+  <div style="position:absolute;{{g.band}}"></div>
+  <sc-if value="{{arm}}" hint-placeholder-val="{{false}}"><div style="position:absolute;{{g.arm}}"></div></sc-if>
+  <sc-if value="{{wc}}" hint-placeholder-val="{{false}}">
+    <div style="position:absolute;{{g.wheel}}"></div>
+    <div style="position:absolute;{{g.hub}}"></div>
+    <div style="position:absolute;{{g.caster}}"></div>
+  </sc-if>
+  <div style="position:absolute;{{g.head}}"></div>
+  <sc-if value="{{cap}}" hint-placeholder-val="{{true}}"><div style="position:absolute;{{g.cap}}"></div></sc-if>
+  <sc-if value="{{bob}}" hint-placeholder-val="{{true}}">
+    <div style="position:absolute;{{g.lockL}}"></div>
+    <div style="position:absolute;{{g.lockR}}"></div>
+  </sc-if>
+  <div style="position:absolute;{{g.eyeL}}"></div>
+  <div style="position:absolute;{{g.eyeR}}"></div>
+  <div style="position:absolute;{{g.cheekL}}"></div>
+  <div style="position:absolute;{{g.cheekR}}"></div>
+  <div style="position:absolute;{{g.mouth}}"></div>
+  <sc-if value="{{hear}}" hint-placeholder-val="{{false}}"><div style="position:absolute;{{g.hear}}"></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"size":{"editor":"int","default":150,"min":40,"max":400},"skin":{"editor":"color","default":"#E9B48A","options":["#F6D2B4","#E9B48A","#C98E62","#8D5A3B","#5A3725"]},"outfit":{"editor":"color","default":"#EF4B2F"},"hair":{"editor":"color","default":"#2A1640"},"hairStyle":{"editor":"enum","options":["bob","puff","bun","crop","none"],"default":"bob"},"eyes":{"editor":"enum","options":["open","sleep","wow"],"default":"open"},"aid":{"editor":"enum","options":["none","wheelchair","hearing","arm"],"default":"none"},"label":{"editor":"text","default":"Peg character"},"$preview":{"width":93,"height":150}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props;
+    const H = Number(p.size ?? 150);
+    const W = Math.round(H * 0.62);
+    const st = p.hairStyle ?? 'bob';
+    const ey = p.eyes ?? 'open';
+    const aid = p.aid ?? 'none';
+    const skin = p.skin ?? '#E9B48A';
+    const out = p.outfit ?? '#EF4B2F';
+    const hair = p.hair ?? '#2A1640';
+    const ink = '#2A1640';
+    const wc = aid === 'wheelchair';
+    const px = (v) => Math.round(v) + 'px';
+    const box = (l, t, w, h) => `left:${px(l)};top:${px(t)};width:${px(w)};height:${px(h)};`;
+    const d = Math.round(W * 0.86);
+    const hx = (W - d) / 2;
+    const hy = H * 0.1;
+    const by = hy + d * 0.8;
+    const bh = H - by;
+    const eS = Math.max(3, d * 0.1);
+    const eye = (x) => ey === 'sleep'
+      ? box(x - d * 0.02, hy + d * 0.53, d * 0.15, Math.max(2.5, d * 0.04)) + `background:${ink};border-radius:3px;`
+      : box(x, hy + d * 0.47, eS * (ey === 'wow' ? 1.25 : 1), eS * (ey === 'wow' ? 1.5 : 1)) + `background:${ink};border-radius:50%;`;
+    const g = {
+      body: box(0, by, W, bh) + `background:${out};border-radius:46% 46% 20% 20% / 36% 36% 10% 10%;box-shadow:inset ${px(W * 0.09)} 0 0 rgba(255,255,255,.2), inset -${px(W * 0.08)} 0 0 rgba(42,22,64,.12);`,
+      band: box(W * 0.06, H - bh * 0.18, W * 0.88, bh * 0.14) + `background:rgba(42,22,64,.22);border-radius:${px(bh * 0.07)};`,
+      head: box(hx, hy, d, d) + `background:${skin};border-radius:50%;box-shadow:inset -${px(d * 0.07)} -${px(d * 0.06)} 0 rgba(42,22,64,.12);`,
+      cap: box(hx - d * 0.05, hy - d * 0.05, d * 1.1, d * (st === 'crop' ? 0.34 : 0.44)) + `background:${hair};border-radius:50% 50% 30% 30% / 82% 82% 22% 22%;`,
+      lockL: box(hx - d * 0.05, hy + d * 0.18, d * 0.2, d * 0.58) + `background:${hair};border-radius:40% 30% 50% 50%;`,
+      lockR: box(hx + d * 0.85, hy + d * 0.18, d * 0.2, d * 0.58) + `background:${hair};border-radius:30% 40% 50% 50%;`,
+      top: st === 'puff'
+        ? box(W / 2 - d * 0.4, hy - d * 0.34, d * 0.8, d * 0.74) + `background:${hair};border-radius:50%;`
+        : box(W / 2 - d * 0.17, hy - d * 0.26, d * 0.34, d * 0.34) + `background:${hair};border-radius:50%;`,
+      eyeL: eye(hx + d * 0.3),
+      eyeR: eye(hx + d * 0.6),
+      cheekL: box(hx + d * 0.13, hy + d * 0.64, d * 0.17, d * 0.1) + 'background:rgba(255,105,120,.42);border-radius:50%;',
+      cheekR: box(hx + d * 0.7, hy + d * 0.64, d * 0.17, d * 0.1) + 'background:rgba(255,105,120,.42);border-radius:50%;',
+      mouth: ey === 'wow'
+        ? box(hx + d * 0.44, hy + d * 0.68, d * 0.12, d * 0.14) + `border:${px(Math.max(2, d * 0.04))} solid ${ink};border-radius:50%;`
+        : box(hx + d * 0.4, hy + d * 0.64, d * 0.2, d * 0.1) + `border-bottom:${px(Math.max(2, d * 0.045))} solid ${ink};border-radius:0 0 50% 50%;`,
+      hear: box(hx - d * 0.06, hy + d * 0.44, d * 0.14, d * 0.22) + `background:#0FA394;border:${px(Math.max(1.5, d * 0.03))} solid #fff;border-radius:40%;`,
+      arm: box(W * 0.02, by + bh * 0.22, W * 0.17, bh * 0.44) + `background:#A9B3C6;border:${px(Math.max(1.5, d * 0.03))} solid ${ink};border-radius:${px(W * 0.08)};`,
+      handle: box(W * 0.84, by - bh * 0.08, H * 0.05, bh * 0.8) + `background:${ink};border-radius:${px(H * 0.03)};`,
+      wheel: box(W * 0.42, H * 0.53, H * 0.46, H * 0.46) + `border:${px(H * 0.05)} solid ${ink};border-radius:50%;background:rgba(255,255,255,.28);`,
+      hub: box(W * 0.42 + H * 0.2, H * 0.53 + H * 0.2, H * 0.06, H * 0.06) + `background:${ink};border-radius:50%;`,
+      caster: box(W * 0.02, H * 0.87, H * 0.12, H * 0.12) + `background:${ink};border-radius:50%;`
+    };
+    return {
+      RW: px(wc ? W * 1.25 : W), H: px(H), g,
+      wc, arm: aid === 'arm', hear: aid === 'hearing',
+      cap: st !== 'none', bob: st === 'bob', top: st === 'puff' || st === 'bun',
+      label: p.label ?? 'Peg character'
+    };
+  }
+}
+</script>
+</body>
+</html>

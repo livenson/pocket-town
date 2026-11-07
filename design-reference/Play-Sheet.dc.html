@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Map, follow-cam, time and photo, phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:18px;box-shadow:0 5px 0 rgba(42,22,64,.22);display:flex;align-items:center;justify-content:center;color:#2A1640;width:56px;height:56px;flex:none}
+.d{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.ph{position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;box-shadow:0 10px 0 rgba(42,22,64,.12), 0 0 0 1px rgba(42,22,64,.08);flex:none;background:#F3C99B}
+.lb{display:flex;align-items:center;gap:10px;height:44px;font:800 20px 'Baloo 2',sans-serif;color:#2A1640}
+.lb span{background:#2A1640;color:#fff;border-radius:10px;padding:0 10px;font-size:16px}
+.pin{position:absolute;width:48px;height:48px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 4px #fff, 0 5px 0 4px rgba(42,22,64,.2)}
+.crumb{display:flex;width:48px;height:48px;border-radius:16px;background:#fff;align-items:center;justify-content:center;color:#2A1640;flex:none}
+.corner{position:absolute;width:44px;height:44px;border-color:#fff;border-style:solid;border-width:0}
+</style>
+</helmet>
+<div style="width:1800px;height:1000px;background:#F2DCC8;padding:40px 48px;display:flex;gap:48px;font-family:Nunito,system-ui,sans-serif;color:#2A1640">
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>D1</span>World map (phone)</div>
+    <div class="ph" style="background:#9AD46F">
+      <div style="position:absolute;left:-20px;right:-20px;top:420px;height:54px;border-radius:27px;background:#F3DDB5"></div>
+      <div style="position:absolute;left:170px;top:-20px;width:54px;bottom:-20px;border-radius:27px;background:#F3DDB5"></div>
+      <div style="position:absolute;left:30px;top:200px;display:flex;flex-direction:column;align-items:center"><div style="width:130px;height:56px;background:#EF4B2F;clip-path:polygon(50% 0, 100% 100%, 0 100%)"></div><div style="width:110px;height:80px;background:#FFF8F0;border:5px solid #2A1640;border-radius:0 0 12px 12px"></div></div>
+      <div style="position:absolute;left:240px;top:190px;display:flex;flex-direction:column;align-items:center"><div style="width:124px;height:34px;background:repeating-linear-gradient(90deg, #FFB627 0 20px, #fff 20px 40px);border:5px solid #2A1640;border-radius:12px 12px 4px 4px"></div><div style="width:110px;height:90px;background:#FFE6CF;border:5px solid #2A1640;border-radius:0 0 12px 12px;box-shadow:0 0 0 10px rgba(255,182,39,.4)"></div></div>
+      <div style="position:absolute;left:250px;top:520px;display:flex;flex-direction:column;align-items:center"><div style="width:110px;height:58px;background:#8E3CA8;border:5px solid #2A1640;border-bottom:0;border-radius:55px 55px 0 0"></div><div style="width:110px;height:64px;background:#FFF8F0;border:5px solid #2A1640;border-radius:0 0 12px 12px"></div></div>
+      <div style="position:absolute;left:40px;top:540px;width:64px;height:64px;border-radius:50%;background:#4E9A2E"></div><div style="position:absolute;left:100px;top:580px;width:50px;height:50px;border-radius:50%;background:#4E9A2E"></div>
+      <div class="pin" style="left:70px;top:140px;background:#FFD2AE"><span style="position:absolute;left:0;top:-4px"><dc-import name="Peg" size="76" hair-style="bob" outfit="#EF4B2F" skin="#E9B48A" label="Moku is home" hint-size="47px,76px"></dc-import></span></div>
+      <div class="pin" style="left:272px;top:126px;background:#FFE08A"><span style="position:absolute;left:0;top:4px"><dc-import name="Peg" size="76" hair-style="puff" outfit="#FFB627" skin="#8D5A3B" label="Pim is at the café" hint-size="47px,76px"></dc-import></span></div>
+      <button class="t" style="position:absolute;left:16px;top:54px" aria-label="Home"><dc-import name="Icon" icon="home" size="28" hint-size="28px,28px"></dc-import></button>
+      <button style="position:absolute;right:16px;top:54px;height:56px;border-radius:18px;background:#fff;box-shadow:0 5px 0 rgba(42,22,64,.22);display:flex;align-items:center;gap:6px;padding:0 12px;color:#2A1640" aria-label="Time of day: afternoon"><span style="color:#C98800;display:flex"><dc-import name="Icon" icon="sun" size="28" hint-size="28px,28px"></dc-import></span><span style="width:40px;height:8px;border-radius:4px;background:#BFE3FF;box-shadow:inset 26px 0 0 #FFB627"></span><dc-import name="Icon" icon="moon" size="24" hint-size="24px,24px"></dc-import></button>
+      <section style="position:absolute;left:0;right:0;bottom:0;height:200px;background:#FFF8F0;border-radius:32px 32px 0 0;padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="display:flex;width:56px;height:56px;border-radius:18px;background:#FFB627;align-items:center;justify-content:center"><dc-import name="Icon" icon="shop" size="34" hint-size="34px,34px"></dc-import></span>
+          <span class="d" style="font-size:26px">Café</span>
+          <span style="margin-left:auto;display:flex;gap:6px"><span style="position:relative;display:flex;width:44px;height:44px;border-radius:50%;background:#FFE08A;overflow:hidden"><span style="position:absolute;left:0;top:4px"><dc-import name="Peg" size="70" hair-style="puff" outfit="#FFB627" skin="#8D5A3B" label="Pim" hint-size="43px,70px"></dc-import></span></span></span>
+        </div>
+        <button style="height:72px;border-radius:24px;background:#EF4B2F;color:#fff;box-shadow:0 6px 0 #B8321C;display:flex;align-items:center;justify-content:center;gap:10px;font:800 26px 'Baloo 2',sans-serif"><dc-import name="Icon" icon="door" size="32" hint-size="32px,32px"></dc-import>Go in</button>
+      </section>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>D5</span>Follow-cam</div>
+    <div class="ph">
+      <div style="position:absolute;left:-470px;top:-60px;width:900px;height:560px"><div style="transform:scale(1.3);transform-origin:0 0"><dc-import name="Room" hint-size="900px,560px"></dc-import></div></div>
+      <span class="corner" style="left:24px;top:150px;border-left-width:6px;border-top-width:6px;border-radius:16px 0 0 0"></span>
+      <span class="corner" style="right:24px;top:150px;border-right-width:6px;border-top-width:6px;border-radius:0 16px 0 0"></span>
+      <span class="corner" style="left:24px;bottom:150px;border-left-width:6px;border-bottom-width:6px;border-radius:0 0 0 16px"></span>
+      <span class="corner" style="right:24px;bottom:150px;border-right-width:6px;border-bottom-width:6px;border-radius:0 0 16px 0"></span>
+      <nav style="position:absolute;left:12px;right:12px;top:52px;display:flex;align-items:center;gap:6px;background:rgba(42,22,64,.88);border-radius:24px;padding:8px" aria-label="Places Pim visited">
+        <span class="crumb" aria-label="Pim's house"><dc-import name="Icon" icon="home" size="26" hint-size="26px,26px"></dc-import></span>
+        <span style="color:#fff;display:flex"><dc-import name="Icon" icon="next" size="18" hint-size="18px,18px"></dc-import></span>
+        <span class="crumb" aria-label="Park"><dc-import name="Icon" icon="tree" size="26" hint-size="26px,26px"></dc-import></span>
+        <span style="color:#fff;display:flex"><dc-import name="Icon" icon="next" size="18" hint-size="18px,18px"></dc-import></span>
+        <span class="crumb" style="background:#FFB627;box-shadow:0 0 0 3px #fff" aria-label="Café, now"><dc-import name="Icon" icon="shop" size="26" hint-size="26px,26px"></dc-import></span>
+        <button style="margin-left:auto;width:56px;height:48px;border-radius:16px;background:#EF4B2F;color:#fff;display:flex;align-items:center;justify-content:center" aria-label="Stop following"><dc-import name="Icon" icon="close" size="26" hint-size="26px,26px"></dc-import></button>
+      </nav>
+      <div style="position:absolute;left:50%;bottom:40px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:#fff;border-radius:999px;padding:6px 18px 6px 6px;box-shadow:0 5px 0 rgba(42,22,64,.22)">
+        <span style="position:relative;display:flex;width:52px;height:52px;border-radius:50%;background:#FFE08A;overflow:hidden"><span style="position:absolute;left:0;top:4px"><dc-import name="Peg" size="84" hair-style="puff" outfit="#FFB627" skin="#8D5A3B" label="Pim" hint-size="52px,84px"></dc-import></span></span>
+        <span style="display:flex;color:#2A1640"><dc-import name="Icon" icon="eye" size="30" hint-size="30px,30px"></dc-import></span>
+        <span class="d" style="font-size:22px">Following Pim</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>D6</span>Time control: paused</div>
+    <div class="ph">
+      <div style="position:absolute;left:-215px;top:40px;width:900px;height:560px"><div style="transform:scale(.8);transform-origin:0 0"><dc-import name="Room" hint-size="900px,560px"></dc-import></div></div>
+      <div style="position:absolute;inset:0;background:rgba(191,227,255,.35)"></div>
+      <div style="position:absolute;left:50%;top:150px;margin-left:-60px;width:120px;height:120px;border-radius:50%;background:rgba(42,22,64,.82);color:#fff;display:flex;align-items:center;justify-content:center"><dc-import name="Icon" icon="pause" size="64" hint-size="64px,64px"></dc-import></div>
+      <section style="position:absolute;left:0;right:0;bottom:0;height:330px;background:#FFF8F0;border-radius:32px 32px 0 0;padding:22px 20px;display:flex;flex-direction:column;gap:16px;align-items:center">
+        <div style="display:flex;background:#fff;border-radius:999px;padding:8px;gap:6px;box-shadow:0 5px 0 #E3B48F" role="group" aria-label="Time">
+          <button style="width:78px;height:78px;border-radius:50%;background:#2A1640;color:#fff;display:flex;align-items:center;justify-content:center" aria-label="Pause, on" aria-pressed="true"><dc-import name="Icon" icon="pause" size="38" hint-size="38px,38px"></dc-import></button>
+          <button style="width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center" aria-label="Play"><dc-import name="Icon" icon="play" size="38" hint-size="38px,38px"></dc-import></button>
+          <button style="width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center" aria-label="Faster"><dc-import name="Icon" icon="ff" size="38" hint-size="38px,38px"></dc-import></button>
+        </div>
+        <div style="width:100%;display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px;text-align:center;font-size:13px;font-weight:800;color:#5E3F62">
+          <div style="background:#FFE6CF;border-radius:18px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:6px"><dc-import name="Icon" icon="pause" size="26" hint-size="26px,26px"></dc-import>Everyone holds still. You can still move things.</div>
+          <div style="background:#FFE6CF;border-radius:18px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:6px"><dc-import name="Icon" icon="play" size="26" hint-size="26px,26px"></dc-import>Normal day</div>
+          <div style="background:#FFE6CF;border-radius:18px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:6px"><dc-import name="Icon" icon="ff" size="26" hint-size="26px,26px"></dc-import>Day zooms by; clouds and clock spin</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="lb"><span>D7</span>Photo and recording (on device)</div>
+    <div class="ph" style="background:#2A1640">
+      <div style="position:absolute;left:20px;right:20px;top:110px;height:520px;border-radius:30px;overflow:hidden;box-shadow:0 0 0 6px #fff">
+        <div style="position:absolute;left:-330px;top:20px;width:900px;height:560px"><div style="transform:scale(.95);transform-origin:0 0"><dc-import name="Room" hint-size="900px,560px"></dc-import></div></div>
+      </div>
+      <button class="t" style="position:absolute;left:20px;top:44px" aria-label="Close camera"><dc-import name="Icon" icon="close" size="28" hint-size="28px,28px"></dc-import></button>
+      <div style="position:absolute;right:20px;top:44px;display:flex;background:rgba(255,255,255,.14);border-radius:18px;padding:4px;gap:4px" role="group" aria-label="Photo or video">
+        <button style="width:52px;height:48px;border-radius:14px;background:#fff;color:#2A1640;display:flex;align-items:center;justify-content:center" aria-label="Photo, on"><dc-import name="Icon" icon="camera" size="26" hint-size="26px,26px"></dc-import></button>
+        <button style="width:52px;height:48px;border-radius:14px;color:#fff;display:flex;align-items:center;justify-content:center" aria-label="Video"><dc-import name="Icon" icon="video" size="26" hint-size="26px,26px"></dc-import></button>
+      </div>
+      <div style="position:absolute;left:0;right:0;bottom:56px;display:flex;align-items:center;justify-content:space-around;padding:0 24px">
+        <button style="position:relative;width:64px;height:64px;border-radius:18px;background:#FFE6CF;overflow:hidden;box-shadow:0 0 0 3px #fff" aria-label="My photos, saved on this device">
+          <span style="position:absolute;inset:8px;border-radius:10px;background:#BFE6DC"></span>
+          <span style="position:absolute;right:-2px;bottom:-2px;display:flex;width:28px;height:28px;border-radius:50%;background:#2A1640;color:#fff;align-items:center;justify-content:center"><dc-import name="Icon" icon="lock" size="16" hint-size="16px,16px"></dc-import></span>
+        </button>
+        <button style="width:96px;height:96px;border-radius:50%;background:#fff;box-shadow:0 0 0 6px rgba(255,255,255,.35)" aria-label="Take photo"></button>
+        <button style="width:64px;height:64px;border-radius:18px;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center" aria-label="Stickers"><dc-import name="Icon" icon="star" size="32" hint-size="32px,32px"></dc-import></button>
+      </div>
+      <p style="position:absolute;left:0;right:0;bottom:16px;margin:0;text-align:center;font-size:13px;font-weight:800;color:#D9CDE6">Saved on this device only. No sharing from here.</p>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1800,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

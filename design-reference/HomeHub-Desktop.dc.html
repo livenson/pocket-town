@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home hub, desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&amp;family=Nunito:wght@600;700;800;900&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;border:0;padding:0;cursor:pointer;background:none}
+.t{background:#fff;border-radius:18px;box-shadow:0 5px 0 #A9C9E6;display:flex;align-items:center;justify-content:center;color:#2A1640;width:60px;height:60px;flex:none}
+.tile{position:relative;border-radius:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font:800 26px 'Baloo 2',sans-serif}
+.k{position:absolute;left:16px;top:16px;min-width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.92);color:#2A1640;font:900 16px Nunito,sans-serif;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 rgba(42,22,64,.25)}
+</style>
+</helmet>
+<div style="position:relative;width:1440px;height:900px;background:#BFE3FF;color:#2A1640;font-family:Nunito,system-ui,sans-serif;overflow:hidden">
+  <div style="position:absolute;left:260px;top:90px;width:180px;height:52px;border-radius:999px;background:#fff;opacity:.85"></div>
+  <div style="position:absolute;left:700px;top:130px;width:140px;height:40px;border-radius:999px;background:#fff;opacity:.7"></div>
+  <div style="position:absolute;left:-60px;top:770px;width:1040px;height:220px;border-radius:50%;background:#9AD46F"></div>
+
+  <div style="position:absolute;left:40px;top:28px;display:flex;align-items:center;gap:14px">
+    <button style="position:relative;width:64px;height:64px;border-radius:50%;background:#FFD2AE;box-shadow:0 5px 0 #A9C9E6, 0 0 0 4px #fff;overflow:hidden" aria-label="Switch player">
+      <span style="position:absolute;left:-5px;top:-8px"><dc-import name="Peg" size="112" hair-style="bob" outfit="#EF4B2F" skin="#E9B48A" label="Moku" hint-size="69px,112px"></dc-import></span>
+    </button>
+    <span style="font:800 28px 'Baloo 2',sans-serif">Moku’s town</span>
+  </div>
+  <div style="position:absolute;right:40px;top:28px;display:flex;gap:12px">
+    <button class="t" aria-label="Hear this screen"><dc-import name="Icon" icon="speaker" size="30" hint-size="30px,30px"></dc-import></button>
+    <button class="t" aria-label="Settings"><dc-import name="Icon" icon="sliders" size="30" hint-size="30px,30px"></dc-import></button>
+  </div>
+
+  <div style="position:absolute;left:60px;top:140px;width:840px;height:672px">
+    <div style="transform:scale(1.4);transform-origin:0 0"><dc-import name="Diorama" hint-size="600px,480px"></dc-import></div>
+  </div>
+  <div style="position:absolute;left:470px;top:420px;background:#2A1640;color:#fff;border-radius:14px;padding:8px 14px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px">
+    <dc-import name="Icon" icon="speaker" size="18" hint-size="18px,18px"></dc-import>Pim is chatting · click to visit
+  </div>
+
+  <nav style="position:absolute;right:56px;top:150px;width:460px;display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:24px" aria-label="Places">
+    <button class="tile" style="height:300px;background:#0FA394;box-shadow:0 8px 0 #0A7469, 0 0 0 5px #fff;color:#fff;transform:translateY(-6px)"><span class="k">1</span><dc-import name="Icon" icon="globe" size="96" hint-size="96px,96px"></dc-import>World</button>
+    <button class="tile" style="height:300px;background:#EF4B2F;box-shadow:0 8px 0 #B8321C;color:#fff"><span class="k">2</span><dc-import name="Icon" icon="peg" size="96" hint-size="96px,96px"></dc-import>My characters</button>
+    <button class="tile" style="height:300px;background:#FFB627;box-shadow:0 8px 0 #C98800;color:#2A1640"><span class="k">3</span><dc-import name="Icon" icon="house" size="96" hint-size="96px,96px"></dc-import>My house</button>
+    <button class="tile" style="height:300px;background:#4F6BF0;box-shadow:0 8px 0 #2F45B5;color:#fff"><span class="k">4</span><dc-import name="Icon" icon="people" size="96" hint-size="96px,96px"></dc-import>Friends
+      <span style="position:absolute;right:16px;top:16px;width:58px;height:58px;border-radius:50%;background:#FF8FB1;box-shadow:0 0 0 4px #fff, 0 0 0 8px #0FA394;overflow:hidden"><span style="position:absolute;left:-1px;top:-4px"><dc-import name="Peg" size="96" hair-style="crop" outfit="#4F6BF0" skin="#E9B48A" hair="#C2552B" label="Zuza is online" hint-size="60px,96px"></dc-import></span></span>
+    </button>
+  </nav>
+  <div style="position:absolute;right:56px;bottom:40px;display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;color:#2A1640;background:rgba(255,255,255,.7);border-radius:999px;padding:8px 16px">
+    Keys <span style="background:#fff;border-radius:8px;padding:2px 9px;box-shadow:0 2px 0 #A9C9E6">1–4</span> places · <span style="background:#fff;border-radius:8px;padding:2px 9px;box-shadow:0 2px 0 #A9C9E6">?</span> all shortcuts
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
