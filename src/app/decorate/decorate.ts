@@ -3,6 +3,7 @@ import { playSfx } from '../../audio/audio';
 import {
   anchorAt,
   clampFurniture,
+  paints,
   type FurnitureInstance,
   type FurnitureKindId,
 } from '../../content/furniture';
@@ -62,5 +63,23 @@ export function copyPiece(f: FurnitureInstance): void {
 export function removePiece(f: FurnitureInstance): void {
   if (game.do({ type: 'removeFurniture', roomId: currentRoomId(), id: f.id })) {
     useDecor.getState().select(null);
+  }
+}
+
+/** Paint the piece the next colour (after the last, back to as designed). */
+export function paintPiece(f: FurnitureInstance): void {
+  const i = paints.indexOf(f.paint);
+  const next = paints[(i + 1) % paints.length];
+  if (
+    game.do({
+      type: 'moveFurniture',
+      roomId: currentRoomId(),
+      id: f.id,
+      x: f.x,
+      y: f.y,
+      paint: next ?? null,
+    })
+  ) {
+    playSfx('tap');
   }
 }

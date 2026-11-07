@@ -3,6 +3,7 @@
 import { Container, Graphics } from 'pixi.js';
 import {
   furnitureKinds,
+  paintedShapes,
   type FurnitureKind,
   type FurnitureInstance,
   type Shape,
@@ -50,9 +51,9 @@ function drawShape(g: Graphics, s: Shape): void {
   ellipticalRect(g, inner, { rx: rs, ry: rs }).stroke(st);
 }
 
-export function drawFurniture(kind: FurnitureKind): Graphics {
+export function drawFurniture(kind: FurnitureKind, paint?: string): Graphics {
   const g = new Graphics();
-  for (const s of kind.shapes) drawShape(g, s);
+  for (const s of paintedShapes(kind, paint)) drawShape(g, s);
   return g;
 }
 
@@ -161,7 +162,8 @@ export class RoomView extends Container {
 
   addFurniture(f: FurnitureInstance): Container {
     const kind: FurnitureKind = furnitureKinds[f.kind];
-    const g: Container = kind.id === 'window' ? this.drawWindow(kind) : drawFurniture(kind);
+    const g: Container =
+      kind.id === 'window' ? this.drawWindow(kind) : drawFurniture(kind, f.paint);
     g.label = `furniture:${f.id}`;
     if (kind.layer === 'wall' && !f.standing) this.wallLayer.addChild(g);
     else if (kind.layer === 'floor') this.floorLayer.addChild(g);

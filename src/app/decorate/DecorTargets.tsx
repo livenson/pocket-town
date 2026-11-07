@@ -11,7 +11,15 @@ import { useUi } from '../../state/ui';
 import { clientToRoom, registerTarget } from '../../stage/targets';
 import { useVoiceLabel } from '../../ui/useVoiceLabel';
 import { useGame } from '../game';
-import { addPiece, copyPiece, movePiece, pieceAt, pieceById, turnPiece } from './decorate';
+import {
+  addPiece,
+  copyPiece,
+  movePiece,
+  paintPiece,
+  pieceAt,
+  pieceById,
+  turnPiece,
+} from './decorate';
 
 const DRAG_PX = 8;
 const nameOf = (kind: string) => strings.furnitureNames[kind] ?? kind;
@@ -151,6 +159,9 @@ function useDecorKeys(): void {
       } else if (e.key === 'r' || e.key === 'R') {
         e.stopPropagation();
         turnPiece(f);
+      } else if (e.key === 'p' || e.key === 'P') {
+        e.stopPropagation();
+        paintPiece(f);
       } else if (e.key === 'c' || e.key === 'C') {
         e.stopPropagation();
         copyPiece(f);

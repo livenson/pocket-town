@@ -125,6 +125,8 @@ export const et: Strings = {
     room: 'Tuba: puuduta, et asi siia panna',
     carrying: (name: string) => `${name}: puuduta tuba, et see sinna panna`,
     turn: 'Pööra',
+    colour: 'Värv',
+    howTo: 'Et seda muuta, puuduta pliiatsit',
     copy: 'Kopeeri',
     remove: 'Hoia all, et ära võtta',
     house: 'Muuda maja',

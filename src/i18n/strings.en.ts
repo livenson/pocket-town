@@ -127,6 +127,8 @@ export const en = {
     room: 'The room: tap to put the piece here',
     carrying: (name: string) => `${name}: tap the room to put it there`,
     turn: 'Turn',
+    colour: 'Colour',
+    howTo: 'To change how it looks, tap the pencil',
     copy: 'Copy',
     remove: 'Hold to take it away',
     house: 'Change the house',

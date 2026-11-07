@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { clampFurniture, furnitureKinds } from '../../src/content/furniture';
+import {
+  clampFurniture,
+  furnitureKinds,
+  mainColour,
+  paintedShapes,
+} from '../../src/content/furniture';
 import { findRoom } from '../../src/content/rooms';
 import { collectAds } from '../../src/sim/ads';
 import { History } from '../../src/sim/history';
@@ -80,5 +85,36 @@ describe('decorating a room', () => {
     // Undo everything: the beds are back.
     while (h.canUndo) h.undo(w);
     expect(findRoom('home-bedroom')?.furniture.filter((f) => f.kind === 'bed')).toHaveLength(2);
+  });
+
+  it('paints a piece: its main colour changes, and undo paints it back', () => {
+    const w = createWorld(3);
+    syncHouses(w);
+    const h = new History();
+    const shelf = findRoom('library-main')?.furniture.find((f) => f.kind === 'bookshelf');
+    if (!shelf) throw new Error('no bookshelf');
+    const move = {
+      type: 'moveFurniture',
+      roomId: 'library-main',
+      id: shelf.id,
+      x: shelf.x,
+      y: shelf.y,
+    } as const;
+    h.do(w, { ...move, paint: '#EF4B2F' });
+    expect(findRoom('library-main')?.furniture.find((f) => f.id === shelf.id)?.paint).toBe(
+      '#EF4B2F',
+    );
+    const main = mainColour(furnitureKinds.bookshelf);
+    const painted = paintedShapes(furnitureKinds.bookshelf, '#EF4B2F');
+    expect(painted.some((s) => s.fill === '#EF4B2F')).toBe(true);
+    expect(painted.some((s) => s.fill === main)).toBe(false);
+    h.do(w, { ...move, paint: null });
+    expect(
+      findRoom('library-main')?.furniture.find((f) => f.id === shelf.id)?.paint,
+    ).toBeUndefined();
+    h.undo(w);
+    expect(findRoom('library-main')?.furniture.find((f) => f.id === shelf.id)?.paint).toBe(
+      '#EF4B2F',
+    );
   });
 });

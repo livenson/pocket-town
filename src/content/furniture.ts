@@ -1130,6 +1130,8 @@ export interface FurnitureInstance {
   flip?: boolean;
   /** Stands on the floor in front of the wall, sorted with characters (house pieces). */
   standing?: boolean;
+  /** Painted by the child: replaces the piece's main colour (see mainColour). */
+  paint?: string;
 }
 
 /**
@@ -1241,4 +1243,42 @@ export function anchorAt(
   const h = kind.h * scale;
   if (kind.layer === 'stand') return { x: px - w / 2, y: py - (kind.footY ?? kind.h) * scale };
   return { x: px - w / 2, y: py - h / 2 };
+}
+
+/** Colours a piece can be painted, in order (undefined: as designed). */
+export const paints: (string | undefined)[] = [
+  undefined,
+  color.tomato,
+  color.marigold,
+  color.leaf,
+  color.teal,
+  color.cornflower,
+  color.purple,
+  color.blossom,
+  '#FFF8F0',
+];
+
+/** The colour that most of a piece is drawn in (outlines and shading aside). */
+export function mainColour(kind: FurnitureKind): string | undefined {
+  const area = new Map<string, number>();
+  for (const s of kind.shapes) {
+    if (s.fill === INK || (s.alpha ?? 1) < 1) continue;
+    area.set(s.fill, (area.get(s.fill) ?? 0) + s.w * s.h);
+  }
+  let best: string | undefined;
+  let most = 0;
+  for (const [fill, a] of area) {
+    if (a > most) {
+      best = fill;
+      most = a;
+    }
+  }
+  return best;
+}
+
+/** The shapes to draw, with the child's paint in place of the main colour. */
+export function paintedShapes(kind: FurnitureKind, paint: string | undefined): Shape[] {
+  const main = paint ? mainColour(kind) : undefined;
+  if (!paint || !main) return kind.shapes;
+  return kind.shapes.map((s) => (s.fill === main ? { ...s, fill: paint } : s));
 }

@@ -80,6 +80,8 @@ function ObjectTarget({ object }: { object: PlacedObject }) {
   );
 }
 
+let shownPencilHint = false;
+
 /**
  * Furniture that offers something to do: tap it and someone goes to use it. The
  * picked character if there is one (this is also how to steer them to it),
@@ -117,6 +119,11 @@ function FurnitureTarget({
         const picked = here.find((b) => b.id === usePlay.getState().selectedBotId);
         const who =
           picked ?? here.toSorted((a, b) => Math.abs(a.place.x - x) - Math.abs(b.place.x - x))[0];
+        // Show the way to change how it looks: when nobody can come, and once a visit.
+        if (!who || !shownPencilHint) {
+          shownPencilHint = true;
+          useUi.getState().toast('pencil', strings.decorate.howTo);
+        }
         if (!who) {
           playSfx('soft');
           return;

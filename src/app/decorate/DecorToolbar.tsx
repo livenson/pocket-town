@@ -6,7 +6,7 @@ import { useUi } from '../../state/ui';
 import { HoldButton } from '../../ui/HoldButton';
 import { IconButton } from '../../ui/IconButton';
 import { game, useGame } from '../game';
-import { copyPiece, pieceById, removePiece, turnPiece } from './decorate';
+import { copyPiece, paintPiece, pieceById, removePiece, turnPiece } from './decorate';
 
 export function DecorToolbar() {
   const selectedId = useDecor((s) => s.selectedId);
@@ -25,6 +25,12 @@ export function DecorToolbar() {
             label={strings.decorate.turn}
             shortcut="R"
             onClick={() => turnPiece(f)}
+          />
+          <IconButton
+            icon="palette"
+            label={strings.decorate.colour}
+            shortcut="P"
+            onClick={() => paintPiece(f)}
           />
           <IconButton
             icon="dup"

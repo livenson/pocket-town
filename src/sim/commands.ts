@@ -37,7 +37,16 @@ export type Command =
   | { type: 'housewarming'; houseId: string }
   /** Decorating a room: add, move or turn, and remove a piece of furniture. */
   | { type: 'addFurniture'; roomId: string; piece: FurnitureInstance }
-  | { type: 'moveFurniture'; roomId: string; id: string; x: number; y: number; flip?: boolean }
+  | {
+      type: 'moveFurniture';
+      roomId: string;
+      id: string;
+      x: number;
+      y: number;
+      flip?: boolean;
+      /** Repaint: a colour, or null to go back to the designed one. */
+      paint?: string | null;
+    }
   | { type: 'removeFurniture'; roomId: string; id: string }
   /** A tree or the pond on the map, changed by the child. */
   | { type: 'setDecor'; id: string; variant: number }
@@ -301,6 +310,8 @@ function decorate(world: World, cmd: DecorateCommand): boolean {
     } else {
       const moved: FurnitureInstance = { ...piece, x: cmd.x, y: cmd.y };
       if (cmd.flip !== undefined) moved.flip = cmd.flip;
+      if (cmd.paint === null) delete moved.paint;
+      else if (cmd.paint !== undefined) moved.paint = cmd.paint;
       next = current.map((f) => (f === piece ? { ...moved, ...clampFurniture(moved) } : f));
     }
   }

@@ -127,6 +127,8 @@ export const lv: Strings = {
     room: 'Istaba: pieskaries, lai noliktu šeit',
     carrying: (name: string) => `${name}: pieskaries istabai, lai to noliktu`,
     turn: 'Pagriezt',
+    colour: 'Krāsa',
+    howTo: 'Lai to mainītu, pieskaries zīmulim',
     copy: 'Kopēt',
     remove: 'Turi, lai noņemtu',
     house: 'Mainīt māju',
