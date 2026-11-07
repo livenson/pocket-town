@@ -79,6 +79,10 @@ design-reference/       prototypes from the design canvas (read-only reference)
 
 - Follow `docs/PLAN.md` milestone by milestone. Finish each milestone's acceptance criteria, run lint, tests and build, then commit before starting the next.
 - Small commits with clear messages. Push to `main`; the GitHub Actions workflow deploys to Pages.
+- Check changes in a real, visible local browser, not only in headless tests:
+  - While working, use `npm run dev` (fast, hot reload).
+  - Before every push, run `npm run build && npm run preview` and check that build in the browser at phone, tablet and desktop sizes: no console errors, no CSP violations, no third-party requests, and the changed interaction works. Use the build because the CSP, the service worker (offline, install) and the hashed asset paths exist only there, and it is what deploys.
+  - Push only after that check passes.
 - When the plan is ambiguous, choose the option that keeps the zero-reading core and the hard rules intact, note it in `docs/DECISIONS.md`, and carry on.
 - Keep `docs/PLAN.md` checkboxes up to date as tasks are completed.
 - Test on a real iPad and an Android tablet when possible (the owner will do this from the Pages URL). Design for Safari on iPadOS first; it is the strictest target.
