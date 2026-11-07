@@ -91,6 +91,61 @@ export const sfx = {
     shape: 0,
     slide: -6,
   }),
+  /** Soft chime: a bot starts something new. */
+  chime: zzfxParams({
+    volume: 0.45,
+    randomness: 0.02,
+    frequency: 880,
+    attack: 0.005,
+    sustain: 0.03,
+    release: 0.35,
+    shape: 0,
+    sustainVolume: 0.5,
+    decay: 0.05,
+  }),
+  /** Happy jingle: a need is satisfied, a gift lands. */
+  jingle: zzfxParams({
+    volume: 0.7,
+    randomness: 0.02,
+    frequency: 600,
+    attack: 0.01,
+    sustain: 0.05,
+    release: 0.25,
+    shape: 0,
+    pitchJump: 300,
+    pitchJumpTime: 0.06,
+    repeatTime: 0.12,
+    sustainVolume: 0.6,
+  }),
+  /** Ding-dong: a visitor at the door. */
+  doorbell: zzfxParams({
+    volume: 0.9,
+    randomness: 0,
+    frequency: 660,
+    attack: 0.01,
+    sustain: 0.18,
+    release: 0.5,
+    shape: 0,
+    pitchJump: -140,
+    pitchJumpTime: 0.22,
+    sustainVolume: 0.6,
+  }),
 } satisfies Record<string, ZzfxParams>;
+
+/** One "Pocketese" syllable: a short pitched blip (a character's voice). */
+export function blipParams(frequency: number): ZzfxParams {
+  return zzfxParams({
+    volume: 0.5,
+    randomness: 0.15,
+    frequency,
+    attack: 0.01,
+    sustain: 0.03,
+    release: 0.06,
+    shape: 1, // triangle
+    slide: 4,
+    modulation: 2,
+    sustainVolume: 0.7,
+  });
+}
 
 export type SfxName = keyof typeof sfx;

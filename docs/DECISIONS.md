@@ -74,3 +74,14 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 - **Portrait tablets** put the time pill and camera above a full-width object drawer; the drawer shows as many tiles per page as fit (3–6).
 - **Character textures.** Each character's drawing is cached as a texture per appearance and eye state (`cacheAsTexture`, resolution 3 so it stays crisp when the room is scaled up), and redrawn only when the eyes change.
 - **Screenshot tests** compare the stage at three viewports against baselines made on Linux, the CI platform (`npm run e2e:screenshots`, which runs in the Playwright Docker image). On other platforms that one test is skipped. `?still` freezes the stage clock at zero for these pictures; `#scene` opens the play stage directly.
+
+## 2026-11-07: M3 simulation choices
+
+- **World as plain data.** `src/sim/types.ts` is JSON-friendly (no classes), so saving in M4 is a straight copy; all randomness comes from a seeded mulberry32 state stored in the world.
+- **Town.** Starter house (kitchen and living room, plus a bedroom through a door), a neighbour's house, café, park, library and music hall (`src/content/rooms.ts`). Bots live in the two houses. Beds sleep two.
+- **Scoring** follows SIM.md exactly; gains are divided by 100 so the 0.05 wander threshold applies. Sleep's gain is whatever energy is missing. At night sleep gets a small base pull (`nightSleepBase`) as well as the ×4 boost, so bots go to bed even when not tired, and sleepers never wake before 07:00.
+- **"Paused" bot energy** stops autonomy and also holds needs still, so paused bots never end up starving.
+- **Chatting** needs a free partner: a bot only invites a bot that is idle or wandering, which then turns to chat back. That keeps the "bots never interrupt each other" rule.
+- **Tidy** only ever removes things a bot left out (a gift ball after play). Anything the child places or moves is marked as the child's and is never touched by bots.
+- **Sounds** for state changes (chime on a new activity, jingle on a need met, doorbell, Pocketese blips while chatting) play only for the room on screen, at most one of each per frame.
+- **Test hooks in the URL:** `?seed=N` for a reproducible town, `?hour=N` to start at a time of day, `?still` to freeze for screenshots, `#scene` to open the play stage.

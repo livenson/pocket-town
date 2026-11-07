@@ -3,7 +3,7 @@
 // AudioContext (and unlocks speech) on the first tap, click or key press.
 import { ZZFX } from 'zzfx';
 import { useSettings } from '../state/settings';
-import { sfx, type SfxName } from './sfx';
+import { blipParams, sfx, type SfxName } from './sfx';
 import { unlockSpeech } from './speech';
 
 const UNLOCK_EVENTS = ['pointerdown', 'touchend', 'mousedown', 'keydown'] as const;
@@ -59,5 +59,30 @@ export function playSfx(name: SfxName): void {
     ZZFX.play(...sfx[name]);
   } catch {
     // Audio unavailable (no device, blocked, etc.): play continues silently.
+  }
+}
+
+/**
+ * A few "Pocketese" syllables in a character's own pitch range: rhythm and
+ * feeling without words (DESIGN.md → Sound).
+ */
+export function speakPocketese(basePitch: number, syllables = 2): void {
+  const volume = useSettings.getState().effectsVolume;
+  if (volume <= 0) return;
+  try {
+    unlock();
+    ZZFX.volume = BASE_VOLUME * volume;
+    const ctx = context();
+    for (let i = 0; i < syllables; i++) {
+      const samples = ZZFX.buildSamples(...blipParams(basePitch * (0.9 + 0.25 * ((i * 7) % 3))));
+      const buffer = ctx.createBuffer(1, samples.length, ZZFX.sampleRate);
+      buffer.getChannelData(0).set(samples);
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(ctx.destination);
+      source.start(ctx.currentTime + i * 0.13);
+    }
+  } catch {
+    // Audio unavailable: the emote bubble still shows.
   }
 }

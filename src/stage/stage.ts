@@ -2,11 +2,15 @@
 // element hosts it. Rooms are 900 × 560 logical units, scaled to fit.
 import 'pixi.js/unsafe-eval'; // no eval(): keeps the Content Security Policy strict
 import { Application, Container, type Ticker } from 'pixi.js';
-import { starterRoom } from '../content/rooms';
+import { sim } from '../app/simRunner';
+import { findRoom, starterRoom, type DoorDef } from '../content/rooms';
 import { breakpoints, color, stage as stageSize } from '../design/tokens';
-import { DemoCast } from './demo';
+import { minuteOfDay } from '../sim/clock';
+import { useUi } from '../state/ui';
+import { daylight } from './daylight';
 import { StagePrefs } from './prefs';
 import { RoomView } from './RoomView';
+import { SimView } from './SimView';
 
 /** Freeze the clock at zero (deterministic screenshots): `?still` in the URL. */
 const STILL = typeof location !== 'undefined' && new URLSearchParams(location.search).has('still');
@@ -15,12 +19,11 @@ export class Stage {
   readonly app = new Application();
   readonly world = new Container();
   room!: RoomView;
-  cast!: DemoCast;
+  view!: SimView;
   private readonly prefs = new StagePrefs();
   private host: HTMLElement | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private time = 0;
-  private simTime = 0;
 
   async init(): Promise<void> {
     await this.app.init({
@@ -35,20 +38,49 @@ export class Stage {
     });
     this.app.canvas.setAttribute('aria-hidden', 'true');
     this.app.canvas.dataset.testid = 'stage-canvas';
-    this.room = new RoomView(starterRoom);
-    this.world.addChild(this.room);
     this.app.stage.addChild(this.world);
-    this.cast = new DemoCast(this.room);
-    this.cast.update(0, 0, 0, 0, this.prefs.calm);
+    this.room = this.makeRoom(useUi.getState().roomId);
+    this.view = new SimView(this.room);
+    this.drawFrame(0);
     this.app.ticker.add(this.tick);
+    // Follow room changes made elsewhere (the map, the hub).
+    useUi.subscribe((s, prev) => {
+      if (s.roomId !== prev.roomId) this.showRoom(s.roomId);
+    });
+  }
+
+  private makeRoom(roomId: string): RoomView {
+    const room = new RoomView(findRoom(roomId) ?? starterRoom);
+    room.onDoor = (door) => this.openDoor(door);
+    this.world.addChild(room);
+    return room;
+  }
+
+  private openDoor(door: DoorDef): void {
+    if (door.to === 'outside') useUi.getState().go('map');
+    else useUi.getState().setRoom(door.to);
+  }
+
+  /** Look into another room. */
+  showRoom(roomId: string): void {
+    if (roomId === this.room.def.id) return;
+    const old = this.room;
+    this.room = this.makeRoom(roomId);
+    this.view.setRoom(this.room);
+    old.destroy({ children: true });
+    this.drawFrame(0);
+  }
+
+  private drawFrame(dt: number): void {
+    const world = sim.world;
+    this.room.setDaylight(daylight(minuteOfDay(world.minute)));
+    this.view.update(world, STILL ? 0 : sim.alpha, dt, this.time, this.prefs.calm);
   }
 
   private readonly tick = (ticker: Ticker): void => {
     const dt = Math.min(ticker.deltaMS, 100) / 1000;
-    const simDt = dt * this.prefs.speed;
     this.time += dt;
-    this.simTime += simDt;
-    this.cast.update(dt, simDt, this.time, this.simTime, this.prefs.calm);
+    this.drawFrame(dt);
   };
 
   attach(host: HTMLElement): void {

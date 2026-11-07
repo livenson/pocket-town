@@ -1,11 +1,14 @@
 // The starter cast (design-reference/Main.dc.html and Room.dc.html).
 import { color } from '../design/tokens';
 import type { Appearance } from './appearance';
+import type { TraitId } from './traits';
 
 export interface CharacterDef {
   id: string;
   name: string;
   appearance: Appearance;
+  traits: [TraitId, TraitId, TraitId];
+  homeId: string;
 }
 
 export const starterCast: CharacterDef[] = [
@@ -19,6 +22,8 @@ export const starterCast: CharacterDef[] = [
       hairStyle: 'bob',
       aid: 'none',
     },
+    traits: ['snacky', 'chatty', 'tidy'],
+    homeId: 'home',
   },
   {
     id: 'pim',
@@ -30,6 +35,8 @@ export const starterCast: CharacterDef[] = [
       hairStyle: 'puff',
       aid: 'none',
     },
+    traits: ['musical', 'sporty', 'brave'],
+    homeId: 'home',
   },
   {
     id: 'lumo',
@@ -41,6 +48,8 @@ export const starterCast: CharacterDef[] = [
       hairStyle: 'bun',
       aid: 'hearing',
     },
+    traits: ['chatty', 'gardener', 'sleepy'],
+    homeId: 'neighbour',
   },
   {
     id: 'nella',
@@ -52,6 +61,8 @@ export const starterCast: CharacterDef[] = [
       hairStyle: 'bob',
       aid: 'arm',
     },
+    traits: ['explorer', 'musical', 'shy'],
+    homeId: 'neighbour',
   },
   {
     id: 'oki',
@@ -63,6 +74,8 @@ export const starterCast: CharacterDef[] = [
       hairStyle: 'none',
       aid: 'none',
     },
+    traits: ['sleepy', 'gardener', 'shy'],
+    homeId: 'home',
   },
   {
     id: 'tavi',
@@ -74,5 +87,7 @@ export const starterCast: CharacterDef[] = [
       hairStyle: 'crop',
       aid: 'wheelchair',
     },
+    traits: ['sporty', 'explorer', 'snacky'],
+    homeId: 'home',
   },
 ];

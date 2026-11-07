@@ -64,15 +64,15 @@ Acceptance: a static room with five characters idling and one walking back and f
 
 Goal: characters that live their own day, legibly. Implement `SIM.md` fully.
 
-- [ ] `src/sim/` with no DOM or Pixi imports: `World`, `Bot`, `Needs`, `Traits`, `Activity`, `Advertisement`, `Planner` (utility AI), `Clock`, `Rng` (seeded, e.g. mulberry32), `Commands`.
-- [ ] Fixed-step simulation at 10 ticks per real second, decoupled from rendering; render interpolates positions.
-- [ ] Clock and time control: pause, play, fast (×4). Day/night: one game day = 12 real minutes at normal speed; sky and window colours follow time of day.
-- [ ] Movement within a room on a 1D floor line with a small depth offset; between rooms through doors; between buildings via the map (bot leaves through the front door, appears as a map pin, enters the destination).
-- [ ] Each bot always exposes `now` (activity, progress 0–1) and `next` (planned activity) for the UI.
-- [ ] Socialising: two bots with the "chat" activity face each other and alternate emote bubbles.
-- [ ] Visits: a bot can visit another house; doorbell sound, bell bubble, visitor flag on the roof.
-- [ ] Bot energy setting: lively (default rates), calm (half rates, longer activities), paused (autonomy off; bots idle in place).
-- [ ] Unit tests with a fixed seed: needs decay; trait multipliers change choices; a hungry bot walks to food; nudges override the next choice; frozen bots do not move; bots never modify child-placed objects (property test over 10,000 ticks).
+- [x] `src/sim/` with no DOM or Pixi imports: `World`, `Bot`, `Needs`, `Traits`, `Activity`, `Advertisement`, `Planner` (utility AI), `Clock`, `Rng` (seeded, e.g. mulberry32), `Commands`.
+- [x] Fixed-step simulation at 10 ticks per real second, decoupled from rendering; render interpolates positions.
+- [x] Clock and time control: pause, play, fast (×4). Day/night: one game day = 12 real minutes at normal speed; sky and window colours follow time of day.
+- [x] Movement within a room on a 1D floor line with a small depth offset; between rooms through doors; between buildings via the map (bot leaves through the front door, appears as a map pin, enters the destination). (Map pins are drawn in M7; the child can already tap doors to look into the next room, and the map screen leads into every building.)
+- [x] Each bot always exposes `now` (activity, progress 0–1) and `next` (planned activity) for the UI.
+- [x] Socialising: two bots with the "chat" activity face each other and alternate emote bubbles.
+- [x] Visits: a bot can visit another house; doorbell sound, bell bubble, visitor flag on the roof. (The roof flag and the guest's face on the house pin are drawn on the world map in M7.)
+- [x] Bot energy setting: lively (default rates), calm (half rates, longer activities), paused (autonomy off; bots idle in place).
+- [x] Unit tests with a fixed seed: needs decay; trait multipliers change choices; a hungry bot walks to food; nudges override the next choice; frozen bots do not move; bots never modify child-placed objects (property test over 10,000 ticks).
 
 Acceptance: leave the starter house running for 10 minutes; every bot shows a sensible routine (eat, nap, play, chat, visit), nobody gets stuck, the `now`/`next` icons always match what the bot is visibly doing.
 

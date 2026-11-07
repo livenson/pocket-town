@@ -13,6 +13,9 @@ export interface ToastMessage {
 
 interface UiStore {
   nav: NavState;
+  /** The room the play stage is looking at. */
+  roomId: string;
+  setRoom: (roomId: string) => void;
   time: TimeSpeed;
   shortcutsOpen: boolean;
   plusSheetOpen: boolean;
@@ -46,6 +49,8 @@ function initialNavFromHash(): NavState {
 
 export const useUi = create<UiStore>()((set, get) => ({
   nav: initialNavFromHash(),
+  roomId: 'home-living',
+  setRoom: (roomId) => set({ roomId }),
   time: 'play',
   shortcutsOpen: false,
   plusSheetOpen: false,

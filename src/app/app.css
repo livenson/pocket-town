@@ -837,3 +837,29 @@ html[data-layout='phone'] .gate__card {
   font-weight: 900;
   color: var(--pt-muted-text);
 }
+
+/* ---------- Map (until M7 draws the town) ---------- */
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  width: min(100%, 640px);
+}
+
+.map-building {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1.1;
+  border-top: 18px solid var(--pt-tomato);
+  border-radius: 28px;
+  background: #fff;
+  color: var(--pt-ink);
+  box-shadow: 0 6px 0 #e3b48f;
+  transition: transform var(--pt-press-ms) var(--pt-ease);
+}
+
+.map-building:active {
+  transform: translateY(6px);
+  box-shadow: none;
+}

@@ -35,6 +35,8 @@ export class PegView extends Container {
   private stepPhase = 0;
   private jumpT = 0;
   private facing: 1 | -1 = 1;
+  /** Set by `follow` when the simulation says the character is walking. */
+  private walkingNow = false;
   private readonly tweens = new Tweens();
   /** Offsets idle animations so characters do not breathe in unison. */
   private readonly phase: number;
@@ -107,6 +109,31 @@ export class PegView extends Container {
     this.bubble.show(icon, color, progress);
   }
 
+  /**
+   * Follow the simulation: position (already interpolated), facing, whether it is
+   * walking this frame, and the pose of what it is doing.
+   */
+  follow(
+    x: number,
+    y: number,
+    facing: 1 | -1,
+    walking: boolean,
+    activity: PegActivity,
+    dtS: number,
+    timeS: number,
+    calm: boolean,
+  ): void {
+    const moved = Math.abs(x - this.x);
+    this.position.set(x, y);
+    this.facing = facing;
+    this.targetX = null;
+    this.walkingNow = walking;
+    if (walking) this.stepPhase += moved * HOPS_PER_UNIT;
+    else this.stepPhase = 0;
+    if (activity !== this.activity) this.setActivity(activity);
+    this.update(dtS, timeS, calm);
+  }
+
   /** Advance motion. `dtS` is seconds of stage time; `timeS` the stage clock. */
   update(dtS: number, timeS: number, calm: boolean): void {
     this.tweens.update(dtS * 1000);
@@ -129,7 +156,9 @@ export class PegView extends Container {
         pose = walkPose(this.stepPhase, calm, rolls);
       }
     }
-    if (this.targetX === null) {
+    if (this.targetX === null && this.walkingNow) {
+      pose = walkPose(this.stepPhase, calm, rolls);
+    } else if (this.targetX === null) {
       if (this.activity === 'sleep') pose = sleepPose(timeS, this.phase, calm);
       else if (this.activity === 'dance') pose = dancePose(timeS, this.phase, calm);
       else pose = idlePose(timeS, this.phase, calm);
@@ -144,8 +173,10 @@ export class PegView extends Container {
     this.figure.position.y = pose.dy;
     this.figure.scale.set(pose.scaleX * this.facing, pose.scaleY);
     this.figure.rotation = pose.rotation;
-    // Bubbles ride along with hops but never flip or squash.
-    this.bubble.position.y = -this.size - 34 + pose.dy;
+    // Bubbles ride along with hops but never flip or squash. They may live in a
+    // separate layer (above the night dimming), so position them in room units.
+    if (this.bubble.parent === this) this.bubble.position.set(0, -this.size - 34 + pose.dy);
+    else this.bubble.position.set(this.x, this.y - this.size - 34 + pose.dy);
     // Depth sorting: things lower on the floor are drawn in front.
     this.zIndex = this.y;
   }
