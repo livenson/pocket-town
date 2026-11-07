@@ -24,6 +24,7 @@ Read these before writing code, in this order:
 | Sound effects | ZzFX (procedurally generated sounds; no audio files to license) | Unlock audio on the first user gesture (iOS requirement). |
 | Voice-over placeholder | Web Speech API (`speechSynthesis`) | Behind an interface so recorded voice can replace it later. |
 | Fonts | Self-hosted via `@fontsource/baloo-2` and `@fontsource/nunito` | Never load Google Fonts or any third-party URL at runtime. |
+| Pictures of things and map animals | Microsoft Fluent Emoji (flat), MIT | `npm run art` copies only the pictures used into `src/design/thingArt.ts` (committed); nothing is fetched. Credited in the grown-up area and `docs/THIRD_PARTY.md`. Furniture is drawn in-house (`src/content/furniture.ts`). |
 | Offline and install | `vite-plugin-pwa` | App shell and assets cached; plays fully offline. |
 | Unit tests | Vitest | Sim, undo/redo, save/load and migrations. |
 | End-to-end tests | Playwright | Phone, tablet and desktop viewports with touch emulation. |
@@ -36,7 +37,7 @@ Avoid adding further runtime dependencies without a clear reason; record any you
 These come from the brief and apply to every change.
 
 - **Child safety and privacy.** The app makes no network requests except to load its own static files. No analytics, ads, trackers, external fonts, CDNs, embeds or outbound links. Anything that would leave the device, or any link, purchase or settings change for grown-ups, sits behind the parental gate.
-- **Original work only.** Do not imitate Toca Boca or any existing game's art, characters, logos, palette or UI. Use the identity in `docs/DESIGN.md`.
+- **Original work only.** Do not imitate Toca Boca or any existing game's art, characters, logos, palette or UI. Use the identity in `docs/DESIGN.md`. Open-licensed art is fine when the licence allows it without share-alike (MIT, Apache 2.0, CC0, CC BY with credit): copy only what is used into the repo, credit it in the grown-up area and `docs/THIRD_PARTY.md`, and record it in `docs/DECISIONS.md`.
 - **Zero-reading core.** Every action works from icon, motion and sound alone. Text labels are an optional layer, on by default only for ages 9 and up.
 - **Every drag has a tap alternative.** Tap to pick up (item rides on a marigold halo, valid targets glow), then tap to place. Both must work with mouse, touch and keyboard.
 - **Touch targets.** At least 44×44 CSS px; primary actions at least 76×76 px on tablet.
@@ -45,21 +46,25 @@ These come from the brief and apply to every change.
 - **No manipulative design.** No streaks, timers that pressure, rewards for returning, "don't leave" messages or loot mechanics.
 - **Accessibility.** WCAG AA text contrast; colour is never the only signal; `prefers-reduced-motion` and the in-game "calm motion" setting both reduce animation; keyboard shortcuts on desktop; every icon-only control has an `aria-label`.
 
-## Repository layout (target)
+## Repository layout
 
 ```
 src/
   main.tsx              entry: mounts React shell, creates Pixi app
   app/                  screen state machine, top-level layout, docks
   ui/                   React components (Button, IconButton, Sheet, Carousel, HoldButton, ...)
-  design/               tokens.ts, icons.ts (provided), fonts.css
+  design/               tokens.ts and icons.ts (provided: keep unchanged), foodIcons.ts (extra icons),
+                        thingArt.ts (generated pictures), thingPicture.ts, fonts.css
   stage/                Pixi scene graph: rooms, house diorama, map, peg characters, effects
   sim/                  world model, needs, activities, utility AI, time, RNG (no DOM/Pixi)
   input/                pick-and-place controller, drag, hold, keyboard shortcuts
+  state/                Zustand stores: settings, profiles, ui, play, decor, creation
   audio/                ZzFX sounds, Pocketese voice, speech wrapper
   persist/              save schema, migrations, idb-keyval adapter, autosave
   content/              data: rooms, furniture, foods, traits, names (pure data)
   i18n/                 strings.en.ts (reference), strings.et.ts, strings.lv.ts; all visible text lives here
+  dev/feedback/         kid play-testing tool (dev server only, never in a build)
+scripts/                icon and picture generators; feedback/ (dev-server plugin and CLI)
 tests/                  vitest unit tests mirroring src/
 e2e/                    playwright specs
 docs/                   brief, plan, design, sim spec, decisions
@@ -74,11 +79,14 @@ design-reference/       prototypes from the design canvas (read-only reference)
 - `npm test`: Vitest.
 - `npm run e2e`: Playwright against `npm run preview`.
 - `npm run lint`: oxlint + Prettier check.
+- `npm run e2e:screenshots`: re-create the Linux reference pictures for the room test in Docker (as CI renders them). Run it when a change alters the play screen's look, and check the new picture before committing.
+- `npm run art`: copy the pictures listed in `scripts/make-thing-art.ts` into `src/design/thingArt.ts`. `npm run icons`: the app icons in `public/`.
 - `npm run feedback` / `npm run feedback:lan`: dev server with the kid play-testing tool; run the `kid-feedback` skill to listen and respond (see `.claude/skills/kid-feedback/SKILL.md`). Dev only, never in a build.
 
 ## How to work
 
-- Follow `docs/PLAN.md` milestone by milestone. Finish each milestone's acceptance criteria, run lint, tests and build, then commit before starting the next.
+- Follow `docs/PLAN.md` milestone by milestone. Finish each milestone's acceptance criteria, run lint, tests and build, then commit before starting the next. Requests from the owner and from play-testing come first when they arrive.
+- Where `docs/DECISIONS.md` records an owner decision that differs from the brief (for example removing the wheelchair, hearing aid and helper arm), the decision wins.
 - Small commits with clear messages. Push to `main`; the GitHub Actions workflow deploys to Pages.
 - Check changes in a real, visible local browser, not only in headless tests:
   - While working, use `npm run dev` (fast, hot reload).
@@ -88,4 +96,6 @@ design-reference/       prototypes from the design canvas (read-only reference)
 - Keep `docs/PLAN.md` checkboxes up to date as tasks are completed.
 - Test on a real iPad and an Android tablet when possible (the owner will do this from the Pages URL). Design for Safari on iPadOS first; it is the strictest target.
 - Never commit secrets. There are none needed: this is a static site.
+- Run one Playwright session at a time. Overlapping runs (or browser scripts during a run) starve the machine and produce timeouts that look like failures.
+- Saved towns refer to content by id: never rename or remove a room, furniture piece or thing; add new ones and move old ones instead.
 - Every new visible or spoken word goes into all three dictionaries in `src/i18n/` (English, Estonian, Latvian); the `Strings` type fails the build when one is missing.
