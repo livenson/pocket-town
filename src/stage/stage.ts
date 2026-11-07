@@ -98,8 +98,8 @@ export class Stage {
     for (const f of room.def.furniture) {
       const s = surfaceOf(f);
       if (s)
-        // A band around the top: above characters, so a thing can go on a table
-        // someone sits at, while a drop on their face still gives it to them.
+        // A band around the top. Characters stay above it (a tap on someone gives
+        // them the thing); where nobody stands in front, the band takes it.
         setTargetRect(`surface:${f.id}`, {
           x: s.x0 - 10,
           y: s.top - 30,

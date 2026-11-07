@@ -277,13 +277,13 @@ export function StageTargets() {
         <DoorTarget key={`${roomId}-${i}`} index={i} to={d.to} />
       ))}
       <FloorTargets controlling={controlling} />
+      <SurfaceTargets roomId={roomId} />
       {objects.map((o) => (
         <ObjectTarget key={o.id} object={o} />
       ))}
       {bots.map((b) => (
         <BotTarget key={b.id} bot={b} />
       ))}
-      <SurfaceTargets roomId={roomId} />
       <span className="visually-hidden" aria-live="polite">
         {bots.map((b) => `${b.name}: ${doingLabel(b)}${b.now ? '' : ''}`).join('. ')}
       </span>
