@@ -166,3 +166,31 @@ test('things can go on a table or a shelf, not only the floor', async ({ page })
   // Nothing is being carried any more, so the places stop glowing.
   await expect(b(page, 'Table: put it here')).toHaveCount(0);
 });
+
+test('decorating: add a bed by tapping, turn it, take it away, and undo', async ({ page }) => {
+  await page.goto('./#scene');
+  await tap(page, b(page, 'Pause'));
+  await tap(page, b(page, 'Decorate this room'));
+  // The phone keeps the catalogue in the sheet.
+  const add = page.getByRole('button', { name: 'Add', exact: true });
+  if (await add.isVisible()) await tap(page, add);
+  await tap(page, b(page, 'Beds'));
+  await tap(page, b(page, 'Bed'));
+  // Tap the room (the keyboard's way: the middle of the floor).
+  await page.locator('.stage-target--decor-room').dispatchEvent('click');
+  const beds = page.getByRole('button', { name: /^Bed(, picked)?: / });
+  await expect(beds).toHaveCount(1);
+  await tap(page, b(page, 'Turn'));
+  const hold = page.getByRole('button', { name: 'Hold to take it away' });
+  const box = await hold.boundingBox();
+  if (!box) throw new Error('no hold button');
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(1000);
+  await page.mouse.up();
+  await expect(beds).toHaveCount(0);
+  await tap(page, b(page, 'Undo'));
+  await expect(beds).toHaveCount(1);
+  await tap(page, b(page, 'Done decorating'));
+  await expect(b(page, 'Decorate this room')).toBeVisible();
+});

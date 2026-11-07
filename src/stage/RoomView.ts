@@ -56,6 +56,17 @@ export function drawFurniture(kind: FurnitureKind): Graphics {
   return g;
 }
 
+/** Put a piece's drawing where the instance says: position, size, turn and depth. */
+function placePiece(g: Container, f: FurnitureInstance, kind: FurnitureKind): void {
+  const scale = f.scale ?? 1;
+  g.position.set(f.x, f.y);
+  // Turned pieces flip around their own middle.
+  g.scale.set(f.flip ? -scale : scale, scale);
+  if (f.flip) g.position.x = f.x + kind.w * scale;
+  const footY = 'footY' in kind && kind.footY !== undefined ? kind.footY : kind.h;
+  g.zIndex = f.y + footY * scale;
+}
+
 export class RoomView extends Container {
   /** Wall pieces: always behind characters. */
   readonly wallLayer = new Container();
@@ -73,6 +84,10 @@ export class RoomView extends Container {
   private readonly moons: Graphics[] = [];
   private readonly clouds: Graphics[] = [];
   private sky: Graphics | null = null;
+  /** Each piece's drawing, so decorating can move one without redrawing the room. */
+  private readonly pieces = new Map<string, { g: Container; f: FurnitureInstance }>();
+  /** What is shown while dragging: a piece moved (or a new one) under the finger. */
+  private previewing: { f: FurnitureInstance; ghost: Container | null } | null = null;
 
   constructor(def: RoomDef) {
     super();
@@ -124,7 +139,7 @@ export class RoomView extends Container {
     return shell;
   }
 
-  private drawWindow(f: FurnitureInstance, kind: FurnitureKind): Container {
+  private drawWindow(kind: FurnitureKind): Container {
     const c = new Container();
     const pane = new Graphics().roundRect(8, 8, kind.w - 16, kind.h - 16, 18).fill(0xffffff);
     pane.tint = hex(color.sky);
@@ -138,7 +153,6 @@ export class RoomView extends Container {
       .rect(kind.w / 2 - 4, 0, 8, kind.h)
       .fill(hex(color.ink));
     c.addChild(pane, moon, cloud, frame);
-    c.position.set(f.x, f.y);
     this.panes.push(pane);
     this.moons.push(moon);
     this.clouds.push(cloud);
@@ -147,23 +161,40 @@ export class RoomView extends Container {
 
   addFurniture(f: FurnitureInstance): Container {
     const kind: FurnitureKind = furnitureKinds[f.kind];
-    const g: Container = kind.id === 'window' ? this.drawWindow(f, kind) : drawFurniture(kind);
-    if (kind.id !== 'window') g.position.set(f.x, f.y);
-    const scale = f.scale ?? 1;
-    if (scale !== 1 || f.flip) {
-      // Turned pieces flip around their own middle.
-      g.scale.set(f.flip ? -scale : scale, scale);
-      if (f.flip) g.position.x = f.x + kind.w * scale;
-    }
+    const g: Container = kind.id === 'window' ? this.drawWindow(kind) : drawFurniture(kind);
     g.label = `furniture:${f.id}`;
     if (kind.layer === 'wall' && !f.standing) this.wallLayer.addChild(g);
     else if (kind.layer === 'floor') this.floorLayer.addChild(g);
-    else {
-      const footY = 'footY' in kind && kind.footY !== undefined ? kind.footY : kind.h;
-      g.zIndex = f.y + footY * scale;
-      this.actors.addChild(g);
-    }
+    else this.actors.addChild(g);
+    placePiece(g, f, kind);
+    this.pieces.set(f.id, { g, f });
     return g;
+  }
+
+  /**
+   * While dragging: show `f` (an existing piece moved, or a new one as a see-through
+   * ghost); null puts everything back. Cheap to call every frame with the same value.
+   */
+  preview(f: FurnitureInstance | null): void {
+    if (this.previewing?.f === f) return;
+    if (this.previewing) {
+      const { f: old, ghost } = this.previewing;
+      ghost?.destroy({ children: true });
+      const piece = this.pieces.get(old.id);
+      if (piece) placePiece(piece.g, piece.f, furnitureKinds[piece.f.kind]);
+      this.previewing = null;
+    }
+    if (!f) return;
+    const piece = this.pieces.get(f.id);
+    if (piece) {
+      placePiece(piece.g, f, furnitureKinds[f.kind]);
+      this.previewing = { f, ghost: null };
+      return;
+    }
+    const ghost = this.addFurniture(f);
+    this.pieces.delete(f.id);
+    ghost.alpha = 0.6;
+    this.previewing = { f, ghost };
   }
 
   setDaylight(light: Daylight): void {

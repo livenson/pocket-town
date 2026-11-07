@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { strings } from '../../i18n';
+import { useDecor } from '../../state/decor';
 import { usePlay } from '../../state/play';
 import { useSettings } from '../../state/settings';
 import { useUi } from '../../state/ui';
@@ -14,6 +15,8 @@ import { HintBubble } from '../HintBubble';
 import { hint, useHints } from '../hints';
 import { game, useGame } from '../game';
 import { useLayoutMode, useViewportWidth } from '../media';
+import { DecorToolbar } from '../decorate/DecorToolbar';
+import { FurnitureDrawer } from '../decorate/FurnitureDrawer';
 import { ObjectDrawer } from '../ObjectDrawer';
 import { StageHost } from '../StageHost';
 import { StageTargets } from '../StageTargets';
@@ -36,14 +39,6 @@ export function SceneScreen() {
   const [sheetTab, setSheetTab] = useState<'characters' | 'things'>('things');
   const phone = layout === 'phone';
   const hintStep = useHints((s) => s.step);
-  // The pencil edits the house you are in (if the child built it), or starts a new one.
-  const editHouse = () => {
-    const roomId = useUi.getState().roomId;
-    const house = game.world.houses.find((h) => roomId.startsWith(`${h.id}-`));
-    useUi.getState().setEditingHouse(house?.id ?? null);
-    go('houseWizard');
-  };
-
   // First play for this player: start the hint chain (once; it never comes back).
   useEffect(() => {
     useHints.getState().start(phone);
@@ -58,6 +53,9 @@ export function SceneScreen() {
   const perPage = Math.max(3, Math.min(6, Math.floor((drawerWidth - 2 * (iconBtn + 12)) / 100)));
   // Picking something up from the phone sheet closes it, so the stage is free to tap.
   const sheetShown = sheetOpen && !carrying;
+  const decorating = useDecor((s) => s.on);
+  // Leaving the play screen ends decorating.
+  useEffect(() => () => useDecor.getState().setOn(false), []);
 
   return (
     <div
@@ -65,6 +63,7 @@ export function SceneScreen() {
       data-hand={leftHanded ? 'left' : 'right'}
       data-carrying={carrying || undefined}
       data-camera={cameraOpen || undefined}
+      data-decorating={decorating || undefined}
     >
       <div className="stage" aria-label={strings.stage} role="region">
         <StageHost />
@@ -106,7 +105,20 @@ export function SceneScreen() {
                 go('map');
               }}
             />
-            <IconButton icon="pencil" label={strings.edit} shortcut="E" onClick={editHouse} />
+            <IconButton
+              icon={decorating ? 'check' : 'pencil'}
+              label={decorating ? strings.decorate.done : strings.decorate.start}
+              shortcut="E"
+              pressed={decorating}
+              onClick={() => {
+                const on = !useDecor.getState().on;
+                useDecor.getState().setOn(on);
+                if (on) {
+                  usePlay.getState().drop();
+                  usePlay.getState().closeCard();
+                }
+              }}
+            />
           </div>
         </>
       )}
@@ -119,7 +131,7 @@ export function SceneScreen() {
 
       {!phone && (
         <section className="dock dock--drawer" aria-label={strings.thingsDrawer}>
-          <ObjectDrawer perPage={perPage} />
+          {decorating ? <FurnitureDrawer perPage={perPage} /> : <ObjectDrawer perPage={perPage} />}
         </section>
       )}
 
@@ -180,12 +192,19 @@ export function SceneScreen() {
               </div>
             }
           >
-            {sheetTab === 'things' ? <ObjectDrawer perPage={3} columns={3} /> : <CharactersDock />}
+            {decorating ? (
+              <FurnitureDrawer perPage={3} columns={3} />
+            ) : sheetTab === 'things' ? (
+              <ObjectDrawer perPage={3} columns={3} />
+            ) : (
+              <CharactersDock />
+            )}
           </Sheet>
         </>
       )}
 
-      {!following && <HintBubble />}
+      {decorating && <DecorToolbar />}
+      {!following && !decorating && <HintBubble />}
       <CarryLayer />
       <BotCard />
       <CameraOverlay />

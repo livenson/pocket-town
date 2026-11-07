@@ -40,6 +40,14 @@ export const en = {
   useFurniture: (name: string) => `${name}: send someone here`,
   putOn: (name: string) => `${name}: put it here`,
   furnitureNames: {
+    window: 'Window',
+    rug: 'Rug',
+    lamp: 'Lamp',
+    tree: 'Tree',
+    stagePlatform: 'Stage',
+    curtain: 'Curtain',
+    starLight: 'Star light',
+    bookPile: 'Pile of books',
     shelf: 'Shelf',
     stove: 'Stove',
     table: 'Table',
@@ -82,6 +90,31 @@ export const en = {
     'neighbour-main': 'living room',
     'neighbour-bedroom': 'bedroom',
   } as Record<string, string>,
+
+  decorate: {
+    start: 'Decorate this room',
+    done: 'Done decorating',
+    piece: (name: string) => `${name}: tap to pick, drag to move`,
+    picked: (name: string) => `${name}, picked: tap the room to move it there`,
+    room: 'The room: tap to put the piece here',
+    carrying: (name: string) => `${name}: tap the room to put it there`,
+    turn: 'Turn',
+    copy: 'Copy',
+    remove: 'Hold to take it away',
+    house: 'Change the house',
+    catalogue: 'Furniture',
+    categories: {
+      sit: 'Sitting',
+      eat: 'Tables and kitchen',
+      sleep: 'Beds',
+      play: 'Play',
+      music: 'Music',
+      books: 'Books',
+      plants: 'Plants',
+      walls: 'On the wall',
+      floor: 'Rugs and lamps',
+    } as Record<string, string>,
+  },
 
   // Bot card
   card: {

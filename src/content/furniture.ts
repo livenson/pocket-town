@@ -1,5 +1,6 @@
 // Furniture as flat shapes, transcribed from design-reference/Room.dc.html.
 // Coordinates are local to the piece (origin = top-left of its box), in room units.
+import type { IconName } from '../design/icons';
 import { color } from '../design/tokens';
 
 export type Corner4 = [number, number, number, number];
@@ -675,4 +676,62 @@ export function surfaceOf(f: FurnitureInstance): Surface | null {
   // Standing pieces: their feet. Wall pieces: the floor just in front of the wall.
   const floorY = kind.layer === 'stand' ? f.y + (kind.footY ?? kind.h) * s : 430;
   return { x0: f.x + inset, x1: f.x + kind.w * s - inset, top: f.y + top * s, floorY };
+}
+
+/** Pieces the child cannot move or remove (the way in and out of a room). */
+export const fixedKinds: FurnitureKindId[] = ['door'];
+
+const ROOM_W = 900;
+const WALL_BASE = 362;
+const FLOOR_FRONT = 545;
+
+/**
+ * Keep a piece where it can stand: wall pieces on the wall, rugs flat on the floor,
+ * standing pieces with their feet on the floor. Returns the top-left to use.
+ */
+export function clampFurniture(f: FurnitureInstance): { x: number; y: number } {
+  const kind: FurnitureKind = furnitureKinds[f.kind];
+  const s = f.scale ?? 1;
+  const w = kind.w * s;
+  const h = kind.h * s;
+  const x = Math.min(ROOM_W - w - 4, Math.max(4, f.x));
+  if (kind.layer === 'wall' && !f.standing) {
+    return { x, y: Math.min(WALL_BASE + 8 - h, Math.max(8, f.y)) };
+  }
+  if (kind.layer === 'floor') {
+    return { x, y: Math.min(FLOOR_FRONT + 10 - h, Math.max(WALL_BASE + 4, f.y)) };
+  }
+  const foot = (kind.footY ?? kind.h) * s;
+  const footY = Math.min(FLOOR_FRONT, Math.max(WALL_BASE, f.y + foot));
+  return { x, y: footY - foot };
+}
+
+export type CatalogueId =
+  'sit' | 'eat' | 'sleep' | 'play' | 'music' | 'books' | 'plants' | 'walls' | 'floor';
+
+/** The furniture catalogue for decorating, by category (the icon names are from icons.ts). */
+export const catalogue: { id: CatalogueId; icon: IconName; kinds: FurnitureKindId[] }[] = [
+  { id: 'sit', icon: 'sofa', kinds: ['sofa', 'bench'] },
+  { id: 'eat', icon: 'fork', kinds: ['table', 'cafeTable', 'counter', 'stove', 'cakeStand'] },
+  { id: 'sleep', icon: 'bed', kinds: ['bed'] },
+  { id: 'play', icon: 'ball', kinds: ['toyBox', 'swing'] },
+  { id: 'music', icon: 'note', kinds: ['musicBox', 'piano', 'stagePlatform'] },
+  { id: 'books', icon: 'book', kinds: ['bookshelf', 'bookPile'] },
+  { id: 'plants', icon: 'plant', kinds: ['plant', 'tree', 'gardenBed'] },
+  { id: 'walls', icon: 'roller', kinds: ['window', 'shelf', 'curtain', 'starLight'] },
+  { id: 'floor', icon: 'lamp', kinds: ['rug', 'lamp'] },
+];
+
+/** Top-left for a piece so it sits where the finger is: feet there, or centred on it. */
+export function anchorAt(
+  kindId: FurnitureKindId,
+  px: number,
+  py: number,
+  scale = 1,
+): { x: number; y: number } {
+  const kind: FurnitureKind = furnitureKinds[kindId];
+  const w = kind.w * scale;
+  const h = kind.h * scale;
+  if (kind.layer === 'stand') return { x: px - w / 2, y: py - (kind.footY ?? kind.h) * scale };
+  return { x: px - w / 2, y: py - h / 2 };
 }

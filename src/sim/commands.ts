@@ -2,10 +2,16 @@
 // Every command is a plain object so it can be recorded, undone and replayed.
 import type { ActivityId } from '../content/activities';
 import type { Appearance } from '../content/appearance';
-import type { HouseDef } from '../content/house';
+import { roomIdOf, type HouseDef } from '../content/house';
 import type { TraitId } from '../content/traits';
 import { giveEffects } from '../content/objects';
-import { findBuilding } from '../content/rooms';
+import {
+  clampFurniture,
+  fixedKinds,
+  furnitureKinds,
+  type FurnitureInstance,
+} from '../content/furniture';
+import { findBaseRoom, findBuilding, findRoom } from '../content/rooms';
 import { syncHouses } from './houses';
 import { tuning } from '../content/tuning';
 import { emit, startGoHome, startVisit } from './step';
@@ -29,6 +35,10 @@ export type Command =
   | { type: 'moveIn'; botId: string; houseId: string }
   /** Neighbours come round to see the new house. */
   | { type: 'housewarming'; houseId: string }
+  /** Decorating a room: add, move or turn, and remove a piece of furniture. */
+  | { type: 'addFurniture'; roomId: string; piece: FurnitureInstance }
+  | { type: 'moveFurniture'; roomId: string; id: string; x: number; y: number; flip?: boolean }
+  | { type: 'removeFurniture'; roomId: string; id: string }
   /** A tree or the pond on the map, changed by the child. */
   | { type: 'setDecor'; id: string; variant: number }
   /** The characters gallery: a new character, a changed one, a goodbye. */
@@ -184,6 +194,9 @@ export function apply(world: World, cmd: Command): boolean {
     case 'setHouse': {
       const i = world.houses.findIndex((h) => h.id === cmd.house.id);
       const copy = structuredClone(cmd.house);
+      const old = world.houses[i];
+      // A room rebuilt in the house wizard takes the wizard's furniture again.
+      if (old) forgetChangedRooms(world, old, copy);
       if (i >= 0) world.houses[i] = copy;
       else world.houses.push(copy);
       syncHouses(world);
@@ -191,7 +204,13 @@ export function apply(world: World, cmd: Command): boolean {
     }
     case 'removeHouse': {
       const before = world.houses.length;
+      const gone = world.houses.find((h) => h.id === cmd.id);
       world.houses = world.houses.filter((h) => h.id !== cmd.id);
+      if (gone && world.roomEdits) {
+        world.roomEdits = Object.fromEntries(
+          Object.entries(world.roomEdits).filter(([id]) => !id.startsWith(`${gone.id}-`)),
+        );
+      }
       syncHouses(world);
       return world.houses.length < before;
     }
@@ -204,6 +223,10 @@ export function apply(world: World, cmd: Command): boolean {
       startGoHome(world, bot, true);
       return true;
     }
+    case 'addFurniture':
+    case 'moveFurniture':
+    case 'removeFurniture':
+      return decorate(world, cmd);
     case 'setDecor': {
       world.decor = { ...world.decor, [cmd.id]: cmd.variant };
       return true;
@@ -249,4 +272,58 @@ export function apply(world: World, cmd: Command): boolean {
       return world.bots.length < before;
     }
   }
+}
+
+type DecorateCommand = Extract<
+  Command,
+  { type: 'addFurniture' } | { type: 'moveFurniture' } | { type: 'removeFurniture' }
+>;
+
+/**
+ * Change a room's furniture. The first change copies the room as designed; from
+ * then on the world keeps the whole list (replaced, never mutated, so the room
+ * registry sees the change).
+ */
+function decorate(world: World, cmd: DecorateCommand): boolean {
+  const current = world.roomEdits?.[cmd.roomId] ?? findBaseRoom(cmd.roomId)?.furniture;
+  if (!current || !findRoom(cmd.roomId)) return false;
+  let next: FurnitureInstance[];
+  if (cmd.type === 'addFurniture') {
+    if (!(cmd.piece.kind in furnitureKinds) || fixedKinds.includes(cmd.piece.kind)) return false;
+    if (current.some((f) => f.id === cmd.piece.id)) return false;
+    const piece = { ...cmd.piece, ...clampFurniture(cmd.piece) };
+    next = [...current, piece];
+  } else {
+    const piece = current.find((f) => f.id === cmd.id);
+    if (!piece || fixedKinds.includes(piece.kind)) return false;
+    if (cmd.type === 'removeFurniture') {
+      next = current.filter((f) => f !== piece);
+    } else {
+      const moved: FurnitureInstance = { ...piece, x: cmd.x, y: cmd.y };
+      if (cmd.flip !== undefined) moved.flip = cmd.flip;
+      next = current.map((f) => (f === piece ? { ...moved, ...clampFurniture(moved) } : f));
+    }
+  }
+  world.roomEdits = { ...world.roomEdits, [cmd.roomId]: next };
+  syncHouses(world);
+  return true;
+}
+
+const itemsIn = (h: HouseDef, space: number) =>
+  JSON.stringify(h.items.filter((p) => p.room === space));
+
+/** Drop the decorating of rooms whose type or wizard furniture changed. */
+function forgetChangedRooms(world: World, before: HouseDef, after: HouseDef): void {
+  if (!world.roomEdits) return;
+  const edits = { ...world.roomEdits };
+  let changed = false;
+  before.rooms.forEach((type, space) => {
+    const id = roomIdOf(after, space);
+    if (!edits[id]) return;
+    if (type !== after.rooms[space] || itemsIn(before, space) !== itemsIn(after, space)) {
+      delete edits[id];
+      changed = true;
+    }
+  });
+  if (changed) world.roomEdits = edits;
 }

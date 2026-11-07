@@ -1,6 +1,7 @@
 // Undo and redo for everything the child does (never for the bots' own choices).
 // Each step remembers how to put things back: the state of the bot it touched, or
 // the object it placed, moved or removed.
+import type { FurnitureInstance } from '../content/furniture';
 import type { HouseDef } from '../content/house';
 import { apply, type Command } from './commands';
 import { syncHouses } from './houses';
@@ -28,10 +29,17 @@ type Inverse =
   | { kind: 'moveObject'; id: string; object: PlacedObject }
   | { kind: 'restoreObject'; object: PlacedObject; index: number }
   /** The houses and every bot's control state, as they were (house commands). */
-  | { kind: 'town'; houses: HouseDef[]; bots: { id: string; state: BotControlState }[] }
+  | {
+      kind: 'town';
+      houses: HouseDef[];
+      bots: { id: string; state: BotControlState }[];
+      roomEdits: World['roomEdits'];
+    }
   /** The whole cast, as it was (adding, changing or removing a character). */
   | { kind: 'cast'; bots: Bot[] }
-  | { kind: 'decor'; id: string; variant: number | undefined };
+  | { kind: 'decor'; id: string; variant: number | undefined }
+  /** A room's furniture as it was (undefined: never decorated). */
+  | { kind: 'room'; roomId: string; furniture: FurnitureInstance[] | undefined };
 
 interface Entry {
   cmd: Command;
@@ -75,6 +83,15 @@ function capture(world: World, cmd: Command): Inverse | null {
         kind: 'town',
         houses: clone(world.houses),
         bots: world.bots.map((b) => ({ id: b.id, state: botState(b) })),
+        roomEdits: world.roomEdits && clone(world.roomEdits),
+      };
+    case 'addFurniture':
+    case 'moveFurniture':
+    case 'removeFurniture':
+      return {
+        kind: 'room',
+        roomId: cmd.roomId,
+        furniture: world.roomEdits?.[cmd.roomId] && clone(world.roomEdits[cmd.roomId]),
       };
     case 'setDecor':
       return { kind: 'decor', id: cmd.id, variant: world.decor?.[cmd.id] };
@@ -111,6 +128,14 @@ function revert(world: World, inv: Inverse): void {
     case 'cast':
       world.bots = clone(inv.bots);
       return;
+    case 'room': {
+      const edits = { ...world.roomEdits };
+      if (inv.furniture) edits[inv.roomId] = clone(inv.furniture);
+      else delete edits[inv.roomId];
+      world.roomEdits = edits;
+      syncHouses(world);
+      return;
+    }
     case 'decor': {
       const decor = { ...world.decor };
       if (inv.variant === undefined) delete decor[inv.id];
@@ -120,6 +145,7 @@ function revert(world: World, inv: Inverse): void {
     }
     case 'town':
       world.houses = clone(inv.houses);
+      world.roomEdits = inv.roomEdits && clone(inv.roomEdits);
       for (const { id, state } of inv.bots) {
         const bot = getBot(world, id);
         if (bot) Object.assign(bot, clone(state));

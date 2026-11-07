@@ -2,7 +2,7 @@
 // element hosts it. Rooms are 900 × 560 logical units, scaled to fit.
 import 'pixi.js/unsafe-eval'; // no eval(): keeps the Content Security Policy strict
 import { offers } from '../content/activities';
-import { furnitureKinds, surfaceOf, type FurnitureKind } from '../content/furniture';
+import { fixedKinds, furnitureKinds, surfaceOf, type FurnitureKind } from '../content/furniture';
 import { AccessibilitySystem, Application, Container, extensions, type Ticker } from 'pixi.js';
 import { sim } from '../app/simRunner';
 import { findRoom, starterRoom } from '../content/rooms';
@@ -15,6 +15,7 @@ import { ObjectsView } from './ObjectsView';
 import { RoomView } from './RoomView';
 import { SimView } from './SimView';
 import { clearTargetRects, relayoutTargets, setTargetRect, view as targetView } from './targets';
+import { useDecor } from '../state/decor';
 import { usePlay } from '../state/play';
 import { FLOOR } from '../sim/world';
 
@@ -107,6 +108,15 @@ export class Stage {
           h: 44,
         });
     }
+    // Decorating: every piece but the doors can be picked and moved; the whole room
+    // takes taps that place or move a piece.
+    setTargetRect('decor-room', { x: 0, y: 0, w: stageSize.roomWidth, h: stageSize.roomHeight });
+    for (const f of room.def.furniture) {
+      if (fixedKinds.includes(f.kind)) continue;
+      const kind: FurnitureKind = furnitureKinds[f.kind];
+      const s = f.scale ?? 1;
+      setTargetRect(`piece:${f.id}`, { x: f.x, y: f.y, w: kind.w * s, h: kind.h * s });
+    }
     // Furniture that offers something to do: tap it to send someone there.
     for (const f of room.def.furniture) {
       const kind: FurnitureKind = furnitureKinds[f.kind];
@@ -117,9 +127,9 @@ export class Stage {
     return room;
   }
 
-  /** Look into another room. */
-  showRoom(roomId: string): void {
-    if (roomId === this.room.def.id) return;
+  /** Look into another room (or redraw this one after decorating). */
+  showRoom(roomId: string, redraw = false): void {
+    if (roomId === this.room.def.id && !redraw) return;
     const old = this.room;
     this.room = this.makeRoom(roomId);
     this.view.setRoom(this.room);
@@ -132,6 +142,10 @@ export class Stage {
     const world = sim.world;
     const play = usePlay.getState();
     this.followCamera();
+    // Decorating changed this room's furniture: draw it again.
+    const def = findRoom(this.room.def.id);
+    if (def && def.furniture !== this.room.def.furniture) this.showRoom(def.id, true);
+    this.room.preview(useDecor.getState().preview);
     this.room.setDaylight(daylight(minuteOfDay(world.minute)));
     this.view.update(world, STILL ? 0 : sim.alpha, dt, this.time, this.prefs.calm);
     const carried = play.carrying?.source.from === 'object' ? play.carrying.source.objectId : null;

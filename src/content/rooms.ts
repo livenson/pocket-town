@@ -262,18 +262,49 @@ export const town: BuildingDef[] = [
 
 /** Houses the child built, kept in step with the world (see sim/houses.ts). */
 let built: BuildingDef[] = [];
+/** Rooms the child decorated: their whole furniture list (see sim/houses.ts). */
+let edits: Record<string, FurnitureInstance[]> = {};
+/** Everything, with the child's decorating applied; rebuilt only when either changes. */
+let derived: BuildingDef[] = town;
+
+function rebuild(): void {
+  const all = built.length === 0 ? town : [...town, ...built];
+  derived = all.map((b) =>
+    b.rooms.some((r) => edits[r.id])
+      ? {
+          ...b,
+          rooms: b.rooms.map((r) => (edits[r.id] ? { ...r, furniture: edits[r.id] ?? [] } : r)),
+        }
+      : b,
+  );
+}
 
 export function setBuiltBuildings(list: BuildingDef[]): void {
   built = list;
+  rebuild();
 }
 
-/** The starter town plus everything the child built. */
+export function setRoomEdits(map: Record<string, FurnitureInstance[]>): void {
+  edits = map;
+  rebuild();
+}
+
+/** The starter town plus everything the child built, as decorated. */
 export function allBuildings(): BuildingDef[] {
-  return built.length === 0 ? town : [...town, ...built];
+  return derived;
 }
 
 export function findRoom(roomId: string): RoomDef | undefined {
   for (const b of allBuildings()) {
+    const r = b.rooms.find((room) => room.id === roomId);
+    if (r) return r;
+  }
+  return undefined;
+}
+
+/** A room as designed (or as built in the house wizard), before any decorating. */
+export function findBaseRoom(roomId: string): RoomDef | undefined {
+  for (const b of built.length === 0 ? town : [...town, ...built]) {
     const r = b.rooms.find((room) => room.id === roomId);
     if (r) return r;
   }

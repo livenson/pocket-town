@@ -97,12 +97,17 @@ test('every screen is reachable and passes axe (WCAG 2.1 AA)', async ({ page }) 
   await expectAccessible(page, 'camera');
   await press(page, 'Close camera');
 
-  await press(page, 'Edit');
+  // Decorating this room in place: the furniture catalogue replaces the things.
+  await press(page, 'Decorate this room');
+  await expect(page.getByRole('button', { name: 'Done decorating' })).toBeVisible();
+  await expectAccessible(page, 'decorating');
+  await press(page, 'Done decorating');
+
+  await press(page, 'Home');
+  await press(page, 'My house');
   await expect(page.getByRole('heading', { name: 'Pick a spot for your house' })).toBeAttached();
   await expectAccessible(page, 'house wizard');
   await press(page, 'Back');
-
-  await press(page, 'Home');
   await press(page, 'My characters');
   await expect(page.getByRole('heading', { name: 'My characters' })).toBeVisible();
   await expectAccessible(page, 'characters');

@@ -3454,3 +3454,67 @@ html[data-layout='phone'] .dice-button--small {
   height: 60px;
   border-radius: 20px;
 }
+
+/* ---------- Decorating in place ---------- */
+
+.stage-target--decor-room {
+  border-radius: 0;
+}
+
+/* Waiting for a tap that places or moves a piece: a soft teal glow on the room. */
+.stage-targets .stage-target.stage-target--decor-room[data-valid] {
+  outline: none;
+  background: transparent;
+  box-shadow: inset 0 0 0 6px rgba(15, 163, 148, 0.45);
+  animation: none;
+}
+
+.stage-targets .stage-target.stage-target--decor-room[data-valid]::after {
+  display: none;
+}
+
+.stage-target--piece {
+  border-radius: 16px;
+}
+
+.stage-target--piece:hover,
+.stage-target--piece:focus-visible {
+  outline: 4px dashed var(--pt-marigold);
+  outline-offset: 2px;
+}
+
+.stage-target--piece[data-selected] {
+  outline: 5px solid var(--pt-marigold);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 12px rgba(255, 182, 39, 0.25);
+}
+
+.decor-toolbar {
+  position: absolute;
+  z-index: 30;
+  top: var(--safe-top);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: var(--pt-paper);
+  box-shadow: 0 6px 0 rgba(42, 22, 64, 0.18);
+}
+
+.furniture-tile {
+  background: var(--pt-paper);
+}
+
+.furniture-tile[aria-pressed='true'] {
+  box-shadow:
+    0 0 0 4px var(--pt-marigold),
+    0 0 0 12px rgba(255, 182, 39, 0.3);
+}
+
+/* Phones: below the top row of buttons, not over them. */
+html[data-layout='phone'] .decor-toolbar {
+  top: calc(var(--safe-top) + var(--icon-btn) + 16px);
+}

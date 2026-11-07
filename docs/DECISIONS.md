@@ -154,3 +154,11 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 - **Removed: wheelchair, hearing aid and prosthetic arm** (the "Helpers" choice in the body step), at the owner's request after play-testing. This overrides the line in `docs/BRIEF.md` that lists them. Saves that still have an `aid` value simply draw without it. Lumo, Nella and Tavi in the starter cast no longer have one.
 - **Added: person or animal** in the body step: cat, dog, bear, bunny or mouse. Same peg body; ears, nose and whiskers come from the shared extras shapes, so the portraits and the play stage match. The skin colour is the fur. The dice picks an animal about half the time.
 - **Added: more looks.** Hair: long, spiky, pigtails. Clothes: heart and star badges. Accessories: headband, flower, crown. Face: freckles (dark on light skin, light on dark skin, so they always show).
+
+## 2026-11-07: Decorate any room in place (owner's call after play-testing)
+
+- **The pencil decorates the room you are in**, in every building (homes, café, library, park, music hall): the drawer becomes a furniture catalogue; tap a piece to carry it and tap the room, or drag it in; tap a placed piece to pick it (turn, copy, hold to take away), drag it, or tap the room to move it there. Arrows nudge, R turns, C copies, Esc lets go. Doors stay put. Everything is undoable.
+- **Saved as each decorated room's whole furniture list** (`world.roomEdits`); the room registry applies it, so the stage, the sim's ads and the targets all see the same room. Older saves have no edits and look as before.
+- **Bots adapt**: they use what is there; with no bed in a house they sleep elsewhere (tested over a day with the beds removed).
+- **Built houses**: the house wizard still builds them (from "My house" in the hub, or "Change the house" while decorating one). Rebuilding a room's furniture in the wizard replaces that room's decorating; undo brings it back.
+- **The house wizard's grid stays** for building new houses; free placement happens in the room itself.

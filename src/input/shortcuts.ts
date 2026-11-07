@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { playSfx } from '../audio/audio';
 import { game } from '../app/game';
 import { hint } from '../app/hints';
+import { useDecor } from '../state/decor';
 import { usePlay } from '../state/play';
 import { useUi } from '../state/ui';
 import { dropCarried } from './carry';
@@ -122,10 +123,8 @@ export function runShortcut(action: ShortcutAction): boolean {
       return true;
     case 'edit':
       if (screen !== 'scene') return false;
-      ui.setEditingHouse(
-        game.world.houses.find((h) => ui.roomId.startsWith(`${h.id}-`))?.id ?? null,
-      );
-      ui.go('houseWizard');
+      // Decorate this room right here (or stop decorating).
+      useDecor.getState().setOn(!useDecor.getState().on);
       return true;
     case 'camera':
       if (screen !== 'scene') return false;

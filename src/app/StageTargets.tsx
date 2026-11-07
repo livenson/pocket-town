@@ -10,7 +10,9 @@ import { surfaceOf } from '../content/furniture';
 import { findRoom } from '../content/rooms';
 import { strings, thingName } from '../i18n';
 import type { Bot, PlacedObject } from '../sim/types';
+import { useDecor } from '../state/decor';
 import { usePlay } from '../state/play';
+import { DecorTargets } from './decorate/DecorTargets';
 import { useUi } from '../state/ui';
 import { registerTarget } from '../stage/targets';
 import { useVoiceLabel } from '../ui/useVoiceLabel';
@@ -247,6 +249,7 @@ export function StageTargets() {
   const roomId = useUi((s) => s.roomId);
   const selectedId = usePlay((s) => s.selectedBotId);
   const cardOpen = usePlay((s) => s.cardOpen);
+  const decorating = useDecor((s) => s.on);
   const room = findRoom(roomId);
   const bots = world.bots.filter((b) => !b.travel && b.place.roomId === roomId);
   const objects = world.objects.filter((o) => o.place.roomId === roomId);
@@ -260,6 +263,16 @@ export function StageTargets() {
     (selected.mode === 'puppet' || cardOpen)
       ? selected
       : null;
+  if (decorating) {
+    return (
+      <div className="stage-targets">
+        <DecorTargets />
+        {room?.doors.map((d, i) => (
+          <DoorTarget key={`${roomId}-${i}`} index={i} to={d.to} />
+        ))}
+      </div>
+    );
+  }
   return (
     <div className="stage-targets">
       {room?.furniture
