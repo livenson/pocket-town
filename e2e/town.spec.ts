@@ -159,10 +159,9 @@ test('things can go on a table or a shelf, not only the floor', async ({ page })
   await tap(page, b(page, 'Cake'));
   await expect(b(page, 'Table: put it here')).toBeAttached();
   await expect(b(page, 'Shelf: put it here')).toBeAttached();
-  // Someone may sit at the table (a tap on them gives it to them): use the free end.
-  const table = await b(page, 'Table: put it here').boundingBox();
-  if (!table) throw new Error('no table');
-  await page.mouse.click(table.x + 8, table.y + table.height / 2);
+  // Characters may stand in front of the table (a tap on them gives it to them), so
+  // press the table's own button, as the keyboard does.
+  await b(page, 'Table: put it here').dispatchEvent('click');
   await expect(page.getByRole('button', { name: 'Cake, pick it up' })).toBeAttached();
   // Nothing is being carried any more, so the places stop glowing.
   await expect(b(page, 'Table: put it here')).toHaveCount(0);

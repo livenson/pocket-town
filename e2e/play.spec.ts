@@ -163,7 +163,8 @@ test('a photo goes into the album on this device', async ({ page }) => {
   await page.goto('./#scene');
   await press(page, button(page, 'Photo'));
   await press(page, button(page, 'Take photo'));
-  await expect(page.getByRole('status')).toContainText('Photo saved');
+  // Encoding the picture is slow on software WebGL under load.
+  await expect(page.getByRole('status')).toContainText('Photo saved', { timeout: 15_000 });
   await press(page, button(page, 'My photos, saved on this device'));
   await expect(page.getByRole('heading', { name: 'Photos' })).toBeVisible();
   await expect(page.locator('.photo-thumb')).toHaveCount(1);
