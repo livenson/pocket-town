@@ -57,3 +57,14 @@ describe('screen machine', () => {
     }
   });
 });
+
+describe('onboarding edges', () => {
+  it('runs splash → age → profile → dice avatar → hooray → scene', () => {
+    let s = initialNav;
+    for (const to of ['age', 'profile', 'diceAvatar', 'hooray', 'scene'] as const) {
+      expect(EDGES[s.screen]).toContain(to);
+      s = go(s, to);
+    }
+    expect(s.screen).toBe('scene');
+  });
+});

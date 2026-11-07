@@ -123,6 +123,8 @@ export const strings = {
   // Screens
   screens: {
     splash: 'Pocket Town',
+    diceAvatar: 'Your character',
+    hooray: 'Hooray!',
     age: 'How old are you?',
     profile: 'Who is playing?',
     avatarWizard: 'Make a character',
@@ -145,6 +147,31 @@ export const strings = {
     friendsLocked: 'Friends: coming later. Ask a grown-up.',
   },
   comingSoon: 'Coming soon',
+
+  // Onboarding
+  onboarding: {
+    loading: 'Pocket Town is loading. Tap to start.',
+    building: 'Building your town…',
+    hearQuestion: 'Hear the question',
+    grownUpSetup: 'Grown-up? Set up here',
+    newPlayer: 'New player',
+    whoIsPlaying: 'Who is playing? Tap the plus to make a new player.',
+    rollHelp: 'Roll the dice, or tick when you like it.',
+    hearHelp: 'Hear what to do',
+    roll: 'Roll a new character',
+    changeDetails: 'Change details',
+    yourCharacter: 'Your character',
+    hooray: (name: string) => `Hooray, ${name}!`,
+    player: (name: string) => `Play as ${name}`,
+  },
+  hints: {
+    plus: 'Tap the plus to find things',
+    cake: 'Pick the cake',
+    give: 'Give it to a friend: tap a glowing spot',
+    fed: 'Bippa! They love it.',
+    map: 'Now try the map',
+    hear: 'Hear the hint',
+  },
 
   // Settings
   settingsLabels: {

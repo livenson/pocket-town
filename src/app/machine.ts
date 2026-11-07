@@ -5,6 +5,8 @@ export type ScreenId =
   | 'splash'
   | 'age'
   | 'profile'
+  | 'diceAvatar'
+  | 'hooray'
   | 'avatarWizard'
   | 'houseWizard'
   | 'hub'
@@ -22,10 +24,12 @@ const GATED: ReadonlySet<ScreenId> = new Set<ScreenId>(['grownUp', 'kit']);
 
 /** Where each screen may go next (besides back and home, which always work). */
 export const EDGES: Readonly<Record<ScreenId, readonly ScreenId[]>> = {
-  splash: ['age'],
-  age: ['profile'],
-  profile: ['avatarWizard', 'hub', 'gate'],
-  avatarWizard: ['houseWizard', 'hub'],
+  splash: ['age', 'profile'],
+  age: ['profile', 'diceAvatar', 'gate'],
+  profile: ['age', 'diceAvatar', 'avatarWizard', 'hub', 'scene', 'gate'],
+  diceAvatar: ['avatarWizard', 'hooray'],
+  hooray: ['scene'],
+  avatarWizard: ['houseWizard', 'hub', 'hooray', 'diceAvatar'],
   houseWizard: ['hub', 'scene'],
   hub: ['map', 'characters', 'houseWizard', 'scene', 'settings', 'gate'],
   map: ['scene', 'hub'],
@@ -37,6 +41,15 @@ export const EDGES: Readonly<Record<ScreenId, readonly ScreenId[]>> = {
   photo: [],
   kit: [],
 };
+
+/** Screens where back and home make no sense yet (first launch). */
+export const ONBOARDING: ReadonlySet<ScreenId> = new Set<ScreenId>([
+  'splash',
+  'age',
+  'profile',
+  'diceAvatar',
+  'hooray',
+]);
 
 export interface NavState {
   screen: ScreenId;

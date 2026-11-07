@@ -8,6 +8,8 @@ import { useShowTextLabels } from '../ui/labels';
 import type { ScreenId } from './machine';
 import { useCalmMotion, useLayoutMode } from './media';
 import { AgeScreen } from './screens/AgeScreen';
+import { DiceAvatarScreen } from './screens/DiceAvatarScreen';
+import { HoorayScreen } from './screens/HoorayScreen';
 import { GateScreen } from './screens/GateScreen';
 import { GrownUpScreen } from './screens/GrownUpScreen';
 import { HubScreen } from './screens/HubScreen';
@@ -29,6 +31,10 @@ function renderScreen(screen: ScreenId): ReactElement {
       return <AgeScreen />;
     case 'profile':
       return <ProfileScreen />;
+    case 'diceAvatar':
+      return <DiceAvatarScreen />;
+    case 'hooray':
+      return <HoorayScreen />;
     case 'hub':
       return <HubScreen />;
     case 'map':

@@ -4,7 +4,13 @@ import { get, set } from 'idb-keyval';
 import type { World } from '../sim/types';
 
 export const SAVE_SCHEMA = 1;
+/** Saves made before profiles existed (and the test-only "no profile" town). */
 const SLOTS = ['pocket-town:save:a', 'pocket-town:save:b'] as const;
+
+/** Each player has their own town, in their own pair of slots. */
+export function slotsFor(profileId: string | null): readonly [string, string] {
+  return profileId ? [`pocket-town:save:${profileId}:a`, `pocket-town:save:${profileId}:b`] : SLOTS;
+}
 
 export interface SaveFile {
   schema: number;
@@ -56,12 +62,13 @@ function parse(text: unknown): SaveFile | null {
   }
 }
 
-let lastGeneration = 0;
+const lastGeneration = new Map<string, number>();
 
 /** Load the newest good save, or null if there is none. */
-export async function loadSave(): Promise<SaveFile | null> {
+export async function loadSave(profileId: string | null = null): Promise<SaveFile | null> {
+  const slots = slotsFor(profileId);
   const files: SaveFile[] = [];
-  for (const slot of SLOTS) {
+  for (const slot of slots) {
     try {
       const file = parse(await get(slot));
       if (file) files.push(file);
@@ -71,21 +78,30 @@ export async function loadSave(): Promise<SaveFile | null> {
   }
   files.sort((a, b) => b.generation - a.generation);
   const best = files[0] ?? null;
-  lastGeneration = Math.max(lastGeneration, ...files.map((f) => f.generation), 0);
+  const key = slots[0];
+  lastGeneration.set(
+    key,
+    Math.max(lastGeneration.get(key) ?? 0, ...files.map((f) => f.generation), 0),
+  );
   return best;
 }
 
 /** Write a save into the older of the two slots. */
-export async function writeSave(world: World, ui: SaveFile['ui']): Promise<void> {
-  const generation = ++lastGeneration;
+export async function writeSave(
+  world: World,
+  ui: SaveFile['ui'],
+  profileId: string | null = null,
+): Promise<void> {
+  const slots = slotsFor(profileId);
+  const generation = (lastGeneration.get(slots[0]) ?? 0) + 1;
+  lastGeneration.set(slots[0], generation);
   const file: SaveFile = { schema: SAVE_SCHEMA, savedAt: Date.now(), generation, world, ui };
-  const slot = SLOTS[generation % 2] ?? SLOTS[0];
-  await set(slot, JSON.stringify(file));
+  await set(slots[generation % 2] ?? slots[0], JSON.stringify(file));
 }
 
 /** For tests: forget which generation was written last. */
 export function resetSaveState(): void {
-  lastGeneration = 0;
+  lastGeneration.clear();
 }
 
 export { SLOTS as SAVE_SLOTS };

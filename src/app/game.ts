@@ -7,6 +7,9 @@ import { loadSave, writeSave } from '../persist/save';
 import type { Command } from '../sim/commands';
 import { History } from '../sim/history';
 import type { World } from '../sim/types';
+import { createWorld, entryRoom, makeBot } from '../sim/world';
+import { useCreation } from '../state/creation';
+import { newProfileId, useProfiles, type Profile } from '../state/profiles';
 import { useUi } from '../state/ui';
 import { sim } from './simRunner';
 
@@ -30,6 +33,10 @@ export const useGame = create<GameState>()(() => ({
 
 const history = new History();
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
+/** Whose town is open (null: the shared town used before profiles, and by tests). */
+let profileId: string | null = null;
+/** Tests and screenshots (?seed, ?still) never write saves. */
+let saving = true;
 
 function changed(): void {
   useGame.setState((s) => ({
@@ -48,8 +55,9 @@ export function scheduleSave(): void {
 export async function saveNow(): Promise<void> {
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = null;
+  if (!saving) return;
   try {
-    await writeSave(sim.world, { roomId: useUi.getState().roomId });
+    await writeSave(sim.world, { roomId: useUi.getState().roomId }, profileId);
   } catch {
     // Storage full or blocked: keep playing; the next save tries again.
   }
@@ -79,12 +87,63 @@ export const game = {
   },
 };
 
+/** The player's own character lives in the starter house like everyone else. */
+export function playerBotId(profile: Pick<Profile, 'id'>): string {
+  return `me-${profile.id}`;
+}
+
+function ensurePlayerBot(world: World, profile: Profile): void {
+  const id = playerBotId(profile);
+  const existing = world.bots.find((b) => b.id === id);
+  if (existing) {
+    existing.name = profile.name;
+    existing.appearance = profile.appearance;
+    existing.traits = profile.traits;
+    return;
+  }
+  const room = entryRoom('home');
+  world.bots.push(
+    makeBot(
+      {
+        id,
+        name: profile.name,
+        appearance: profile.appearance,
+        traits: profile.traits,
+        homeId: 'home',
+      },
+      { buildingId: 'home', roomId: room.id, x: 620, y: 470 },
+    ),
+  );
+}
+
+/**
+ * Open a player's town: their save if they have one, otherwise a fresh town (the
+ * very first player inherits a town saved before profiles existed).
+ */
+export async function enterProfile(id: string): Promise<void> {
+  await saveNow();
+  const { profiles } = useProfiles.getState();
+  const profile = profiles.find((p) => p.id === id);
+  if (!profile) return;
+  useProfiles.getState().choose(id);
+  let save = await loadSave(id).catch(() => null);
+  if (!save && profiles.length === 1) save = await loadSave(null).catch(() => null);
+  const world = save?.world ?? createWorld((Date.now() % 2147483647) | 0);
+  ensurePlayerBot(world, profile);
+  profileId = id;
+  history.clear();
+  sim.load(world);
+  useUi.getState().setRoom(save?.ui.roomId ?? 'home-living');
+  changed();
+}
+
 /** Load the saved town (if any) and keep saving it. Call once at startup. */
 export async function startGame(): Promise<void> {
   // ?seed and ?still are for tests and screenshots: they start from a fresh town.
   const params = new URLSearchParams(location.search);
   const fresh = params.has('seed') || params.has('still');
-  const save = fresh ? null : await loadSave().catch(() => null);
+  saving = !fresh;
+  const save = fresh ? null : await loadSave(null).catch(() => null);
   if (save) {
     sim.load(save.world);
     useUi.getState().setRoom(save.ui.roomId);
@@ -113,4 +172,20 @@ export function useWorldTick(fps = 4): World {
   }, [fps]);
   void version;
   return sim.world;
+}
+
+/** Make the new player from the profile being created, and open their town. */
+export async function finishCreation(): Promise<void> {
+  const c = useCreation.getState();
+  const id = newProfileId();
+  useProfiles.getState().add({
+    id,
+    name: c.name,
+    appearance: c.appearance,
+    traits: c.traits,
+    age: c.age,
+    hintsDone: false,
+    createdAt: Date.now(),
+  });
+  await enterProfile(id);
 }

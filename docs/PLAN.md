@@ -103,13 +103,13 @@ Acceptance: e2e: open the drawer, give cake to a bot (by drag and by tap-tap), u
 
 Goal: from opening the link to playing in under 60 seconds. Match `design-reference/Proto-Onboarding.dc.html` (behaviour notes are in its script block).
 
-- [ ] Splash (A1): animated town build-up while assets load; continues by itself when ready, or on tap.
-- [ ] Neutral age screen (A2): 4 … 15+ tiles, nothing preselected, question spoken aloud. Age stored on the profile only (on device). Age ≥ 9 turns text labels on.
+- [x] Splash (A1): animated town build-up while assets load; continues by itself when ready, or on tap.
+- [x] Neutral age screen (A2): 4 … 15+ tiles, nothing preselected, question spoken aloud. Age stored on the profile only (on device). Age ≥ 9 turns text labels on.
 - [x] Parental gate (A3): a random two-digit number written in words ("type forty-seven"); keypad; wrong answer clears gently. Reused for every grown-up entry. (Built early in M1 so the grown-up area and kit were never reachable without it.)
-- [ ] Profile select (B1): faces only, "new player" tile, up to 6 profiles per device.
-- [ ] Dice avatar: one big dice that rerolls appearance and name; pencil opens the full avatar wizard (M6); tick continues.
-- [ ] Celebration, then land in the furnished starter house with bots already doing things.
-- [ ] First-play hint chain with halos and spoken hints: "+" → pick cake → give to a bot → map glows. Hints stop after completion and never return for that profile.
+- [x] Profile select (B1): faces only, "new player" tile, up to 6 profiles per device.
+- [x] Dice avatar: one big dice that rerolls appearance and name; pencil opens the full avatar wizard (M6); tick continues.
+- [x] Celebration, then land in the furnished starter house with bots already doing things.
+- [x] First-play hint chain with halos and spoken hints: "+" → pick cake → give to a bot → map glows. Hints stop after completion and never return for that profile.
 
 Acceptance: e2e completes onboarding in under 15 taps; on an iPad, time from first load to first bot fed is under 60 s for an adult acting like a child.
 

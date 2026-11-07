@@ -16,6 +16,13 @@ import { clearTargetRects, relayoutTargets, setTargetRect, view as targetView } 
 import { usePlay } from '../state/play';
 import { FLOOR } from '../sim/world';
 
+/** Height the bottom docks take in landscape (object drawer and gap), in CSS px. */
+const BOTTOM_DOCK_PX = 190;
+/** The lowest room y where characters usually stand; kept clear of the drawer. */
+const FEET_LINE = 500;
+/** Without a GPU, drawing at full rate starves everything else. */
+const SOFTWARE_MAX_FPS = 30;
+
 /** Freeze the clock at zero (deterministic screenshots): `?still` in the URL. */
 const STILL = typeof location !== 'undefined' && new URLSearchParams(location.search).has('still');
 
@@ -53,6 +60,11 @@ export class Stage {
     this.objects = new ObjectsView(this.room);
     this.drawFrame(0);
     this.app.ticker.add(this.tick);
+    // No GPU, or an automated test browser: draw at most 30 times a second so input
+    // and the rest of the page stay responsive.
+    if (usesSoftwareRendering(this.app.canvas) || navigator.webdriver) {
+      this.app.ticker.maxFPS = SOFTWARE_MAX_FPS;
+    }
     // Follow room changes made elsewhere (the map, the hub).
     useUi.subscribe((s, prev) => {
       if (s.roomId !== prev.roomId) this.showRoom(s.roomId);
@@ -74,7 +86,7 @@ export class Stage {
       h: FLOOR.maxY - FLOOR.minY + 70,
     });
     [225, 450, 675].forEach((x, i) =>
-      setTargetRect(`spot:${i}`, { x: x - 50, y: 396, w: 100, h: 50 }),
+      setTargetRect(`spot:${i}`, { x: x - 50, y: 404, w: 100, h: 50 }),
     );
     return room;
   }
@@ -176,7 +188,10 @@ export class Stage {
     const phonePortrait = portrait && w < breakpoints.phoneMaxWidth;
     // In portrait, "contain" would make the room tiny: fill about half the height
     // instead and crop the sides (the camera centres on the room for now).
-    const scale = portrait ? Math.max(contain, (h * 0.55) / RH) : contain;
+    // Landscape: the object drawer covers the bottom, so make sure the strip of floor
+    // where characters stand (down to y ≈ 500) stays above it.
+    const landscapeFit = Math.min(w / RW, h / RH, (h - BOTTOM_DOCK_PX) / FEET_LINE);
+    const scale = portrait ? Math.max(contain, (h * 0.55) / RH) : Math.max(0.3, landscapeFit);
     this.world.scale.set(scale);
     const cropped = RW * scale > w + 1;
     this.fit = { w, h, scale, cropped };
@@ -198,6 +213,18 @@ export class Stage {
     targetView.host = this.host;
     relayoutTargets();
     if (STILL) this.app.render();
+  }
+}
+
+/** True when WebGL is drawn by the CPU (no GPU): then the stage draws less often. */
+function usesSoftwareRendering(canvas: HTMLCanvasElement): boolean {
+  try {
+    const gl = canvas.getContext('webgl2') ?? canvas.getContext('webgl');
+    const info = gl?.getExtension('WEBGL_debug_renderer_info');
+    const name = info && gl ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+    return /swiftshader|llvmpipe|software/i.test(name);
+  } catch {
+    return false;
   }
 }
 

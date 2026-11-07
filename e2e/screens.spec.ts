@@ -39,10 +39,12 @@ async function passGate(page: Page): Promise<void> {
 }
 
 test('every screen is reachable and passes axe (WCAG 2.1 AA)', async ({ page }) => {
+  // About a dozen screens, each checked with axe: longer than most tests.
+  test.setTimeout(150_000);
   await page.goto('./');
   await expectAccessible(page, 'splash');
 
-  await press(page, 'Play');
+  await page.getByRole('button', { name: /loading/ }).click();
   await expect(page.getByRole('heading', { name: 'How old are you?' })).toBeVisible();
   await expectAccessible(page, 'age');
 
@@ -50,7 +52,15 @@ test('every screen is reachable and passes axe (WCAG 2.1 AA)', async ({ page }) 
   await expect(page.getByRole('heading', { name: 'Who is playing?' })).toBeVisible();
   await expectAccessible(page, 'profile');
 
-  await press(page, 'Make a character');
+  await press(page, 'New player');
+  await expect(page.getByRole('button', { name: 'Roll a new character' })).toBeVisible();
+  await expectAccessible(page, 'dice avatar');
+  await press(page, 'Done');
+  await expect(page.getByRole('heading', { name: /^Hooray, / })).toBeVisible();
+  await expectAccessible(page, 'hooray');
+  await press(page, 'Play');
+  await expect(page.getByRole('group', { name: 'Time' })).toBeVisible();
+  await press(page, 'Home');
   await expect(page.getByRole('button', { name: 'World' })).toBeVisible();
   await expectAccessible(page, 'hub');
 
@@ -172,9 +182,12 @@ test('calm motion stops every looping animation', async ({ page }) => {
 
 test('calm motion setting turns on from the settings screen', async ({ page }) => {
   await page.goto('./');
-  await press(page, 'Play');
+  await page.getByRole('button', { name: /loading/ }).click();
   await press(page, '5');
-  await press(page, 'Make a character');
+  await press(page, 'New player');
+  await press(page, 'Done');
+  await press(page, 'Play');
+  await press(page, 'Home');
   await press(page, 'Settings');
   const calm = page.getByRole('switch', { name: 'Calm motion' });
   await expect(calm).toHaveAttribute('aria-checked', 'false');
@@ -208,12 +221,7 @@ test('calm motion setting turns on from the settings screen', async ({ page }) =
 
 test('keyboard shortcuts work on the scene', async ({ page, browserName }) => {
   test.skip(browserName === 'webkit', 'Desktop shortcuts are checked in Chromium');
-  await page.goto('./');
-  await press(page, 'Play');
-  await press(page, '9');
-  await press(page, 'Make a character');
-  await press(page, 'World');
-  await press(page, 'My house');
+  await page.goto('./#scene');
   await page.locator('body').focus();
   await page.keyboard.press('?');
   await expect(page.getByRole('dialog', { name: 'Shortcuts' })).toBeVisible();

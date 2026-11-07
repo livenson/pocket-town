@@ -5,6 +5,7 @@
 import { useRef } from 'react';
 import type { PointerEvent } from 'react';
 import { game } from '../app/game';
+import { hint } from '../app/hints';
 import { playSfx } from '../audio/audio';
 import { sim } from '../app/simRunner';
 import { findRoom } from '../content/rooms';
@@ -28,13 +29,16 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
   let ok = false;
   if (target.startsWith('bot:')) {
     ok = game.do({ type: 'give', botId: target.slice(4), kind: c.kind });
-    if (ok) playSfx('jingle');
+    if (ok) {
+      playSfx('jingle');
+      hint.gave();
+    }
   } else if (target === 'floor' || target.startsWith('spot:')) {
     let at: { x: number; y: number } | null = null;
     // A floor spot puts it right there; a tap or drop on the floor puts its base just
     // below the pointer, so it lands where the finger is.
     if (target.startsWith('spot:')) {
-      at = { x: [225, 450, 675][Number(target.slice(5))] ?? 450, y: 440 };
+      at = { x: [225, 450, 675][Number(target.slice(5))] ?? 450, y: 452 };
     } else if (clientX !== undefined && clientY !== undefined) {
       const p = clientToRoom(clientX, clientY);
       at = p ? { x: p.x, y: p.y + 20 } : null;
@@ -61,6 +65,7 @@ export function missed(clientX: number, clientY: number): void {
 export function pickUp(kind: string, source: CarrySource, mode: Carrying['mode']): void {
   playSfx('pick');
   usePlay.getState().pickUp({ kind, source, mode });
+  hint.pickedUp(kind);
   // On phones the drawer is a sheet: close it so the stage is free to tap.
   useUi.getState().setPlusSheetOpen(false);
 }
@@ -69,6 +74,7 @@ export function dropCarried(): void {
   if (!usePlay.getState().carrying) return;
   playSfx('soft');
   usePlay.getState().drop();
+  hint.dropped();
 }
 
 /** Remove a placed thing the child is carrying (after a press-and-hold). */

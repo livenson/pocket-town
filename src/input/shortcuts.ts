@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { playSfx } from '../audio/audio';
 import { game } from '../app/game';
+import { hint } from '../app/hints';
 import { usePlay } from '../state/play';
 import { useUi } from '../state/ui';
 import { dropCarried } from './carry';
@@ -70,7 +71,7 @@ export function shortcutFor(
 
 /** Screens where play-time shortcuts (map, edit, time, camera) apply. */
 const PLAY_SCREENS = new Set(['scene', 'map', 'hub']);
-const NO_HOME = new Set(['splash', 'age', 'profile', 'gate']);
+const NO_HOME = new Set(['splash', 'age', 'profile', 'diceAvatar', 'hooray', 'gate']);
 
 /**
  * While carrying something, the arrow keys move between the places it can go
@@ -116,6 +117,7 @@ export function runShortcut(action: ShortcutAction): boolean {
       return true;
     case 'map':
       if (!PLAY_SCREENS.has(screen) || screen === 'map') return false;
+      hint.mapOpened();
       ui.go('map');
       return true;
     case 'edit':

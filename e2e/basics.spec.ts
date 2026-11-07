@@ -21,7 +21,7 @@ async function recordSounds(page: Page): Promise<void> {
 }
 
 async function pressPlay(page: Page): Promise<void> {
-  const button = page.getByRole('button', { name: 'Play' });
+  const button = page.getByRole('button', { name: /loading/ });
   const hasTouch = await page.evaluate(() => navigator.maxTouchPoints > 0);
   if (hasTouch) await button.tap();
   else await button.click();
@@ -29,8 +29,8 @@ async function pressPlay(page: Page): Promise<void> {
 
 test('shows the splash in the Pocket Town identity', async ({ page }) => {
   await page.goto('./');
-  const title = page.getByRole('heading', { level: 1, name: 'Pocket Town' });
-  await expect(title).toBeVisible();
+  const title = page.locator('.splash__title');
+  await expect(title).toHaveText('Pocket Town');
 
   const bg = await page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor);
   expect(bg).toBe('rgb(255, 230, 207)'); // apricot ground
@@ -39,13 +39,12 @@ test('shows the splash in the Pocket Town identity', async ({ page }) => {
   expect(await title.evaluate((el) => getComputedStyle(el).fontWeight)).toBe('800');
   expect(await page.evaluate(() => document.fonts.check('800 48px "Baloo 2"'))).toBe(true);
 
-  const button = page.getByRole('button', { name: 'Play' });
-  const box = await button.boundingBox();
-  expect(box?.width).toBeGreaterThanOrEqual(76);
-  expect(box?.height).toBeGreaterThanOrEqual(76);
+  // The whole splash is one big tap target.
+  const box = await page.getByRole('button', { name: /loading/ }).boundingBox();
+  expect(box?.width).toBeGreaterThanOrEqual(300);
 });
 
-test('the Play button makes a sound', async ({ page }) => {
+test('tapping the splash makes a sound', async ({ page }) => {
   await recordSounds(page);
   await page.goto('./');
   await pressPlay(page);
@@ -116,7 +115,7 @@ test.describe('installable PWA', () => {
     await page.reload(); // now controlled by the service worker
     await context.setOffline(true);
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'Pocket Town' })).toBeVisible();
+    await expect(page.locator('.splash__title')).toHaveText('Pocket Town');
     await context.setOffline(false);
   });
 });

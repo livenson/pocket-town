@@ -10,25 +10,25 @@ beforeEach(() => {
 });
 
 describe('App', () => {
-  it('starts on the splash with an accessible Play button that pops', () => {
+  it('starts on the splash: one big button that pops and moves on', () => {
     const play = vi.spyOn(audio, 'playSfx');
     render(<App />);
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Pocket Town');
-    fireEvent.click(screen.getByRole('button', { name: 'Play' }));
+    fireEvent.click(screen.getByRole('button', { name: /loading/ }));
     expect(play).toHaveBeenCalledWith('tap');
     expect(useUi.getState().nav.screen).toBe('age');
   });
 
-  it('walks from age to the hub and into the scene', () => {
+  it('asks the age without anything preselected, then who is playing', () => {
+    vi.useFakeTimers();
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Play' }));
+    fireEvent.click(screen.getByRole('button', { name: /loading/ }));
+    const tiles = screen.getAllByRole('button').filter((b) => b.className === 'age-tile');
+    expect(tiles).toHaveLength(12);
+    expect(tiles.some((t) => t.getAttribute('aria-pressed') === 'true')).toBe(false);
     fireEvent.click(screen.getByRole('button', { name: '9' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Make a character' }));
-    expect(useUi.getState().nav.screen).toBe('hub');
-    fireEvent.click(screen.getByRole('button', { name: 'World' }));
-    fireEvent.click(screen.getByRole('button', { name: 'My house' }));
-    expect(useUi.getState().nav.screen).toBe('scene');
-    expect(screen.getByRole('group', { name: 'Time' })).toBeTruthy();
+    void act(() => vi.advanceTimersByTime(500));
+    expect(useUi.getState().nav.screen).toBe('profile');
+    vi.useRealTimers();
   });
 
   it('opens the shortcuts overlay with "?" and closes it with Escape', () => {

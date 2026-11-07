@@ -3,6 +3,7 @@ import { categories, objectKinds, type ObjectCategory } from '../content/objects
 import type { IconName } from '../design/icons';
 import { strings } from '../i18n/strings.en';
 import { useCarrySource } from '../input/carry';
+import { useHints } from './hints';
 import { usePlay } from '../state/play';
 import { Carousel } from '../ui/Carousel';
 import { Icon } from '../ui/Icon';
@@ -21,10 +22,11 @@ function ObjectTile({ id, label, icon, tint }: TileProps) {
   const voice = useVoiceLabel(label);
   const carry = useCarrySource(id, { from: 'drawer' });
   const inHand = usePlay((s) => s.carrying?.kind === id && s.carrying.source.from === 'drawer');
+  const hinted = useHints((s) => s.step === 'cake' && id === 'cake');
   return (
     <button
       type="button"
-      className="object-tile"
+      className={hinted ? 'object-tile hint-glow' : 'object-tile'}
       style={{ background: tint }}
       aria-label={label}
       aria-pressed={inHand}

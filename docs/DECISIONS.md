@@ -96,3 +96,14 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 - **Putting a placed thing away** is press-and-hold (destructive), from the "carrying" pill.
 - **Photos** are stored as bytes plus a type, not as `Blob`s, because WebKit can refuse Blobs in IndexedDB. The album keeps the newest 60 and never offers sharing.
 - **Sounds before the first tap are skipped** (browsers block audio until a user gesture), so opening the app never logs autoplay warnings.
+
+## 2026-11-07: M5 onboarding choices
+
+- **Each player has their own town.** Saves are per profile (`pocket-town:save:<profileId>:a`/`b`). The very first profile inherits a town saved before profiles existed, so earlier testing is not lost. The player's own character moves into the starter house as one of the bots.
+- **Profiles** (faces only, up to six) are stored on the device; which player is active is not remembered, so every launch asks "who is playing?" (a sibling cannot land in someone else's town by accident).
+- **Order of questions:** first launch asks the age, then shows the single "new player" face (as in the prototype). Later "new player" taps ask the age first, then go straight to the dice. While choosing, word labels already follow the age picked.
+- **Splash** builds the town and continues by itself once the play stage code and fonts are loaded and at least 2.6 s have passed; a tap skips the wait. The Pixi chunk loads during the splash, so play starts without a pause.
+- **Hint chain:** phone starts at the "+" (the drawer is folded away); tablets and desktops start at the cake. Hints are spoken as they change, show words only for age 9+, and are marked done for that profile when the map is opened. Under calm motion the halos stay as still rings.
+- **Measured:** the e2e run reaches the map in 9–10 taps (target: under 15) and feeds the first friend in about 8 s of scripted play (target: under 60 s for an adult acting like a child).
+- **Landscape fit keeps the floor above the drawer.** On wide screens (16:9 laptops) "contain" put the characters' feet behind the object drawer; the room is now scaled so the floor line where characters stand (y ≈ 500) ends above the bottom docks, letterboxing the sides a little more.
+- **Without a GPU (or in automated test browsers) the stage draws at most 30 frames a second.** CI runners render WebGL in software, and drawing at full rate starved input handling. CI also runs e2e with 2 workers, a 60 s test timeout and 2 retries.

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { strings } from '../../i18n/strings.en';
 import { usePlay } from '../../state/play';
 import { useSettings } from '../../state/settings';
@@ -10,6 +10,8 @@ import { CameraOverlay } from '../CameraOverlay';
 import { CarryLayer } from '../CarryLayer';
 import { CharactersDock } from '../CharactersDock';
 import { FollowBar } from '../FollowBar';
+import { HintBubble } from '../HintBubble';
+import { hint, useHints } from '../hints';
 import { game, useGame } from '../game';
 import { useLayoutMode, useViewportWidth } from '../media';
 import { ObjectDrawer } from '../ObjectDrawer';
@@ -33,6 +35,12 @@ export function SceneScreen() {
   const setCameraOpen = usePlay((s) => s.setCameraOpen);
   const [sheetTab, setSheetTab] = useState<'characters' | 'things'>('things');
   const phone = layout === 'phone';
+  const hintStep = useHints((s) => s.step);
+
+  // First play for this player: start the hint chain (once; it never comes back).
+  useEffect(() => {
+    useHints.getState().start(phone);
+  }, [phone]);
   const width = useViewportWidth();
   // Tiles that fit beside the docks: ~100 px each after the arrows (2 × 76 px).
   const portrait = typeof window !== 'undefined' && window.innerHeight > width;
@@ -81,7 +89,16 @@ export function SceneScreen() {
           </div>
 
           <div className="dock dock--top-right">
-            <IconButton icon="map" label={strings.map} shortcut="M" onClick={() => go('map')} />
+            <IconButton
+              icon="map"
+              label={strings.map}
+              shortcut="M"
+              className={hintStep === 'map' ? 'hint-glow' : undefined}
+              onClick={() => {
+                hint.mapOpened();
+                go('map');
+              }}
+            />
             <IconButton
               icon="pencil"
               label={strings.edit}
@@ -118,11 +135,14 @@ export function SceneScreen() {
         <>
           <button
             type="button"
-            className="plus-button"
+            className={hintStep === 'plus' ? 'plus-button hint-glow' : 'plus-button'}
             aria-label={strings.addSheet}
             aria-haspopup="dialog"
             aria-expanded={sheetShown}
-            onClick={() => setSheetOpen(true)}
+            onClick={() => {
+              setSheetOpen(true);
+              hint.sheetOpened();
+            }}
           >
             <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true">
               <path
@@ -163,6 +183,7 @@ export function SceneScreen() {
         </>
       )}
 
+      {!following && <HintBubble />}
       <CarryLayer />
       <BotCard />
       <CameraOverlay />

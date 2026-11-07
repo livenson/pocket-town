@@ -80,7 +80,10 @@ export function routeTo(from: Place, to: Place): RouteStep[] {
   return steps;
 }
 
-export function makeBot(def: (typeof starterCast)[number], place: Place): Bot {
+export function makeBot(
+  def: Pick<(typeof starterCast)[number], 'id' | 'name' | 'appearance' | 'traits' | 'homeId'>,
+  place: Place,
+): Bot {
   return {
     id: def.id,
     name: def.name,
