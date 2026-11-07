@@ -2748,10 +2748,12 @@ html[data-labels='false'] .wizard-section__title span {
 .hub__hill {
   position: absolute;
   left: -4%;
-  bottom: -12%;
+  /* The top of a wide ellipse, ending at the bottom edge: nothing pokes out
+     below, so the hub does not scroll. */
+  bottom: 0;
   width: 72%;
-  height: 34%;
-  border-radius: 50%;
+  height: 22%;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
   background: var(--pt-grass);
 }
 
@@ -2819,6 +2821,15 @@ html[data-labels='false'] .wizard-section__title span {
   .hub__main {
     grid-template-columns: minmax(0, 1fr);
     align-content: start;
+  }
+}
+
+/* Side by side, the square tiles also fit the height: on a short, wide window
+   both rows stay on screen (the top bar and padding take about 190 px). */
+@media (min-width: 900px) {
+  .hub__main .hub-grid {
+    width: min(100%, calc(100dvh - 190px));
+    justify-self: end;
   }
 }
 
