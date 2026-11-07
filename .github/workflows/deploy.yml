@@ -1,6 +1,6 @@
 # Build, test and deploy Pocket Town to GitHub Pages.
-# Before first use: Settings → Pages → Build and deployment → Source: "GitHub Actions".
-# Check each action for a newer major version when setting this up.
+# Pages source must be "GitHub Actions" (Settings → Pages → Build and deployment).
+# Lint, unit tests, build and e2e run on every push and pull request; deploy runs only from main.
 
 name: CI and deploy
 
@@ -21,9 +21,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: lts/*
           cache: npm
@@ -37,9 +37,17 @@ jobs:
         run: npx playwright install --with-deps chromium webkit
       - run: npm run e2e
 
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: test-results
+          retention-days: 7
+
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -55,4 +63,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

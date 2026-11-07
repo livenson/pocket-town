@@ -8,18 +8,18 @@ Work through the milestones in order. Each one ends with something playable at `
 
 Goal: an empty but real app live on GitHub Pages, with CI.
 
-- [ ] Scaffold with Vite (React + TypeScript template), then add PixiJS 8, Zustand, idb-keyval, zzfx, @fontsource/baloo-2, @fontsource/nunito, vite-plugin-pwa.
-- [ ] Dev tooling: Vitest, @testing-library/react, Playwright, ESLint (typescript-eslint, react-hooks), Prettier.
-- [ ] `vite.config.ts`: `base: '/pocket-town/'`; PWA plugin with `registerType: 'autoUpdate'`, manifest (name "Pocket Town", short_name "Pocket Town", `display: 'standalone'`, `orientation: 'any'`, `background_color: '#FFE6CF'`, `theme_color: '#EF4B2F'`, `start_url` and `scope` `/pocket-town/`), generated icons in `public/` (tomato rounded square with a white house glyph from `icons.ts`).
-- [ ] Copy the provided `src/design/tokens.ts` and `src/design/icons.ts` into place (already in this pack); add `src/design/fonts.css` importing the two @fontsource families (weights 600–900).
-- [ ] `index.html`: `lang="en"`, viewport `width=device-width, initial-scale=1, viewport-fit=cover`, no external URLs. Disable iOS double-tap zoom on the game surface with `touch-action: manipulation` and on the stage with `touch-action: none`.
-- [ ] A placeholder screen in the identity: apricot ground, "Pocket Town" in Baloo 2 ExtraBold, one tomato Play button that plays a ZzFX "pop" on tap.
-- [ ] `.github/workflows/deploy.yml` (provided in this pack; check each action's latest major version and bump if newer). Lint, unit tests and build run on every push and PR; deploy only from `main`.
-- [ ] Repository settings (do with `gh` if authenticated, otherwise list the steps for the owner):
+- [x] Scaffold with Vite (React + TypeScript template), then add PixiJS 8, Zustand, idb-keyval, zzfx, @fontsource/baloo-2, @fontsource/nunito, vite-plugin-pwa.
+- [x] Dev tooling: Vitest, @testing-library/react, Playwright, oxlint (type-aware; replaced ESLint, see DECISIONS), Prettier.
+- [x] `vite.config.ts`: `base: '/pocket-town/'`; PWA plugin with `registerType: 'autoUpdate'`, manifest (name "Pocket Town", short_name "Pocket Town", `display: 'standalone'`, `orientation: 'any'`, `background_color: '#FFE6CF'`, `theme_color: '#EF4B2F'`, `start_url` and `scope` `/pocket-town/`), generated icons in `public/` (tomato rounded square with a white house glyph from `icons.ts`).
+- [x] Copy the provided `src/design/tokens.ts` and `src/design/icons.ts` into place (already in this pack); add `src/design/fonts.css` importing the two @fontsource families (weights 600–900).
+- [x] `index.html`: `lang="en"`, viewport `width=device-width, initial-scale=1, viewport-fit=cover`, no external URLs. Disable iOS double-tap zoom on the game surface with `touch-action: manipulation` and on the stage with `touch-action: none`.
+- [x] A placeholder screen in the identity: apricot ground, "Pocket Town" in Baloo 2 ExtraBold, one tomato Play button that plays a ZzFX "pop" on tap.
+- [x] `.github/workflows/deploy.yml` (provided in this pack; check each action's latest major version and bump if newer). Lint, unit tests and build run on every push and PR; deploy only from `main`.
+- [x] Repository settings (do with `gh` if authenticated, otherwise list the steps for the owner):
   - Repo `livenson/pocket-town` exists and is public (GitHub Pages on a free account needs a public repo).
   - Settings → Pages → Build and deployment → Source: **GitHub Actions** (`gh api -X POST repos/livenson/pocket-town/pages -f build_type=workflow`, or `PUT` if Pages already exists).
-- [ ] `README.md`: what it is, live URL, commands.
-- [ ] `docs/DECISIONS.md` started.
+- [x] `README.md`: what it is, live URL, commands.
+- [x] `docs/DECISIONS.md` started.
 
 Acceptance: pushing to `main` deploys; the live URL shows the placeholder and the button makes a sound on iPad Safari; Lighthouse PWA "installable" passes; the network panel shows no third-party requests.
 
