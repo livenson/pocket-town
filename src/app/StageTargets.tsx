@@ -39,6 +39,11 @@ function BotTarget({ bot }: { bot: Bot }) {
           return;
         }
         playSfx('tap');
+        // Picking someone else lets go of the character the child was steering.
+        const before = game.world.bots.find((b) => b.id === usePlay.getState().selectedBotId);
+        if (before && before.id !== bot.id && before.mode === 'puppet') {
+          game.do({ type: 'control', botId: before.id, on: false });
+        }
         openCard(bot.id);
       }}
     />
@@ -94,10 +99,16 @@ function DoorTarget({ index, to }: { index: number; to: string }) {
   );
 }
 
+/**
+ * The floor, while carrying a thing (put it here) or while a character is picked
+ * (walk here): tap a character, then tap the floor, like picking up and placing.
+ */
 function FloorTargets({ controlling }: { controlling: Bot | null }) {
   const carrying = usePlay((s) => s.carrying);
   const roomId = useUi((s) => s.roomId);
   if (!carrying && !controlling) return null;
+  const walkTo = (where: string) =>
+    !carrying && controlling ? strings.walkTo(controlling.name, where) : where;
   const onFloor = (e: MouseEvent<HTMLButtonElement>, key: string) => {
     if (carrying) {
       placeOn(key, e.clientX || undefined, e.clientY || undefined);
@@ -111,12 +122,17 @@ function FloorTargets({ controlling }: { controlling: Bot | null }) {
         key === 'floor' && e.clientX
           ? { x: ((e.clientX - box.left) / box.width) * 900, y: 470 }
           : { x: [225, 450, 675][Number(key.slice(5))] ?? 450, y: 480 };
-      playSfx('tap');
+      playSfx('place');
+      if (controlling.mode !== 'puppet') {
+        game.do({ type: 'control', botId: controlling.id, on: true });
+      }
       game.do({
         type: 'puppetMove',
         botId: controlling.id,
         place: { buildingId: room?.buildingId ?? 'home', roomId, ...spot },
       });
+      // Out of the way, so the child sees them walk; still picked, to move again.
+      usePlay.getState().closeCard();
     }
   };
   return (
@@ -127,7 +143,7 @@ function FloorTargets({ controlling }: { controlling: Bot | null }) {
         className="stage-target stage-target--floor"
         data-target="floor"
         data-valid
-        aria-label={strings.floor}
+        aria-label={walkTo(strings.floor)}
         tabIndex={-1}
         onClick={(e) => onFloor(e, 'floor')}
       />
@@ -139,7 +155,7 @@ function FloorTargets({ controlling }: { controlling: Bot | null }) {
           className="stage-target stage-target--spot"
           data-target={`spot:${i}`}
           data-valid
-          aria-label={label}
+          aria-label={walkTo(label)}
           onClick={(e) => onFloor(e, `spot:${i}`)}
         />
       ))}
@@ -151,12 +167,20 @@ export function StageTargets() {
   const world = useWorldTick(3);
   const roomId = useUi((s) => s.roomId);
   const selectedId = usePlay((s) => s.selectedBotId);
+  const cardOpen = usePlay((s) => s.cardOpen);
   const room = findRoom(roomId);
   const bots = world.bots.filter((b) => !b.travel && b.place.roomId === roomId);
   const objects = world.objects.filter((o) => o.place.roomId === roomId);
   const selected = world.bots.find((b) => b.id === selectedId);
+  // Steer the picked character: while their card is open, or once steering.
   const controlling =
-    selected?.mode === 'puppet' && selected.place.roomId === roomId ? selected : null;
+    selected &&
+    selected.place.roomId === roomId &&
+    !selected.travel &&
+    selected.mode !== 'frozen' &&
+    (selected.mode === 'puppet' || cardOpen)
+      ? selected
+      : null;
   return (
     <div className="stage-targets">
       {room?.doors.map((d, i) => (

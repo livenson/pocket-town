@@ -34,6 +34,7 @@ export const et: Strings = {
   pageOf: (page: number, pages: number) => `Leht ${page} / ${pages}`,
 
   floor: 'Põrand',
+  walkTo: (name: string, where: string) => `${name}, kõnni siia: ${where}`,
   floorSpot: ['Põrand, vasakul', 'Põrand, keskel', 'Põrand, paremal'],
   frontDoor: 'Välisuks: mine õue',
   doorTo: (room: string) => `Uks: ${room}`,

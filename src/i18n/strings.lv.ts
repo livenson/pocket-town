@@ -36,6 +36,7 @@ export const lv: Strings = {
   pageOf: (page: number, pages: number) => `Lapa ${page} no ${pages}`,
 
   floor: 'Grīda',
+  walkTo: (name: string, where: string) => `${name}, ej šurp: ${where}`,
   floorSpot: ['Grīda, pa kreisi', 'Grīda, vidū', 'Grīda, pa labi'],
   frontDoor: 'Ārdurvis: iet ārā',
   doorTo: (room: string) => `Durvis: ${room}`,

@@ -36,6 +36,7 @@ export const en = {
 
   // Play stage
   floor: 'Floor',
+  walkTo: (name: string, where: string) => `${name}, walk here: ${where}`,
   floorSpot: ['Floor, left', 'Floor, middle', 'Floor, right'],
   frontDoor: 'Front door: go outside',
   doorTo: (room: string) => `Door to the ${room}`,

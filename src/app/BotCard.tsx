@@ -273,6 +273,8 @@ export function BotCard() {
     // Closing the card lets go of a character the child was moving.
     if (bot.mode === 'puppet') game.do({ type: 'control', botId: bot.id, on: false });
     closeCard();
+    // Nothing stays picked: the floor stops glowing.
+    usePlay.getState().select(null);
   };
 
   if (layout === 'phone') {
