@@ -2958,32 +2958,69 @@ html[data-labels='false'] .wizard-section__title span {
 }
 
 .character-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  /* The character on the left; what you can do, then where they live, on the right. */
+  display: grid;
+  grid-template-columns: auto minmax(0, auto);
+  grid-template-areas:
+    'who buttons'
+    'who houses';
   justify-content: center;
-  gap: 18px;
-  padding: 8px 0 12px;
+  align-items: center;
+  column-gap: 40px;
+  row-gap: 20px;
+  padding: 8px 0 16px;
 }
 
 .character-actions__who {
+  grid-area: who;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 8px;
+}
+
+.character-actions__buttons {
+  grid-area: buttons;
+}
+
+.character-actions__houses {
+  grid-area: houses;
 }
 
 .character-actions__buttons,
 .character-actions__houses {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.character-actions__buttons .icon-btn,
+.character-actions__buttons .hold-btn {
+  width: var(--pt-primary-tablet, 76px);
+  height: var(--pt-primary-tablet, 76px);
 }
 
 .character-actions__houses {
-  padding: 6px;
-  border-radius: 999px;
+  justify-self: start;
+  padding: 10px 14px;
+  border-radius: 28px;
   background: var(--pt-ground);
+}
+
+/* House names are long words ("Naabrimaja"): give them room to stay whole. */
+.character-actions__houses .text-label {
+  max-width: 130px;
+}
+
+html[data-layout='phone'] .character-actions {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'who' 'buttons' 'houses';
+  justify-items: center;
+}
+
+html[data-layout='phone'] .character-actions__houses {
+  justify-self: center;
 }
 
 /* ---------- World map (M7) ---------- */

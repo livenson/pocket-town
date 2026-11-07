@@ -131,7 +131,7 @@ export function CharactersScreen() {
         {open && (
           <div className="character-actions">
             <span className="character-actions__who" aria-hidden="true">
-              <PegPortrait appearance={open.appearance} size={120} />
+              <PegPortrait appearance={open.appearance} size={170} />
               <span className="name-pill">{open.name}</span>
             </span>
             <div className="character-actions__buttons">
