@@ -407,6 +407,7 @@ export const lv: Strings = {
   },
 
   grownUp: {
+    version: (v: string, date: string) => (date ? `Versija ${v}, būvēta ${date}` : `Versija ${v}`),
     intro: 'Iestatījumi pieaugušajiem. No Pocket Town nekas neatstāj šo ierīci.',
     kit: 'Komponenti (dizaina pārbaudei)',
   },

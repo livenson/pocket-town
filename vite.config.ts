@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import react from '@vitejs/plugin-react';
+import { execSync } from 'node:child_process';
 import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { kidFeedback } from './scripts/feedback/plugin.ts';
@@ -45,8 +46,23 @@ function contentSecurityPolicy(): Plugin {
   };
 }
 
-export default defineConfig(({ mode }) => ({
+/** Which build this is, for the grown-up area: the commit and the day it was built. */
+function buildId(command: string): { version: string; date: string } {
+  if (command !== 'build') return { version: 'dev', date: '' };
+  let version = 'unknown';
+  try {
+    version = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
+  } catch {
+    // Not a git checkout: still builds.
+  }
+  return { version, date: new Date().toISOString().slice(0, 10) };
+}
+
+export default defineConfig(({ mode, command }) => ({
   base: BASE,
+  define: {
+    __BUILD__: JSON.stringify(buildId(command)),
+  },
   // Kid play-testing (dev server only): `npm run feedback` / `npm run feedback:lan`.
   // Only the inbox at the repo root, not src/dev/feedback.
   server: { watch: { ignored: [`${import.meta.dirname}/feedback/**`] } },

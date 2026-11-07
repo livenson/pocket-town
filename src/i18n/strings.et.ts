@@ -405,6 +405,8 @@ export const et: Strings = {
   },
 
   grownUp: {
+    version: (v: string, date: string) =>
+      date ? `Versioon ${v}, ehitatud ${date}` : `Versioon ${v}`,
     intro: 'Seaded täiskasvanutele. Pocket Townist ei lahku sellest seadmest midagi.',
     kit: 'Komponendid (disaini kontrollimiseks)',
   },

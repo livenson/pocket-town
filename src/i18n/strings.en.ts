@@ -416,6 +416,7 @@ export const en = {
   },
 
   grownUp: {
+    version: (v: string, date: string) => (date ? `Version ${v}, built ${date}` : `Version ${v}`),
     intro: 'Settings for grown-ups. Nothing in Pocket Town leaves this device.',
     kit: 'Component kit (for checking the design)',
   },

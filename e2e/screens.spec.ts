@@ -124,6 +124,8 @@ test('every screen is reachable and passes axe (WCAG 2.1 AA)', async ({ page }) 
   await passGate(page);
   await expect(page.getByRole('heading', { name: 'Grown-up area' })).toBeVisible();
   await expectAccessible(page, 'grown-up');
+  // Which build this is (the commit and the day), for grown-ups and bug reports.
+  await expect(page.getByText(/^Version [0-9a-f]{7}, built \d{4}-\d{2}-\d{2}$/)).toBeVisible();
 
   await press(page, 'Component kit (for checking the design)');
   await expect(page.getByRole('heading', { name: 'Component kit' })).toBeVisible();

@@ -30,7 +30,13 @@
     "typescript/await-thenable": "error",
     "jsx-a11y/prefer-tag-over-role": "off",
     "typescript/consistent-return": "off",
-    "unicorn/no-array-fill-with-reference-type": "off"
+    "unicorn/no-array-fill-with-reference-type": "off",
+    "no-underscore-dangle": [
+      "warn",
+      {
+        "allow": ["__BUILD__"]
+      }
+    ]
   },
   "overrides": [
     {
