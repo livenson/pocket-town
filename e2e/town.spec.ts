@@ -126,3 +126,19 @@ test('my characters: make one with the dice, then say goodbye', async ({ page })
   await tap(page, b(page, 'World'));
   await expect(pins()).toHaveCount(6);
 });
+
+test('a building on the map opens with a real press (finger down, a pause, up)', async ({
+  page,
+}) => {
+  await page.goto('./#scene');
+  await tap(page, b(page, 'Map'));
+  const cafe = b(page, 'Go into Café').or(b(page, /^Go into Café\./));
+  const box = await cafe.boundingBox();
+  if (!box) throw new Error('no café');
+  // Pressing used to move the building out from under the finger.
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.waitForTimeout(150);
+  await page.mouse.up();
+  await expect(page.getByRole('group', { name: 'Time' })).toBeVisible();
+});

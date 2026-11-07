@@ -3049,6 +3049,12 @@ html[data-labels='false'] .wizard-section__title span {
   transform: translate(-50%, -60%);
 }
 
+/* Pressed: sink a little from where it stands. (Replacing the transform moved
+   the building out from under the finger, so a tap never opened it.) */
+.map-building:active {
+  transform: translate(-50%, -60%) translateY(6px);
+}
+
 .map-building__roof {
   width: 118px;
   height: 52px;
