@@ -4,6 +4,7 @@ import { color } from '../../design/tokens';
 import { ellipseBox, ellipticalRect, hex, pctCorners } from '../draw';
 import type { Appearance, Box, Eyes, PegGeometry } from './geometry';
 import { pegGeometry } from './geometry';
+import { bodyExtras, headExtras, mouthPrims, type Prim } from './extras';
 
 const INK = hex(color.ink);
 
@@ -32,6 +33,7 @@ export function drawPeg(
     color: INK,
     alpha: 0.22,
   });
+  drawPrims(g, bodyExtras(geo, a));
 
   if (geo.arm) {
     ellipticalRect(g, geo.arm, pctCorners(geo.arm, 0.45, 0.2))
@@ -78,7 +80,9 @@ export function drawPeg(
     else ellipseBox(g, e).fill(INK);
   }
   for (const c of geo.cheeks) ellipseBox(g, c).fill({ color: 0xff6978, alpha: 0.42 });
-  drawMouth(g, geo.mouth, geo.mouthShape, geo.lineWidth);
+  const mouth = mouthPrims(geo);
+  if (mouth) drawPrims(g, mouth);
+  else drawMouth(g, geo.mouth, geo.mouthShape, geo.lineWidth);
 
   if (geo.hear) {
     ellipticalRect(g, geo.hear, pctCorners(geo.hear, 0.4))
@@ -86,7 +90,25 @@ export function drawPeg(
       .stroke({ width: thin, color: 0xffffff });
   }
 
+  drawPrims(g, headExtras(geo, a));
   return { g, geo };
+}
+
+function drawPrims(g: Graphics, prims: Prim[]): void {
+  for (const p of prims) {
+    if (p.t === 'rect')
+      g.roundRect(p.x, p.y, p.w, p.h, p.r).fill({ color: hex(p.fill), alpha: p.alpha ?? 1 });
+    else if (p.t === 'poly') g.poly(p.pts).fill(hex(p.fill));
+    else if (p.t === 'line')
+      g.moveTo(p.x1, p.y1)
+        .lineTo(p.x2, p.y2)
+        .stroke({ width: p.sw, color: hex(p.stroke), cap: 'round' });
+    else {
+      g.ellipse(p.cx, p.cy, p.rx, p.ry);
+      if (p.fill) g.fill({ color: hex(p.fill), alpha: p.alpha ?? 1 });
+      if (p.stroke) g.stroke({ width: p.sw ?? 2, color: hex(p.stroke) });
+    }
+  }
 }
 
 function drawMouth(g: Graphics, m: Box, shape: 'smile' | 'o', width: number): void {

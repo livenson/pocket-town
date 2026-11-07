@@ -2,6 +2,7 @@
 // cards, the gallery and the avatar wizard.
 import type { Appearance, Eyes } from '../content/appearance';
 import { color } from '../design/tokens';
+import { bodyExtras, headExtras, mouthPrims, type Prim } from '../stage/peg/extras';
 import { pegGeometry, type Box, type Corners } from '../stage/peg/geometry';
 
 const K = 0.5523;
@@ -51,6 +52,57 @@ const Ellipse = ({ b, fill, opacity }: { b: Box; fill: string; opacity?: number 
     opacity={opacity}
   />
 );
+
+function Prims({ prims }: { prims: Prim[] }) {
+  return (
+    <>
+      {prims.map((p, i) => {
+        if (p.t === 'rect') {
+          return (
+            <rect
+              key={i}
+              x={p.x}
+              y={p.y}
+              width={p.w}
+              height={p.h}
+              rx={p.r}
+              fill={p.fill}
+              opacity={p.alpha}
+            />
+          );
+        }
+        if (p.t === 'poly') return <polygon key={i} points={p.pts.join(' ')} fill={p.fill} />;
+        if (p.t === 'line') {
+          return (
+            <line
+              key={i}
+              x1={p.x1}
+              y1={p.y1}
+              x2={p.x2}
+              y2={p.y2}
+              stroke={p.stroke}
+              strokeWidth={p.sw}
+              strokeLinecap="round"
+            />
+          );
+        }
+        return (
+          <ellipse
+            key={i}
+            cx={p.cx}
+            cy={p.cy}
+            rx={p.rx}
+            ry={p.ry}
+            fill={p.fill ?? 'none'}
+            stroke={p.stroke}
+            strokeWidth={p.sw}
+            opacity={p.alpha}
+          />
+        );
+      })}
+    </>
+  );
+}
 
 export interface PegPortraitProps {
   appearance: Appearance;
@@ -125,6 +177,7 @@ export function PegPortrait({
         fill={ink}
         opacity={0.22}
       />
+      <Prims prims={bodyExtras(g, a)} />
       {g.arm && (
         <path
           d={ellipticalRectPath(g.arm, pct(g.arm, 0.45, 0.2))}
@@ -181,7 +234,9 @@ export function PegPortrait({
       {g.cheeks.map((c, i) => (
         <Ellipse key={i} b={c} fill="#FF6978" opacity={0.42} />
       ))}
-      {g.mouthShape === 'o' ? (
+      {mouthPrims(g) ? (
+        <Prims prims={mouthPrims(g) ?? []} />
+      ) : g.mouthShape === 'o' ? (
         <ellipse
           cx={m.x + m.w / 2}
           cy={m.y + m.h / 2}
@@ -200,6 +255,7 @@ export function PegPortrait({
           strokeLinecap="round"
         />
       )}
+      <Prims prims={headExtras(g, a)} />
       {g.hear && (
         <path
           d={ellipticalRectPath(g.hear, pct(g.hear, 0.4))}

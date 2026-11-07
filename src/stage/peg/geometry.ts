@@ -39,6 +39,10 @@ export interface PegGeometry {
   mouth: Box;
   mouthShape: 'smile' | 'o';
   lineWidth: number;
+  mouthStyle: 'smile' | 'grin' | 'calm';
+  /** Stripes or dots across the body, and a collar. */
+  pattern: 'plain' | 'stripes' | 'dots' | 'collar';
+  accessory: 'none' | 'glasses' | 'bow' | 'hat';
   hear: Box | null;
   arm: Box | null;
   wheelchair: { handle: Box; wheel: Box; wheelBorder: number; hub: Box; caster: Box } | null;
@@ -121,6 +125,9 @@ export function pegGeometry(size: number, a: Appearance, eyes: Eyes = 'open'): P
         : { x: hx + d * 0.4, y: hy + d * 0.64, w: d * 0.2, h: d * 0.1 },
     mouthShape: eyes === 'wow' ? 'o' : 'smile',
     lineWidth: Math.max(2, d * 0.045),
+    mouthStyle: a.mouth ?? 'smile',
+    pattern: a.pattern ?? 'plain',
+    accessory: a.accessory ?? 'none',
     hear:
       a.aid === 'hearing' ? { x: hx - d * 0.06, y: hy + d * 0.44, w: d * 0.14, h: d * 0.22 } : null,
     arm: a.aid === 'arm' ? { x: W * 0.02, y: by + bh * 0.22, w: W * 0.17, h: bh * 0.44 } : null,
