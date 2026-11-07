@@ -150,3 +150,17 @@ test('tapping someone on the map goes to watch them', async ({ page }) => {
   await expect(page.getByRole('group', { name: 'Time' })).toBeVisible();
   await expect(page.getByRole('navigation', { name: /Moku/ })).toBeVisible();
 });
+
+test('things can go on a table or a shelf, not only the floor', async ({ page }) => {
+  await page.goto('./#scene');
+  await tap(page, b(page, 'Pause'));
+  const plus = page.getByRole('button', { name: 'Add', exact: true });
+  if (await plus.isVisible()) await tap(page, plus);
+  await tap(page, b(page, 'Cake'));
+  await expect(b(page, 'Table: put it here')).toBeAttached();
+  await expect(b(page, 'Shelf: put it here')).toBeAttached();
+  await tap(page, b(page, 'Table: put it here'));
+  await expect(page.getByRole('button', { name: 'Cake, pick it up' })).toBeAttached();
+  // Nothing is being carried any more, so the places stop glowing.
+  await expect(b(page, 'Table: put it here')).toHaveCount(0);
+});

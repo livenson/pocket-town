@@ -2,7 +2,7 @@
 // element hosts it. Rooms are 900 × 560 logical units, scaled to fit.
 import 'pixi.js/unsafe-eval'; // no eval(): keeps the Content Security Policy strict
 import { offers } from '../content/activities';
-import { furnitureKinds, type FurnitureKind } from '../content/furniture';
+import { furnitureKinds, surfaceOf, type FurnitureKind } from '../content/furniture';
 import { AccessibilitySystem, Application, Container, extensions, type Ticker } from 'pixi.js';
 import { sim } from '../app/simRunner';
 import { findRoom, starterRoom } from '../content/rooms';
@@ -94,6 +94,19 @@ export class Stage {
     [225, 450, 675].forEach((x, i) =>
       setTargetRect(`spot:${i}`, { x: x - 50, y: 404, w: 100, h: 50 }),
     );
+    // Furniture you can put things on, for drops and taps.
+    for (const f of room.def.furniture) {
+      const s = surfaceOf(f);
+      if (s)
+        // A band around the top: above characters, so a thing can go on a table
+        // someone sits at, while a drop on their face still gives it to them.
+        setTargetRect(`surface:${f.id}`, {
+          x: s.x0 - 10,
+          y: s.top - 30,
+          w: s.x1 - s.x0 + 20,
+          h: 44,
+        });
+    }
     // Furniture that offers something to do: tap it to send someone there.
     for (const f of room.def.furniture) {
       const kind: FurnitureKind = furnitureKinds[f.kind];

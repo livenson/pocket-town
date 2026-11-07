@@ -641,3 +641,38 @@ export interface FurnitureInstance {
   /** Stands on the floor in front of the wall, sorted with characters (house pieces). */
   standing?: boolean;
 }
+
+/**
+ * Furniture you can put things on (a play-tester asked why everything went on the
+ * floor): the local y of the top, where a thing's base sits.
+ */
+export const surfaceTop: Partial<Record<FurnitureKindId, number>> = {
+  table: 9,
+  counter: 2,
+  cafeTable: 9,
+  cakeStand: 40,
+  shelf: 40,
+  bookshelf: 2,
+};
+
+export interface Surface {
+  /** Room x range a thing can stand on. */
+  x0: number;
+  x1: number;
+  /** Room y of the top. */
+  top: number;
+  /** Room y of the floor in front, where characters stand to use the thing. */
+  floorY: number;
+}
+
+/** Where things can stand on a piece of furniture, or null if nothing can. */
+export function surfaceOf(f: FurnitureInstance): Surface | null {
+  const top = surfaceTop[f.kind];
+  if (top === undefined) return null;
+  const kind: FurnitureKind = furnitureKinds[f.kind];
+  const s = f.scale ?? 1;
+  const inset = Math.min(30, (kind.w * s) / 4);
+  // Standing pieces: their feet. Wall pieces: the floor just in front of the wall.
+  const floorY = kind.layer === 'stand' ? f.y + (kind.footY ?? kind.h) * s : 430;
+  return { x0: f.x + inset, x1: f.x + kind.w * s - inset, top: f.y + top * s, floorY };
+}

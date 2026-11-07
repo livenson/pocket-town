@@ -6,6 +6,7 @@ import { game, useWorldTick } from './game';
 import { placeOn, useCarrySource } from '../input/carry';
 import { playSfx } from '../audio/audio';
 import { offers } from '../content/activities';
+import { surfaceOf } from '../content/furniture';
 import { findRoom } from '../content/rooms';
 import { strings, thingName } from '../i18n';
 import type { Bot, PlacedObject } from '../sim/types';
@@ -124,6 +125,33 @@ function FurnitureTarget({
         usePlay.getState().closeCard();
       }}
     />
+  );
+}
+
+/** While carrying a thing: tables, counters and shelves to put it on (they glow). */
+function SurfaceTargets({ roomId }: { roomId: string }) {
+  const carrying = usePlay((s) => s.carrying);
+  const room = findRoom(roomId);
+  if (!carrying || !room) return null;
+  return (
+    <>
+      {room.furniture
+        .filter((f) => surfaceOf(f))
+        .map((f) => (
+          <button
+            key={`${roomId}-${f.id}`}
+            ref={(el) => registerTarget(`surface:${f.id}`, el)}
+            type="button"
+            className="stage-target stage-target--surface"
+            data-target={`surface:${f.id}`}
+            data-valid
+            aria-label={strings.putOn(strings.furnitureNames[f.kind] ?? f.kind)}
+            onClick={(e) =>
+              placeOn(`surface:${f.id}`, e.clientX || undefined, e.clientY || undefined)
+            }
+          />
+        ))}
+    </>
   );
 }
 
@@ -255,6 +283,7 @@ export function StageTargets() {
       {bots.map((b) => (
         <BotTarget key={b.id} bot={b} />
       ))}
+      <SurfaceTargets roomId={roomId} />
       <span className="visually-hidden" aria-live="polite">
         {bots.map((b) => `${b.name}: ${doingLabel(b)}${b.now ? '' : ''}`).join('. ')}
       </span>

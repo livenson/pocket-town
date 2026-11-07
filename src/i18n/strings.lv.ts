@@ -38,7 +38,9 @@ export const lv: Strings = {
   floor: 'Grīda',
   walkTo: (name: string, where: string) => `${name}, ej šurp: ${where}`,
   useFurniture: (name: string) => `${name}: sūti kādu šurp`,
+  putOn: (name: string) => `${name}: noliec šeit`,
   furnitureNames: {
+    shelf: 'Plaukts',
     stove: 'Plīts',
     table: 'Galds',
     musicBox: 'Mūzikas kastīte',

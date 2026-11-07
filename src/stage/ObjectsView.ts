@@ -60,11 +60,13 @@ export class ObjectsView {
         this.room.actors.addChild(token);
         this.tokens.set(o.id, token);
       }
-      token.position.set(o.place.x, o.place.y);
-      token.zIndex = o.place.y;
+      // On furniture: drawn on its top, sorted just in front of the piece itself.
+      const y = o.place.y - (o.raise ?? 0);
+      token.position.set(o.place.x, y);
+      token.zIndex = o.place.y + 1;
       // A thing being carried rides the pointer instead of sitting on the floor.
       token.alpha = carryingId === o.id ? 0.35 : 1;
-      setTargetRect(`object:${o.id}`, { x: o.place.x - 40, y: o.place.y - 84, w: 80, h: 90 });
+      setTargetRect(`object:${o.id}`, { x: o.place.x - 40, y: y - 84, w: 80, h: 90 });
     }
     for (const [id, token] of this.tokens) {
       if (here.has(id)) continue;

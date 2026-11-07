@@ -20,8 +20,8 @@ export type Command =
   | { type: 'puppetMove'; botId: string; place: Place }
   | { type: 'freeze'; botId: string; on: boolean }
   | { type: 'sendHome'; botId: string }
-  | { type: 'placeObject'; kind: string; place: Place; id?: string }
-  | { type: 'moveObject'; id: string; place: Place }
+  | { type: 'placeObject'; kind: string; place: Place; id?: string; raise?: number }
+  | { type: 'moveObject'; id: string; place: Place; raise?: number }
   | { type: 'removeObject'; id: string }
   /** Create or change a house the child is building (the whole house, so undo is simple). */
   | { type: 'setHouse'; house: HouseDef }
@@ -161,6 +161,7 @@ export function apply(world: World, cmd: Command): boolean {
         kind: cmd.kind,
         place: { ...cmd.place, ...spot },
         placedBy: 'child',
+        ...(cmd.raise ? { raise: cmd.raise } : {}),
       });
       return true;
     }
@@ -169,6 +170,8 @@ export function apply(world: World, cmd: Command): boolean {
       if (!o) return false;
       const spot = clampToFloor(cmd.place.x, cmd.place.y);
       o.place = { ...cmd.place, ...spot };
+      if (cmd.raise) o.raise = cmd.raise;
+      else delete o.raise;
       // Once the child moves it, it is theirs: bots will not tidy it away.
       o.placedBy = 'child';
       return true;

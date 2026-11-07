@@ -36,7 +36,9 @@ export const et: Strings = {
   floor: 'Põrand',
   walkTo: (name: string, where: string) => `${name}, kõnni siia: ${where}`,
   useFurniture: (name: string) => `${name}: saada keegi siia`,
+  putOn: (name: string) => `${name}: pane siia`,
   furnitureNames: {
+    shelf: 'Riiul',
     stove: 'Pliit',
     table: 'Laud',
     musicBox: 'Muusikakarp',

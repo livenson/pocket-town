@@ -1414,6 +1414,10 @@ html[data-layout='phone'] .gate__card {
   box-shadow: 0 0 0 3px var(--pt-paper);
 }
 
+.stage-target--surface[data-valid] {
+  border-radius: 18px;
+}
+
 .stage-target--spot[data-valid] {
   border-radius: 50%;
 }

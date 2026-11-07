@@ -8,6 +8,7 @@ import { game } from '../app/game';
 import { hint } from '../app/hints';
 import { playSfx } from '../audio/audio';
 import { sim } from '../app/simRunner';
+import { surfaceOf } from '../content/furniture';
 import { findRoom } from '../content/rooms';
 import { usePlay, type Carrying, type CarrySource } from '../state/play';
 import { useUi } from '../state/ui';
@@ -32,6 +33,23 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
     if (ok) {
       playSfx('jingle');
       hint.gave();
+    }
+  } else if (target.startsWith('surface:')) {
+    // On a table, counter or shelf: where the finger is along the top (or the middle).
+    const roomId = useUi.getState().roomId;
+    const f = findRoom(roomId)?.furniture.find((x) => x.id === target.slice(8));
+    const s = f ? surfaceOf(f) : null;
+    if (s) {
+      const p =
+        clientX !== undefined && clientY !== undefined ? clientToRoom(clientX, clientY) : null;
+      const x = Math.min(s.x1, Math.max(s.x0, p?.x ?? (s.x0 + s.x1) / 2));
+      const place = currentPlace(x, s.floorY);
+      const raise = Math.max(0, s.floorY - s.top);
+      ok =
+        c.source.from === 'object'
+          ? game.do({ type: 'moveObject', id: c.source.objectId, place, raise })
+          : game.do({ type: 'placeObject', kind: c.kind, place, raise });
+      if (ok) playSfx('place');
     }
   } else if (target === 'floor' || target.startsWith('spot:')) {
     let at: { x: number; y: number } | null = null;

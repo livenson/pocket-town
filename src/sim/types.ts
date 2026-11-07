@@ -79,6 +79,9 @@ export interface PlacedObject {
   place: Place;
   /** 'child': placed by the child, never touched by bots. 'bot': left out by a bot. */
   placedBy: 'child' | 'bot';
+  /** Standing on furniture: drawn this far above `place` (which stays on the floor
+   *  in front, where characters stand to use it). */
+  raise?: number;
 }
 
 export type SimEventType =
