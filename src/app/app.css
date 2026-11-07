@@ -1441,6 +1441,22 @@ html[data-layout='phone'] .gate__card {
   pointer-events: none;
 }
 
+/* Furniture taps: invisible until hovered or focused; inert while carrying,
+   so a drop goes to the floor or a character behind it. */
+.stage-target--furniture {
+  border-radius: 18px;
+}
+
+.stage-target--furniture:hover,
+.stage-target--furniture:focus-visible {
+  outline: 4px dashed var(--pt-marigold);
+  outline-offset: 2px;
+}
+
+.scene[data-carrying] .stage-target--furniture {
+  pointer-events: none;
+}
+
 /* ---------- Carrying ---------- */
 
 .carry-pill {

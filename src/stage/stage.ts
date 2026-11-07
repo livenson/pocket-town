@@ -1,6 +1,8 @@
 // The play stage: one Pixi Application for the whole app, moved into whichever
 // element hosts it. Rooms are 900 × 560 logical units, scaled to fit.
 import 'pixi.js/unsafe-eval'; // no eval(): keeps the Content Security Policy strict
+import { offers } from '../content/activities';
+import { furnitureKinds, type FurnitureKind } from '../content/furniture';
 import { AccessibilitySystem, Application, Container, extensions, type Ticker } from 'pixi.js';
 import { sim } from '../app/simRunner';
 import { findRoom, starterRoom } from '../content/rooms';
@@ -92,6 +94,13 @@ export class Stage {
     [225, 450, 675].forEach((x, i) =>
       setTargetRect(`spot:${i}`, { x: x - 50, y: 404, w: 100, h: 50 }),
     );
+    // Furniture that offers something to do: tap it to send someone there.
+    for (const f of room.def.furniture) {
+      const kind: FurnitureKind = furnitureKinds[f.kind];
+      if (!offers[f.kind]) continue;
+      const s = f.scale ?? 1;
+      setTargetRect(`furniture:${f.id}`, { x: f.x, y: f.y, w: kind.w * s, h: kind.h * s });
+    }
     return room;
   }
 

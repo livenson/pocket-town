@@ -5,6 +5,7 @@ import type { MouseEvent } from 'react';
 import { game, useWorldTick } from './game';
 import { placeOn, useCarrySource } from '../input/carry';
 import { playSfx } from '../audio/audio';
+import { offers } from '../content/activities';
 import { findRoom } from '../content/rooms';
 import { strings, thingName } from '../i18n';
 import type { Bot, PlacedObject } from '../sim/types';
@@ -72,6 +73,56 @@ function ObjectTarget({ object }: { object: PlacedObject }) {
       {...voice}
       {...carry}
       onClickCapture={voice.onClickCapture}
+    />
+  );
+}
+
+/**
+ * Furniture that offers something to do: tap it and someone goes to use it. The
+ * picked character if there is one (this is also how to steer them to it),
+ * otherwise whoever is nearest.
+ */
+function FurnitureTarget({
+  id,
+  kind,
+  x,
+  roomId,
+}: {
+  id: string;
+  kind: string;
+  x: number;
+  roomId: string;
+}) {
+  const carrying = usePlay((s) => s.carrying);
+  const label = strings.useFurniture(strings.furnitureNames[kind] ?? kind);
+  const voice = useVoiceLabel(label);
+  const activity = offers[kind]?.[0]?.activity;
+  return (
+    <button
+      ref={(el) => registerTarget(`furniture:${id}`, el)}
+      type="button"
+      className="stage-target stage-target--furniture"
+      aria-label={label}
+      tabIndex={carrying ? -1 : 0}
+      {...voice}
+      onClick={() => {
+        if (!activity) return;
+        const world = game.world;
+        const here = world.bots.filter(
+          (b) => !b.travel && b.place.roomId === roomId && b.mode !== 'frozen',
+        );
+        const picked = here.find((b) => b.id === usePlay.getState().selectedBotId);
+        const who =
+          picked ?? here.toSorted((a, b) => Math.abs(a.place.x - x) - Math.abs(b.place.x - x))[0];
+        if (!who) {
+          playSfx('soft');
+          return;
+        }
+        playSfx('tap');
+        if (who.mode === 'puppet') game.do({ type: 'control', botId: who.id, on: false });
+        game.do({ type: 'nudge', botId: who.id, activity });
+        usePlay.getState().closeCard();
+      }}
     />
   );
 }
@@ -183,6 +234,17 @@ export function StageTargets() {
       : null;
   return (
     <div className="stage-targets">
+      {room?.furniture
+        .filter((f) => offers[f.kind])
+        .map((f) => (
+          <FurnitureTarget
+            key={`${roomId}-${f.id}`}
+            id={f.id}
+            kind={f.kind}
+            x={f.x}
+            roomId={roomId}
+          />
+        ))}
       {room?.doors.map((d, i) => (
         <DoorTarget key={`${roomId}-${i}`} index={i} to={d.to} />
       ))}
