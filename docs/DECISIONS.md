@@ -162,3 +162,10 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 - **Bots adapt**: they use what is there; with no bed in a house they sleep elsewhere (tested over a day with the beds removed).
 - **Built houses**: the house wizard still builds them (from "My house" in the hub, or "Change the house" while decorating one). Rebuilding a room's furniture in the wizard replaces that room's decorating; undo brings it back.
 - **The house wizard's grid stays** for building new houses; free placement happens in the room itself.
+
+## 2026-11-07: Things are pictures, from Microsoft Fluent Emoji (owner's choice)
+
+- **Why**: placed things looked like UI icons on tinted tiles; the owner wanted a cake to look like a cake. Compared Fluent (flat), Noto, Twemoji and drawing our own, in a room; the owner picked Fluent flat: flat colours like our furniture, readable small, MIT licence, thousands to choose from. (Tabler line icons were tried first and dropped for the same reason: they are icons too.)
+- **How**: `npm run art` copies only the pictures we use from `@iconify-json/fluent-emoji-flat` (dev dependency) into `src/design/thingArt.ts`; each is its own SVG image (data URL, allowed by the CSP), in the drawer, in hand and as a sprite on the stage. Credit in the grown-up area and `docs/THIRD_PARTY.md`.
+- **More things**: 81 in six categories (food, toys, music, books and art, plants, party), each with an effect when given and an offer when placed. Every existing id is kept, so saves still load. Wish bubbles keep simple line icons.
+- **Furniture stays drawn in house style** (no open set matches the flat rooms).

@@ -1,16 +1,32 @@
-// Things the child (or a bot) put down in the room: a tinted token with the
-// thing's icon. Food sits on a plate that never empties.
-import { Container, Graphics } from 'pixi.js';
+// Things the child (or a bot) put down in the room: the thing's picture, standing
+// on the floor (or on furniture). Food sits on a plate that never empties.
+import { Container, Graphics, Sprite, Texture } from 'pixi.js';
 import { objectKinds } from '../content/objects';
 import { color } from '../design/tokens';
 import type { World } from '../sim/types';
+import { pictureUrl } from '../design/thingPicture';
 import { hex } from './draw';
-import { iconGraphics } from './iconGraphics';
 import type { RoomView } from './RoomView';
 import { setTargetRect } from './targets';
 
 const SIZE = 64;
 const FOOD = new Set(['food']);
+/** Drawn size of a thing's picture, in room units. */
+const PICTURE = 76;
+
+const textures = new Map<string, Promise<Texture>>();
+
+/** The picture as a texture, made once per kind (the SVG is decoded off the page). */
+function pictureTexture(art: string): Promise<Texture> {
+  let t = textures.get(art);
+  if (!t) {
+    const img = new Image();
+    img.src = pictureUrl(art);
+    t = img.decode().then(() => Texture.from(img));
+    textures.set(art, t);
+  }
+  return t;
+}
 
 function drawToken(kind: string): Container {
   const def = objectKinds.find((o) => o.id === kind);
@@ -18,6 +34,7 @@ function drawToken(kind: string): Container {
   const food = def ? FOOD.has(def.category) : false;
   const g = new Graphics();
   if (food) {
+    // Food sits on a plate that never empties.
     g.ellipse(0, -6, SIZE * 0.62, SIZE * 0.2).fill({ color: hex(color.ink), alpha: 0.12 });
     g.ellipse(0, -10, SIZE * 0.58, SIZE * 0.2)
       .fill(0xffffff)
@@ -25,12 +42,18 @@ function drawToken(kind: string): Container {
   } else {
     g.ellipse(0, -4, SIZE * 0.45, SIZE * 0.14).fill({ color: hex(color.ink), alpha: 0.14 });
   }
-  g.roundRect(-SIZE / 2, -SIZE - (food ? 12 : 4), SIZE, SIZE, 20)
-    .fill(hex(def?.tint ?? color.peach))
-    .stroke({ width: 4, color: hex(color.ink) });
-  const icon = iconGraphics(def?.icon ?? 'star', { size: 40, color: color.ink });
-  icon.position.set(0, -SIZE / 2 - (food ? 12 : 4));
-  c.addChild(g, icon);
+  const picture = new Sprite(Texture.EMPTY);
+  picture.anchor.set(0.5, 1);
+  picture.position.set(0, food ? -2 : 4);
+  c.addChild(g, picture);
+  if (def) {
+    void pictureTexture(def.art).then((tex) => {
+      if (picture.destroyed) return;
+      picture.texture = tex;
+      picture.width = PICTURE;
+      picture.height = PICTURE;
+    });
+  }
   return c;
 }
 

@@ -62,6 +62,7 @@ export function GrownUpScreen() {
           showWord
           onClick={() => go('kit')}
         />
+        <p className="grown-up__note">{strings.grownUp.credits}</p>
         <p className="grown-up__note grown-up__build">
           {strings.grownUp.version(__BUILD__.version, __BUILD__.date)}
         </p>

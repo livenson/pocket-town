@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { categories, objectKinds, type ObjectCategory } from '../content/objects';
-import type { AnyIconName } from '../design/foodIcons';
+import { pictureUrl } from '../design/thingPicture';
 import { strings, thingName } from '../i18n';
 import { useCarrySource } from '../input/carry';
 import { useHints } from './hints';
 import { usePlay } from '../state/play';
 import { Carousel } from '../ui/Carousel';
-import { Icon } from '../ui/Icon';
 import { IconButton } from '../ui/IconButton';
 import { useShowTextLabels } from '../ui/labels';
 import { useVoiceLabel } from '../ui/useVoiceLabel';
@@ -14,12 +13,12 @@ import { useVoiceLabel } from '../ui/useVoiceLabel';
 interface TileProps {
   id: string;
   label: string;
-  icon: AnyIconName;
+  art: string;
   tint: string;
 }
 
 /** A thing in the drawer: drag it out, or tap to pick it up (it rides on a marigold halo). */
-function ObjectTile({ id, label, icon, tint }: TileProps) {
+function ObjectTile({ id, label, art, tint }: TileProps) {
   const voice = useVoiceLabel(label);
   const carry = useCarrySource(id, { from: 'drawer' });
   const inHand = usePlay((s) => s.carrying?.kind === id && s.carrying.source.from === 'drawer');
@@ -37,7 +36,14 @@ function ObjectTile({ id, label, icon, tint }: TileProps) {
       {...carry}
       onClickCapture={voice.onClickCapture}
     >
-      <Icon name={icon} size={46} />
+      <img
+        className="object-tile__art"
+        src={pictureUrl(art)}
+        alt=""
+        width={52}
+        height={52}
+        draggable={false}
+      />
       {words && (
         <span className="object-tile__name" aria-hidden="true">
           {label}
@@ -73,7 +79,7 @@ export function ObjectDrawer({ perPage, columns }: { perPage: number; columns?: 
         perPage={perPage}
         columns={columns}
         items={items.map((o) => (
-          <ObjectTile key={o.id} id={o.id} label={thingName(o.id)} icon={o.icon} tint={o.tint} />
+          <ObjectTile key={o.id} id={o.id} label={thingName(o.id)} art={o.art} tint={o.tint} />
         ))}
       />
     </div>

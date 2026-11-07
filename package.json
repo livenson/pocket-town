@@ -15,6 +15,7 @@
     "lint": "oxlint && prettier --check .",
     "format": "prettier --write .",
     "icons": "node scripts/make-icons.ts",
+    "art": "node scripts/make-thing-art.ts",
     "e2e:screenshots": "sh scripts/update-screenshots.sh"
   },
   "dependencies": {
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
+    "@iconify-json/fluent-emoji-flat": "^1.2.6",
     "@playwright/test": "^1.65.0",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",

@@ -1,5 +1,6 @@
 import { dropCarried, putAwayCarried } from '../input/carry';
 import { objectKinds } from '../content/objects';
+import { pictureUrl } from '../design/thingPicture';
 import { strings, thingName } from '../i18n';
 import { usePlay } from '../state/play';
 import { HoldButton } from '../ui/HoldButton';
@@ -18,7 +19,7 @@ export function CarryLayer() {
       {carrying && kind && carrying.mode === 'tap' && (
         <div className="carry-pill" role="status">
           <span className="carry-pill__item" style={{ background: kind.tint }}>
-            <Icon name={kind.icon} size={34} />
+            <img src={pictureUrl(kind.art)} alt="" width={40} height={40} draggable={false} />
           </span>
           <span className="carry-pill__hint" aria-hidden="true">
             <Icon name="hand" size={22} />
@@ -42,7 +43,7 @@ export function CarryLayer() {
           aria-hidden="true"
           style={{ transform: `translate(${dragAt.x}px, ${dragAt.y}px)`, background: kind.tint }}
         >
-          <Icon name={kind.icon} size={44} />
+          <img src={pictureUrl(kind.art)} alt="" width={56} height={56} draggable={false} />
         </div>
       )}
       {invalidAt && (
