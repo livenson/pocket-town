@@ -127,7 +127,8 @@
   /* Words wrap onto two lines rather than overlap a neighbour or get cut off
      (Estonian and Latvian words are often longer than English ones). */
   width: max-content;
-  max-width: calc(var(--icon-btn) + 8px);
+  /* A little wider than the button, so most words fit whole. */
+  max-width: calc(var(--icon-btn) + 28px);
   padding: 2px 6px;
   border-radius: 10px;
   background: var(--pt-paper);
@@ -136,7 +137,9 @@
   font-size: 15px;
   line-height: 1.1;
   text-align: center;
-  overflow-wrap: anywhere;
+  /* Only a word too long for the line breaks, with a hyphen where the
+     browser knows the language; never mid-word otherwise. */
+  overflow-wrap: break-word;
   hyphens: auto;
   pointer-events: none;
 }
@@ -405,6 +408,12 @@ html[data-layout='desktop'] .icon-btn-wrap:has(> .icon-btn:focus-visible) > .hov
   flex-direction: column;
   align-items: center;
   gap: 6px;
+}
+
+/* Step names are single words: the rail grows to fit them, never splits one. */
+.step-rail__item .text-label {
+  max-width: none;
+  overflow-wrap: normal;
 }
 
 .step-rail__step {
