@@ -74,6 +74,7 @@ design-reference/       prototypes from the design canvas (read-only reference)
 - `npm test`: Vitest.
 - `npm run e2e`: Playwright against `npm run preview`.
 - `npm run lint`: oxlint + Prettier check.
+- `npm run feedback` / `npm run feedback:lan`: dev server with the kid play-testing tool; run the `kid-feedback` skill to listen and respond (see `.claude/skills/kid-feedback/SKILL.md`). Dev only, never in a build.
 
 ## How to work
 

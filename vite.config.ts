@@ -1,7 +1,9 @@
 /// <reference types="vitest/config" />
+import basicSsl from '@vitejs/plugin-basic-ssl';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { kidFeedback } from './scripts/feedback/plugin.ts';
 
 const BASE = '/pocket-town/';
 
@@ -43,11 +45,16 @@ function contentSecurityPolicy(): Plugin {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: BASE,
+  // Kid play-testing (dev server only): `npm run feedback` / `npm run feedback:lan`.
+  server: { watch: { ignored: ['**/feedback/**'] } },
   plugins: [
     react(),
     contentSecurityPolicy(),
+    kidFeedback(),
+    // A tablet's browser only allows the microphone over https.
+    mode === 'feedback-lan' && basicSsl(),
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'script',
@@ -85,4 +92,4 @@ export default defineConfig({
     setupFiles: ['tests/setup.ts'],
     restoreMocks: true,
   },
-});
+}));

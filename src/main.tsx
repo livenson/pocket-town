@@ -36,6 +36,11 @@ if (!new URLSearchParams(location.search).has('still')) {
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing #root element');
 
+// Kid play-testing tool: dev server in feedback mode only, never in a build.
+if (import.meta.env.DEV && import.meta.env.MODE.startsWith('feedback')) {
+  void import('./dev/feedback/install').then((m) => m.install());
+}
+
 createRoot(root).render(
   <StrictMode>
     <App />

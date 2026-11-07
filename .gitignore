@@ -29,3 +29,6 @@ coverage
 playwright-report
 test-results
 blob-report
+
+# Kid feedback from play-testing (voices and screenshots stay on this computer)
+/feedback/
