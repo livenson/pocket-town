@@ -399,7 +399,8 @@ html[data-calm='true'] .hooray-play {
   width: min(70vw, 300px);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: var(--pt-peach);
+  /* Cool sky, so every skin tone (all warm) stands out from it. */
+  background: var(--pt-sky);
   transform: translate(-50%, -62%);
 }
 
@@ -2079,7 +2080,8 @@ html[data-layout='phone'] .gate__card {
   width: min(320px, 70%);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: var(--pt-peach);
+  /* Cool sky, so every skin tone (all warm) stands out from it. */
+  background: var(--pt-sky);
   transform: translateX(-50%);
 }
 
