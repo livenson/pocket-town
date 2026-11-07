@@ -68,6 +68,14 @@ export function describePoint(x: number, y: number) {
 
 let fontCss: Promise<string> | null = null;
 
+function pageColour(): string {
+  for (const el of [document.body, document.documentElement]) {
+    const c = getComputedStyle(el).backgroundColor;
+    if (c && c !== 'transparent' && c !== 'rgba(0, 0, 0, 0)') return c;
+  }
+  return '#ffe6cf';
+}
+
 /**
  * A PNG of the page as the kid sees it. The play stage is WebGL, which a DOM
  * snapshot cannot read, so its current frame is swapped in as a picture first.
@@ -96,7 +104,8 @@ export async function captureScreen(): Promise<string | null> {
       pixelRatio: 1,
       width: window.innerWidth,
       height: window.innerHeight,
-      backgroundColor: getComputedStyle(document.body).backgroundColor,
+      // The page colour is on <html>, which the snapshot of #root does not include.
+      backgroundColor: pageColour(),
       fontEmbedCSS: await fontCss,
       filter,
     });
