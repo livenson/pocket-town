@@ -3,7 +3,7 @@
 // - thought cloud: a wish, picture only;
 // - emote: chatting, in turns.
 import { Container, Graphics } from 'pixi.js';
-import type { IconName } from '../design/icons';
+import type { AnyIconName } from '../design/foodIcons';
 import { hex } from './draw';
 import { iconGraphics } from './iconGraphics';
 
@@ -48,7 +48,7 @@ export class IntentBubble extends Container {
     }
   }
 
-  private setIcon(icon: IconName, color: string): void {
+  private setIcon(icon: AnyIconName, color: string): void {
     const key = `${icon}:${color}`;
     if (key === this.key) return;
     this.icon?.destroy();
@@ -60,7 +60,7 @@ export class IntentBubble extends Container {
   }
 
   /** Activity icon with an optional 0–1 progress ring. */
-  show(icon: IconName, color: string, progress: number | null = null): void {
+  show(icon: AnyIconName, color: string, progress: number | null = null): void {
     this.setShape('circle');
     this.setIcon(icon, color);
     this.setProgress(progress);
@@ -68,7 +68,7 @@ export class IntentBubble extends Container {
   }
 
   /** A wish: picture only, in a thought cloud. */
-  showCloud(icon: IconName, color: string): void {
+  showCloud(icon: AnyIconName, color: string): void {
     this.setShape('cloud');
     this.setIcon(icon, color);
     this.setProgress(null);

@@ -1,5 +1,6 @@
 // Things in the object drawer, by category. Pure data. Milestone M4 adds what each
 // one does (eat, play, read...) and the needs it satisfies.
+import type { AnyIconName } from '../design/foodIcons';
 import type { IconName } from '../design/icons';
 import type { ActivityId } from './activities';
 import type { NeedKey } from './tuning';
@@ -10,7 +11,7 @@ export type ObjectCategory = 'food' | 'toys' | 'music' | 'books' | 'plants';
 export interface ObjectKind {
   id: string;
   category: ObjectCategory;
-  icon: IconName;
+  icon: AnyIconName;
   label: string;
   /** Tile background. */
   tint: string;
@@ -31,6 +32,12 @@ export const giveEffects: Record<string, GiveEffect> = {
   salad: FOOD,
   heartCandy: { activity: 'eat', gains: { hunger: 20, social: 35 } },
   dinner: { activity: 'eat', gains: { hunger: 60 } },
+  apple: { activity: 'eat', gains: { hunger: 30 } },
+  pizza: { activity: 'eat', gains: { hunger: 55 } },
+  iceCream: { activity: 'eat', gains: { hunger: 25, fun: 15 } },
+  soup: { activity: 'eat', gains: { hunger: 50 } },
+  cupcake: FOOD,
+  watermelon: { activity: 'eat', gains: { hunger: 35 } },
   ball: { activity: 'play', gains: { fun: 45 } },
   blocks: { activity: 'play', gains: { fun: 40 } },
   pillow: { activity: 'nap', gains: { energy: 35 } },
@@ -51,6 +58,12 @@ export const placedOffers: Record<string, string> = {
   salad: 'plate',
   heartCandy: 'plate',
   dinner: 'plate',
+  apple: 'plate',
+  pizza: 'plate',
+  iceCream: 'plate',
+  soup: 'plate',
+  cupcake: 'plate',
+  watermelon: 'plate',
   ball: 'ball',
   blocks: 'toyBox',
   pillow: 'sofa',
@@ -87,6 +100,18 @@ export const objectKinds: ObjectKind[] = [
     tint: roomColor.bedroom,
   },
   { id: 'dinner', category: 'food', icon: 'fork', label: 'Dinner plate', tint: roomColor.bath },
+  { id: 'cupcake', category: 'food', icon: 'cupcake', label: 'Cupcake', tint: roomColor.bedroom },
+  { id: 'apple', category: 'food', icon: 'apple', label: 'Apple', tint: roomColor.play },
+  { id: 'pizza', category: 'food', icon: 'pizza', label: 'Pizza', tint: roomColor.kitchen },
+  { id: 'iceCream', category: 'food', icon: 'iceCream', label: 'Ice cream', tint: roomColor.bath },
+  { id: 'soup', category: 'food', icon: 'soup', label: 'Soup', tint: color.peach },
+  {
+    id: 'watermelon',
+    category: 'food',
+    icon: 'watermelon',
+    label: 'Watermelon',
+    tint: roomColor.play,
+  },
   { id: 'ball', category: 'toys', icon: 'ball', label: 'Ball', tint: roomColor.living },
   { id: 'blocks', category: 'toys', icon: 'grid4', label: 'Blocks', tint: roomColor.kitchen },
   { id: 'pillow', category: 'toys', icon: 'bed', label: 'Pillow', tint: roomColor.bath },

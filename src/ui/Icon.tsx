@@ -1,7 +1,8 @@
-import { ICON_STROKE, ICON_VIEWBOX, icons, type IconName } from '../design/icons';
+import { iconPath, type AnyIconName } from '../design/foodIcons';
+import { ICON_STROKE, ICON_VIEWBOX } from '../design/icons';
 
 interface IconProps {
-  name: IconName;
+  name: AnyIconName;
   /** Rendered size in CSS px (the icon is square). */
   size?: number;
   strokeWidth?: number;
@@ -24,7 +25,7 @@ export function Icon({ name, size = 32, strokeWidth = ICON_STROKE, className }: 
       aria-hidden="true"
       focusable="false"
     >
-      <path d={icons[name]} />
+      <path d={iconPath(name)} />
     </svg>
   );
 }

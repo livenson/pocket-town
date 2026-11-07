@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { categories, objectKinds, type ObjectCategory } from '../content/objects';
-import type { IconName } from '../design/icons';
+import type { AnyIconName } from '../design/foodIcons';
 import { strings, thingName } from '../i18n';
 import { useCarrySource } from '../input/carry';
 import { useHints } from './hints';
@@ -14,7 +14,7 @@ import { useVoiceLabel } from '../ui/useVoiceLabel';
 interface TileProps {
   id: string;
   label: string;
-  icon: IconName;
+  icon: AnyIconName;
   tint: string;
 }
 

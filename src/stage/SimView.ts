@@ -3,6 +3,7 @@
 import { playSfx, speakPocketese } from '../audio/audio';
 import { activityLook } from '../content/activities';
 import { objectKinds } from '../content/objects';
+import type { AnyIconName } from '../design/foodIcons';
 import type { IconName } from '../design/icons';
 import { color } from '../design/tokens';
 import type { Bot, World } from '../sim/types';
@@ -19,7 +20,7 @@ const EMOTE_COLOR: Partial<Record<IconName, string>> = {
   note: color.purple,
 };
 
-function wishIcon(kind: string): IconName {
+function wishIcon(kind: string): AnyIconName {
   return objectKinds.find((o) => o.id === kind)?.icon ?? 'star';
 }
 
