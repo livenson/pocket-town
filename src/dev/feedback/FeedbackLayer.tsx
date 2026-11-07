@@ -7,6 +7,7 @@ import { game } from '../../app/game';
 import { currentLanguage } from '../../i18n';
 import { useProfiles } from '../../state/profiles';
 import { useUi } from '../../state/ui';
+import { HoldButton } from '../../ui/HoldButton';
 import { Icon } from '../../ui/Icon';
 import type { IconName } from '../../design/icons';
 import { BUSY, sendNew, sendVerdict, useInbox, type ItemSummary, type RoundPayload } from './api';
@@ -307,9 +308,13 @@ function ReplyCard({
       </div>
       {proposal ? (
         <div className="fb-row fb-row--decide">
-          <Btn label={S.undo} tone="soft" onClick={() => verdict('undo', S.undone, 'undo')}>
-            <Icon name="undo" size={40} strokeWidth={3} />
-          </Btn>
+          {/* Hold to put it back, like every destructive thing in the game: a stray
+              tap must not throw away a change the child liked. */}
+          <HoldButton
+            icon="undo"
+            label={S.undo}
+            onConfirm={() => verdict('undo', S.undone, 'undo')}
+          />
           <Btn label={S.again} tone="soft" onClick={onAgain}>
             <Icon name="refresh" size={40} strokeWidth={3} />
           </Btn>
