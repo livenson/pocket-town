@@ -149,11 +149,18 @@ export class RoomView extends Container {
     const kind: FurnitureKind = furnitureKinds[f.kind];
     const g: Container = kind.id === 'window' ? this.drawWindow(f, kind) : drawFurniture(kind);
     if (kind.id !== 'window') g.position.set(f.x, f.y);
+    const scale = f.scale ?? 1;
+    if (scale !== 1 || f.flip) {
+      // Turned pieces flip around their own middle.
+      g.scale.set(f.flip ? -scale : scale, scale);
+      if (f.flip) g.position.x = f.x + kind.w * scale;
+    }
     g.label = `furniture:${f.id}`;
-    if (kind.layer === 'wall') this.wallLayer.addChild(g);
+    if (kind.layer === 'wall' && !f.standing) this.wallLayer.addChild(g);
     else if (kind.layer === 'floor') this.floorLayer.addChild(g);
     else {
-      g.zIndex = f.y + (kind.footY ?? kind.h);
+      const footY = 'footY' in kind && kind.footY !== undefined ? kind.footY : kind.h;
+      g.zIndex = f.y + footY * scale;
       this.actors.addChild(g);
     }
     return g;

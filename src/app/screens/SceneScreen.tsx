@@ -36,6 +36,13 @@ export function SceneScreen() {
   const [sheetTab, setSheetTab] = useState<'characters' | 'things'>('things');
   const phone = layout === 'phone';
   const hintStep = useHints((s) => s.step);
+  // The pencil edits the house you are in (if the child built it), or starts a new one.
+  const editHouse = () => {
+    const roomId = useUi.getState().roomId;
+    const house = game.world.houses.find((h) => roomId.startsWith(`${h.id}-`));
+    useUi.getState().setEditingHouse(house?.id ?? null);
+    go('houseWizard');
+  };
 
   // First play for this player: start the hint chain (once; it never comes back).
   useEffect(() => {
@@ -99,12 +106,7 @@ export function SceneScreen() {
                 go('map');
               }}
             />
-            <IconButton
-              icon="pencil"
-              label={strings.edit}
-              shortcut="E"
-              onClick={() => go('houseWizard')}
-            />
+            <IconButton icon="pencil" label={strings.edit} shortcut="E" onClick={editHouse} />
           </div>
         </>
       )}

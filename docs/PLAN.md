@@ -120,12 +120,12 @@ Acceptance: e2e completes onboarding in under 15 taps; on an iPad, time from fir
 Goal: full creation tools. Match `design-reference/Avatar-*.dc.html` and `design-reference/Proto-House.dc.html` (the house prototype is fully interactive; copy its behaviour, not its markup).
 
 Avatar wizard (C1):
-- [ ] Large live preview on a turntable (drag to spin), icon step rail in any order, option dock as paged carousel, dice/undo/redo/done always visible.
-- [ ] Steps: start (blank / dice / copy existing), body (shape, wheelchair, prosthetic arm, hearing aid), face, hair, clothes, accessories, colours, personality (pick 3 of 10 trait cards), name (dice or curated list; typed name only for age ≥ 9, never leaves the device), celebration.
+- [x] Large live preview on a turntable (drag to spin), icon step rail in any order, option dock as paged carousel, dice/undo/redo/done always visible.
+- [x] Steps: start (blank / dice / copy existing), body (shape, wheelchair, prosthetic arm, hearing aid), face, hair, clothes, accessories, colours, personality (pick 3 of 10 trait cards), name (dice or curated list; typed name only for age ≥ 9, never leaves the device), celebration.
 
 House wizard (C2):
-- [ ] Steps: plot on neighbourhood map → shape (cottage, tall, round) → "ready to play" (furnished, skips to move-in) or "ready to decorate" (empty) → rooms (pick a room type, tap spaces) → walls and floors (per room or whole house) → furniture (12-cell snap grid per room, ghost preview, teal/red validity, turn, copy, hold-to-delete, bot-test toggle) → move in (tap a resident, then the front door) → housewarming (neighbours arrive and react).
-- [ ] Every step: dice, undo/redo, any order via the step rail; all edits on the global undo stack.
+- [x] Steps: plot on neighbourhood map → shape (cottage, tall, round) → "ready to play" (furnished, skips to move-in) or "ready to decorate" (empty) → rooms (pick a room type, tap spaces) → walls and floors (per room or whole house) → furniture (12-cell snap grid per room, ghost preview, teal/red validity, turn, copy, hold-to-delete, bot-test toggle) → move in (tap a resident, then the front door) → housewarming (neighbours arrive and react).
+- [x] Every step: dice, undo/redo, any order via the step rail; all edits on the global undo stack.
 
 Acceptance: e2e builds a house from scratch with each step, undoes three changes, completes housewarming; the new house appears on the map and in the hub.
 

@@ -119,3 +119,15 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 - **Gender-neutral Latvian:** activities are verbs ("ēd", "guļ"), traits and moods are nouns ("Drosme", "Prieks"), so no label assumes a character's gender.
 - **Word labels wrap** onto two lines at the button's width instead of being cut off, since Estonian and Latvian words are often longer.
 - **The translations were written by Claude and need a native speaker's review** before children use them.
+
+## 2026-11-07: M6 wizards
+
+- **Avatar wizard** edits the character being made (new player, or later an existing one): nine steps in any order with a step rail, a dice that surprises only the current step, its own undo/redo for the draft, a turntable preview (drag to spin), and a name typed only for age 9+ (letters, numbers, spaces; never leaves the device). New peg-folk options: body shape (tall, middle, short), mouth (smile, grin, calm), clothes pattern (plain, stripes, dots, collar), accessory (glasses, bow, hat) with an extra colour. Personality always keeps three traits: a new pick replaces the oldest.
+- **Houses are world data.** `world.houses` holds what the child built (plot, shape, four room spaces, colours, a 12-cell furniture grid per room). A small registry turns them into buildings, so bots use the furniture, live there, sleep there and visit. Save schema 2 adds `houses` (migration from 1 tested).
+- **Every house edit is one undoable step** on the main undo stack: the command carries the whole house, and undo restores the houses and every bot's home as they were.
+- **Grid pieces are real furniture**, scaled to fit a cell, in two rows (by the wall, nearer us), turned with "turn"; a taken cell gives a red cross and a gentle sound.
+- **Rooms in a house join in a row**: the first space with a room gets the front door; the rest connect left to right.
+- **Housewarming** sends up to three neighbours on a visit (doorbell, then home again within two game hours).
+- **"My house" in the hub always starts a new house**; built houses appear below it and on the map. The pencil in a built house edits that house.
+- **Narrow screens** stack the wizards (steps along the top, picture, then options); the house picture sizes its own row so it can never cover the steps.
+- **Pixi's accessibility system is removed**: on touch devices it added a hidden "enable accessibility" button; the DOM target layer already provides accessible controls.

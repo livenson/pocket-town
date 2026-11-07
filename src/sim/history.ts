@@ -1,21 +1,34 @@
 // Undo and redo for everything the child does (never for the bots' own choices).
 // Each step remembers how to put things back: the state of the bot it touched, or
 // the object it placed, moved or removed.
+import type { HouseDef } from '../content/house';
 import { apply, type Command } from './commands';
+import { syncHouses } from './houses';
 import type { Bot, PlacedObject, World } from './types';
 import { getBot } from './world';
 
 /** The parts of a bot a child command can change (not where it is standing). */
 type BotControlState = Pick<
   Bot,
-  'mode' | 'modeBeforeFreeze' | 'now' | 'next' | 'route' | 'nudge' | 'wish' | 'happyUntil' | 'needs'
+  | 'mode'
+  | 'modeBeforeFreeze'
+  | 'now'
+  | 'next'
+  | 'route'
+  | 'nudge'
+  | 'wish'
+  | 'happyUntil'
+  | 'needs'
+  | 'homeId'
 >;
 
 type Inverse =
   | { kind: 'bot'; botId: string; state: BotControlState }
   | { kind: 'removeObject'; id: string }
   | { kind: 'moveObject'; id: string; object: PlacedObject }
-  | { kind: 'restoreObject'; object: PlacedObject; index: number };
+  | { kind: 'restoreObject'; object: PlacedObject; index: number }
+  /** The houses and every bot's control state, as they were (house commands). */
+  | { kind: 'town'; houses: HouseDef[]; bots: { id: string; state: BotControlState }[] };
 
 interface Entry {
   cmd: Command;
@@ -25,8 +38,19 @@ interface Entry {
 const clone = <T>(v: T): T => structuredClone(v);
 
 function botState(bot: Bot): BotControlState {
-  const { mode, modeBeforeFreeze, now, next, route, nudge, wish, happyUntil, needs } = bot;
-  return clone({ mode, modeBeforeFreeze, now, next, route, nudge, wish, happyUntil, needs });
+  const { mode, modeBeforeFreeze, now, next, route, nudge, wish, happyUntil, needs, homeId } = bot;
+  return clone({
+    mode,
+    modeBeforeFreeze,
+    now,
+    next,
+    route,
+    nudge,
+    wish,
+    happyUntil,
+    needs,
+    homeId,
+  });
 }
 
 function capture(world: World, cmd: Command): Inverse | null {
@@ -37,6 +61,14 @@ function capture(world: World, cmd: Command): Inverse | null {
       const o = world.objects.find((x) => x.id === cmd.id);
       return o ? { kind: 'moveObject', id: o.id, object: clone(o) } : null;
     }
+    case 'setHouse':
+    case 'removeHouse':
+    case 'housewarming':
+      return {
+        kind: 'town',
+        houses: clone(world.houses),
+        bots: world.bots.map((b) => ({ id: b.id, state: botState(b) })),
+      };
     case 'removeObject': {
       const index = world.objects.findIndex((x) => x.id === cmd.id);
       const o = world.objects[index];
@@ -66,6 +98,14 @@ function revert(world: World, inv: Inverse): void {
     }
     case 'restoreObject':
       world.objects.splice(Math.min(inv.index, world.objects.length), 0, clone(inv.object));
+      return;
+    case 'town':
+      world.houses = clone(inv.houses);
+      for (const { id, state } of inv.bots) {
+        const bot = getBot(world, id);
+        if (bot) Object.assign(bot, clone(state));
+      }
+      syncHouses(world);
       return;
   }
 }

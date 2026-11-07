@@ -2,6 +2,7 @@
 // drawing. The stage reads the world each frame and interpolates with `alpha`.
 import { tuning } from '../content/tuning';
 import { apply, type Command } from '../sim/commands';
+import { syncHouses } from '../sim/houses';
 import { step } from '../sim/step';
 import type { World } from '../sim/types';
 import { START_MINUTE } from '../sim/clock';
@@ -89,6 +90,7 @@ class SimRunner {
   /** Replace the world (loading a save). */
   load(world: World): void {
     this.world = world;
+    syncHouses(world);
     this.acc = 0;
     for (const l of this.listeners) l(this.world);
   }

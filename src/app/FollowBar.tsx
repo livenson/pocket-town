@@ -1,4 +1,4 @@
-import { town, type BuildingKind } from '../content/rooms';
+import { findBuilding, type BuildingKind } from '../content/rooms';
 import type { IconName } from '../design/icons';
 import { buildingName, strings } from '../i18n';
 import { usePlay } from '../state/play';
@@ -30,7 +30,7 @@ export function FollowBar() {
       </span>
       <ol className="follow-bar__crumbs">
         {crumbs.map((b, i) => {
-          const building = town.find((t) => t.id === b);
+          const building = findBuilding(b);
           const here = i === crumbs.length - 1 && !bot.travel;
           return (
             <li

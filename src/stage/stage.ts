@@ -1,7 +1,7 @@
 // The play stage: one Pixi Application for the whole app, moved into whichever
 // element hosts it. Rooms are 900 × 560 logical units, scaled to fit.
 import 'pixi.js/unsafe-eval'; // no eval(): keeps the Content Security Policy strict
-import { Application, Container, type Ticker } from 'pixi.js';
+import { AccessibilitySystem, Application, Container, extensions, type Ticker } from 'pixi.js';
 import { sim } from '../app/simRunner';
 import { findRoom, starterRoom } from '../content/rooms';
 import { breakpoints, color, stage as stageSize } from '../design/tokens';
@@ -25,6 +25,10 @@ const SOFTWARE_MAX_FPS = 30;
 
 /** Freeze the clock at zero (deterministic screenshots): `?still` in the URL. */
 const STILL = typeof location !== 'undefined' && new URLSearchParams(location.search).has('still');
+
+// Pixi's own accessibility layer would add a hidden "enable accessibility" button on
+// touch devices; the DOM target layer over the canvas already does that job.
+extensions.remove(AccessibilitySystem);
 
 export class Stage {
   readonly app = new Application();

@@ -1,6 +1,6 @@
 // Creating the world, and finding places and routes in the town.
 import { starterCast } from '../content/characters';
-import { findBuilding, findRoom, town, type RoomDef } from '../content/rooms';
+import { allBuildings, findBuilding, findRoom, type RoomDef } from '../content/rooms';
 import { stage } from '../design/tokens';
 import type { Bot, Place, RouteStep, World } from './types';
 
@@ -122,6 +122,7 @@ export function createWorld(seed: number): World {
     events: [],
     nextObjectId: 1,
     nextEventSeq: 1,
+    houses: [],
   };
   const starts: Record<string, Partial<Place> & { needs?: Partial<Bot['needs']> }> = {
     moku: { roomId: 'home-living', x: 356, y: 414, needs: { hunger: 40 } },
@@ -147,7 +148,7 @@ export function createWorld(seed: number): World {
 }
 
 export function allRooms(): RoomDef[] {
-  return town.flatMap((b) => b.rooms);
+  return allBuildings().flatMap((b) => b.rooms);
 }
 
 export function getBot(world: World, id: string): Bot | undefined {

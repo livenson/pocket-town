@@ -69,4 +69,6 @@ export function numberToWords(n: number): string {
 /** Names of content (drawer things, traits, buildings) in the current language. */
 export const thingName = (kind: string): string => strings.objects[kind] ?? kind;
 export const traitName = (id: string): string => strings.traits[id] ?? id;
-export const buildingName = (id: string): string => strings.buildings[id] ?? id;
+export const buildingName = (id: string): string =>
+  strings.buildings[id] ??
+  (/-?h(\d+)$/.exec(id) ? strings.house.name(Number(/h(\d+)$/.exec(id)?.[1])) : id);

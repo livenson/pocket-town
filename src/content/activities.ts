@@ -71,6 +71,10 @@ export const offers: Record<string, AdTemplate[]> = {
   swing: [{ activity: 'play', gains: { fun: 50 }, duration: 30, capacity: 2 }],
   gardenBed: [{ activity: 'garden', gains: { fun: 35 }, duration: 40, capacity: 2 }],
   pottedPlant: [{ activity: 'garden', gains: { fun: 25 }, duration: 20, capacity: 1 }],
+  plant: [{ activity: 'garden', gains: { fun: 25 }, duration: 20, capacity: 1 }],
+  bench: [{ activity: 'nap', gains: { energy: 20 }, duration: 30, capacity: 2 }],
+  cakeStand: [{ activity: 'eat', gains: { hunger: 50 }, duration: 25, capacity: 2 }],
+  bookPile: [{ activity: 'read', gains: { fun: 35 }, duration: 35, capacity: 1 }],
 };
 
 /** What a visit offers (any house that is not the bot's home). */

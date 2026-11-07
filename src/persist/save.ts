@@ -3,7 +3,7 @@
 import { get, set } from 'idb-keyval';
 import type { World } from '../sim/types';
 
-export const SAVE_SCHEMA = 1;
+export const SAVE_SCHEMA = 2;
 /** Saves made before profiles existed (and the test-only "no profile" town). */
 const SLOTS = ['pocket-town:save:a', 'pocket-town:save:b'] as const;
 
@@ -24,7 +24,10 @@ export interface SaveFile {
 type Migration = (old: Record<string, unknown>) => Record<string, unknown>;
 
 /** migrations[n] turns a schema-n save into schema n+1. */
-export const migrations: Record<number, Migration> = {};
+export const migrations: Record<number, Migration> = {
+  // 1 → 2: the house wizard (M6) adds houses the child built.
+  1: (old) => ({ ...old, world: isRecord(old.world) ? { houses: [], ...old.world } : old.world }),
+};
 
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v);

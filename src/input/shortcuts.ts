@@ -122,6 +122,9 @@ export function runShortcut(action: ShortcutAction): boolean {
       return true;
     case 'edit':
       if (screen !== 'scene') return false;
+      ui.setEditingHouse(
+        game.world.houses.find((h) => ui.roomId.startsWith(`${h.id}-`))?.id ?? null,
+      );
       ui.go('houseWizard');
       return true;
     case 'camera':

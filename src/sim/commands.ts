@@ -1,9 +1,11 @@
 // What the child can do to the world (docs/SIM.md → The child's influence ladder).
 // Every command is a plain object so it can be recorded, undone and replayed.
 import type { ActivityId } from '../content/activities';
+import type { HouseDef } from '../content/house';
 import { giveEffects } from '../content/objects';
+import { syncHouses } from './houses';
 import { tuning } from '../content/tuning';
-import { emit, startGoHome } from './step';
+import { emit, startGoHome, startVisit } from './step';
 import type { Place, World } from './types';
 import { clampToFloor, getBot, routeTo } from './world';
 
@@ -17,7 +19,13 @@ export type Command =
   | { type: 'sendHome'; botId: string }
   | { type: 'placeObject'; kind: string; place: Place; id?: string }
   | { type: 'moveObject'; id: string; place: Place }
-  | { type: 'removeObject'; id: string };
+  | { type: 'removeObject'; id: string }
+  /** Create or change a house the child is building (the whole house, so undo is simple). */
+  | { type: 'setHouse'; house: HouseDef }
+  | { type: 'removeHouse'; id: string }
+  | { type: 'moveIn'; botId: string; houseId: string }
+  /** Neighbours come round to see the new house. */
+  | { type: 'housewarming'; houseId: string };
 
 /** Apply a child command. Returns false when it does not apply (unknown bot, etc.). */
 export function apply(world: World, cmd: Command): boolean {
@@ -147,6 +155,39 @@ export function apply(world: World, cmd: Command): boolean {
       const before = world.objects.length;
       world.objects = world.objects.filter((x) => x.id !== cmd.id);
       return world.objects.length < before;
+    }
+    case 'setHouse': {
+      const i = world.houses.findIndex((h) => h.id === cmd.house.id);
+      const copy = structuredClone(cmd.house);
+      if (i >= 0) world.houses[i] = copy;
+      else world.houses.push(copy);
+      syncHouses(world);
+      return true;
+    }
+    case 'removeHouse': {
+      const before = world.houses.length;
+      world.houses = world.houses.filter((h) => h.id !== cmd.id);
+      syncHouses(world);
+      return world.houses.length < before;
+    }
+    case 'moveIn': {
+      const bot = getBot(world, cmd.botId);
+      if (!bot || !world.houses.some((h) => h.id === cmd.houseId)) return false;
+      bot.homeId = cmd.houseId;
+      if (bot.mode === 'frozen') return true;
+      bot.mode = 'auto';
+      startGoHome(world, bot, true);
+      return true;
+    }
+    case 'housewarming': {
+      const house = world.houses.find((h) => h.id === cmd.houseId);
+      if (!house) return false;
+      house.warmed = true;
+      const guests = world.bots
+        .filter((b) => b.homeId !== cmd.houseId && b.mode === 'auto')
+        .slice(0, 3);
+      for (const g of guests) startVisit(world, g, cmd.houseId);
+      return guests.length > 0;
     }
   }
 }

@@ -6,6 +6,7 @@ import { NEEDS, tuning } from '../content/tuning';
 import type { IconName } from '../design/icons';
 import { spotPlace, usersOf, availableForChat } from './ads';
 import { isNight } from './clock';
+import { syncHouses } from './houses';
 import { decayMultiplier, effectiveGains, plan } from './planner';
 import { nextRandom, pick } from './rng';
 import type { Bot, Doing, Place, SimEvent, World } from './types';
@@ -132,6 +133,26 @@ export function startGoHome(world: World, bot: Bot, byChild = false): void {
     bot,
     { activity: 'goHome', phase: 'going', progress: 0, duration: 1, gains: {}, byChild },
     { buildingId: bot.homeId, roomId: room.id, x: spot.x, y: spot.y },
+  );
+}
+
+/** Go and visit a house (housewarming): a doorbell on arrival, then home again. */
+export function startVisit(world: World, bot: Bot, houseId: string): void {
+  const room = entryRoom(houseId);
+  const spot = clampToFloor(380 + nextRandom(world.rng) * 260, 460 + nextRandom(world.rng) * 40);
+  startDoing(
+    world,
+    bot,
+    {
+      activity: 'visit',
+      targetId: `building:${houseId}`,
+      phase: 'going',
+      progress: 0,
+      duration: 60,
+      gains: { social: 40, fun: 15 },
+      byChild: true,
+    },
+    { buildingId: houseId, roomId: room.id, x: spot.x, y: spot.y },
   );
 }
 
@@ -332,6 +353,7 @@ function updateBot(world: World, bot: Bot, dm: number): void {
 
 /** Advance the world by one tick. */
 export function step(world: World): void {
+  syncHouses(world);
   world.tick += 1;
   world.minute += tuning.gameMinutesPerTick;
   const dm = tuning.gameMinutesPerTick;

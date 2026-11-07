@@ -1,5 +1,5 @@
 import { playSfx } from '../../audio/audio';
-import { town, type BuildingKind } from '../../content/rooms';
+import { allBuildings, type BuildingKind } from '../../content/rooms';
 import type { IconName } from '../../design/icons';
 import { useUi } from '../../state/ui';
 import { buildingName, strings } from '../../i18n';
@@ -29,7 +29,7 @@ function BuildingButton({
   const go = useUi((s) => s.go);
   const setRoom = useUi((s) => s.setRoom);
   const voice = useVoiceLabel(name);
-  const building = town.find((b) => b.id === id);
+  const building = allBuildings().find((b) => b.id === id);
   return (
     <button
       type="button"
@@ -54,7 +54,7 @@ export function MapScreen() {
   return (
     <ScreenFrame title={strings.screens.map}>
       <div className="map-grid">
-        {town.map((b) => (
+        {allBuildings().map((b) => (
           <BuildingButton
             key={b.id}
             id={b.id}

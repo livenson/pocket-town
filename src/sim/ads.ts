@@ -3,7 +3,7 @@
 import { chatOffer, offers, tidyOffer, visitOffer, type ActivityId } from '../content/activities';
 import { furnitureKinds, type FurnitureKind } from '../content/furniture';
 import { placedOffers } from '../content/objects';
-import { town } from '../content/rooms';
+import { allBuildings } from '../content/rooms';
 import type { NeedKey } from '../content/tuning';
 import type { Bot, Place, World } from './types';
 import { clampToFloor, entryRoom } from './world';
@@ -31,11 +31,18 @@ function spotsAround(x: number, y: number, capacity: number): { x: number; y: nu
   );
 }
 
-function furnitureSpot(kind: FurnitureKind, fx: number, fy: number): { x: number; y: number } {
-  const x = fx + kind.w / 2;
-  if (kind.layer === 'wall') return { x, y: WALL_SPOT_Y };
-  if (kind.layer === 'floor') return { x, y: fy + kind.h / 2 };
-  return { x, y: Math.max(404, Math.min(520, fy + (kind.footY ?? kind.h) - 46)) };
+function furnitureSpot(
+  kind: FurnitureKind,
+  fx: number,
+  fy: number,
+  scale = 1,
+  standing = false,
+): { x: number; y: number } {
+  const x = fx + (kind.w * scale) / 2;
+  const foot = fy + ('footY' in kind && kind.footY !== undefined ? kind.footY : kind.h) * scale;
+  if (kind.layer === 'wall' && !standing) return { x, y: WALL_SPOT_Y };
+  if (kind.layer === 'floor') return { x, y: fy + (kind.h * scale) / 2 };
+  return { x, y: Math.max(404, Math.min(520, foot - 46 * Math.max(0.6, scale))) };
 }
 
 /** Bots that could start chatting now. */
@@ -51,14 +58,14 @@ export function availableForChat(bot: Bot): boolean {
 /** Every advertisement in town, for one bot (it never sees its own chat ad). */
 export function collectAds(world: World, bot: Bot): Ad[] {
   const ads: Ad[] = [];
-  for (const building of town) {
+  for (const building of allBuildings()) {
     for (const room of building.rooms) {
       for (const f of room.furniture) {
         const kind: FurnitureKind = furnitureKinds[f.kind];
         for (const offer of offers[f.kind] ?? []) {
           // Bots only sleep in beds at home.
           if (offer.activity === 'sleep' && building.id !== bot.homeId) continue;
-          const spot = furnitureSpot(kind, f.x, f.y);
+          const spot = furnitureSpot(kind, f.x, f.y, f.scale, f.standing);
           ads.push({
             targetId: `furniture:${room.id}:${f.id}`,
             ...offer,

@@ -2,6 +2,7 @@
 // and loaded as is. No DOM, no Pixi.
 import type { ActivityId } from '../content/activities';
 import type { Appearance } from '../content/appearance';
+import type { HouseDef } from '../content/house';
 import type { TraitId } from '../content/traits';
 import type { NeedKey } from '../content/tuning';
 import type { IconName } from '../design/icons';
@@ -107,4 +108,6 @@ export interface World {
   events: SimEvent[];
   nextObjectId: number;
   nextEventSeq: number;
+  /** Houses the child built in the house wizard. */
+  houses: HouseDef[];
 }

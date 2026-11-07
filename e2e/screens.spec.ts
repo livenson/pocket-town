@@ -95,7 +95,8 @@ test('every screen is reachable and passes axe (WCAG 2.1 AA)', async ({ page }) 
   await press(page, 'Close camera');
 
   await press(page, 'Edit');
-  await expect(page.getByRole('heading', { name: 'My house' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Pick a spot for your house' })).toBeAttached();
+  await expectAccessible(page, 'house wizard');
   await press(page, 'Back');
 
   await press(page, 'Home');

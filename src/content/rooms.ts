@@ -237,8 +237,20 @@ export const town: BuildingDef[] = [
   },
 ];
 
+/** Houses the child built, kept in step with the world (see sim/houses.ts). */
+let built: BuildingDef[] = [];
+
+export function setBuiltBuildings(list: BuildingDef[]): void {
+  built = list;
+}
+
+/** The starter town plus everything the child built. */
+export function allBuildings(): BuildingDef[] {
+  return built.length === 0 ? town : [...town, ...built];
+}
+
 export function findRoom(roomId: string): RoomDef | undefined {
-  for (const b of town) {
+  for (const b of allBuildings()) {
     const r = b.rooms.find((room) => room.id === roomId);
     if (r) return r;
   }
@@ -246,5 +258,5 @@ export function findRoom(roomId: string): RoomDef | undefined {
 }
 
 export function findBuilding(buildingId: string): BuildingDef | undefined {
-  return town.find((b) => b.id === buildingId);
+  return allBuildings().find((b) => b.id === buildingId);
 }

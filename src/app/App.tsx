@@ -1,6 +1,7 @@
 import { useEffect, type ReactElement } from 'react';
 import { applyLanguageSetting, currentLanguage, strings } from '../i18n';
 import { useKeyboardShortcuts } from '../input/shortcuts';
+import { setHouseNamer } from '../sim/houses';
 import { useSettings } from '../state/settings';
 import { useUi } from '../state/ui';
 import { Toasts } from '../ui/Toasts';
@@ -8,6 +9,8 @@ import { useShowTextLabels } from '../ui/labels';
 import type { ScreenId } from './machine';
 import { useCalmMotion, useLayoutMode } from './media';
 import { AgeScreen } from './screens/AgeScreen';
+import { AvatarWizardScreen } from './screens/AvatarWizardScreen';
+import { HouseWizardScreen } from './screens/HouseWizardScreen';
 import { DiceAvatarScreen } from './screens/DiceAvatarScreen';
 import { HoorayScreen } from './screens/HoorayScreen';
 import { GateScreen } from './screens/GateScreen';
@@ -52,7 +55,9 @@ function renderScreen(screen: ScreenId): ReactElement {
     case 'photo':
       return <PhotoScreen />;
     case 'avatarWizard':
+      return <AvatarWizardScreen />;
     case 'houseWizard':
+      return <HouseWizardScreen />;
     case 'characters':
       return <PlaceholderScreen title={strings.screens[screen]} />;
   }
@@ -78,6 +83,7 @@ function useLanguage(): string {
   const setting = useSettings((s) => s.language);
   // Apply during render so this render already uses the right words.
   applyLanguageSetting(setting);
+  setHouseNamer((n) => strings.house.name(n));
   return currentLanguage();
 }
 

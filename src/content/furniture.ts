@@ -497,6 +497,133 @@ export const furnitureKinds = {
       },
     ],
   },
+  bench: {
+    id: 'bench',
+    label: 'Bench',
+    layer: 'stand',
+    w: 160,
+    h: 70,
+    footY: 70,
+    shapes: [
+      { kind: 'rect', x: 10, y: 36, w: 12, h: 34, fill: INK },
+      { kind: 'rect', x: 138, y: 36, w: 12, h: 34, fill: INK },
+      {
+        kind: 'rect',
+        x: 0,
+        y: 0,
+        w: 160,
+        h: 18,
+        r: 9,
+        fill: color.cornflower,
+        stroke: { width: 4, color: INK },
+      },
+      {
+        kind: 'rect',
+        x: 0,
+        y: 24,
+        w: 160,
+        h: 18,
+        r: 9,
+        fill: color.cornflower,
+        stroke: { width: 4, color: INK },
+      },
+    ],
+  },
+  starLight: {
+    id: 'starLight',
+    label: 'Star light',
+    layer: 'stand',
+    w: 80,
+    h: 160,
+    footY: 160,
+    shapes: [
+      { kind: 'rect', x: 37, y: 60, w: 6, h: 96, fill: INK },
+      { kind: 'rect', x: 20, y: 152, w: 40, h: 8, r: 4, fill: INK },
+      {
+        kind: 'ellipse',
+        x: 4,
+        y: 0,
+        w: 72,
+        h: 72,
+        fill: '#FFE08A',
+        stroke: { width: 4, color: INK },
+      },
+      { kind: 'ellipse', x: 26, y: 22, w: 28, h: 28, fill: color.marigold },
+    ],
+  },
+  cakeStand: {
+    id: 'cakeStand',
+    label: 'Cake stand',
+    layer: 'stand',
+    w: 110,
+    h: 120,
+    footY: 120,
+    shapes: [
+      { kind: 'rect', x: 50, y: 64, w: 10, h: 50, fill: INK },
+      { kind: 'rect', x: 26, y: 110, w: 58, h: 10, r: 5, fill: INK },
+      {
+        kind: 'ellipse',
+        x: 0,
+        y: 56,
+        w: 110,
+        h: 18,
+        fill: '#FFFFFF',
+        stroke: { width: 4, color: INK },
+      },
+      {
+        kind: 'rect',
+        x: 18,
+        y: 18,
+        w: 74,
+        h: 44,
+        r: 10,
+        fill: '#FFD2AE',
+        stroke: { width: 4, color: INK },
+      },
+      { kind: 'rect', x: 18, y: 30, w: 74, h: 8, fill: color.blossom },
+      { kind: 'rect', x: 52, y: 0, w: 6, h: 20, r: 3, fill: color.tomato },
+    ],
+  },
+  bookPile: {
+    id: 'bookPile',
+    label: 'Books',
+    layer: 'stand',
+    w: 100,
+    h: 90,
+    footY: 90,
+    shapes: [
+      {
+        kind: 'rect',
+        x: 4,
+        y: 62,
+        w: 92,
+        h: 26,
+        r: 6,
+        fill: color.cornflower,
+        stroke: { width: 4, color: INK },
+      },
+      {
+        kind: 'rect',
+        x: 12,
+        y: 36,
+        w: 78,
+        h: 26,
+        r: 6,
+        fill: color.tomato,
+        stroke: { width: 4, color: INK },
+      },
+      {
+        kind: 'rect',
+        x: 6,
+        y: 10,
+        w: 84,
+        h: 26,
+        r: 6,
+        fill: color.marigold,
+        stroke: { width: 4, color: INK },
+      },
+    ],
+  },
 } as const satisfies Record<string, FurnitureKind>;
 
 export type FurnitureKindId = keyof typeof furnitureKinds;
@@ -507,4 +634,10 @@ export interface FurnitureInstance {
   /** Top-left of the piece in room units. */
   x: number;
   y: number;
+  /** Drawn smaller (house-wizard pieces fit one grid cell). */
+  scale?: number;
+  /** Turned to face the other way. */
+  flip?: boolean;
+  /** Stands on the floor in front of the wall, sorted with characters (house pieces). */
+  standing?: boolean;
 }

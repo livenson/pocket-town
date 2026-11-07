@@ -16,6 +16,9 @@ interface UiStore {
   /** The room the play stage is looking at. */
   roomId: string;
   setRoom: (roomId: string) => void;
+  /** The house open in the house wizard (null: building a new one). */
+  editingHouseId: string | null;
+  setEditingHouse: (id: string | null) => void;
   time: TimeSpeed;
   shortcutsOpen: boolean;
   plusSheetOpen: boolean;
@@ -51,6 +54,8 @@ export const useUi = create<UiStore>()((set, get) => ({
   nav: initialNavFromHash(),
   roomId: 'home-living',
   setRoom: (roomId) => set({ roomId }),
+  editingHouseId: null,
+  setEditingHouse: (editingHouseId) => set({ editingHouseId }),
   time: 'play',
   shortcutsOpen: false,
   plusSheetOpen: false,
