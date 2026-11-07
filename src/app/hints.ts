@@ -54,6 +54,12 @@ export const hint = {
       if (useHints.getState().step === 'fed') show('map');
     }, 1600);
   },
+  /** The child closed the hints: they are done for this player, like finishing them. */
+  dismiss(): void {
+    const id = useProfiles.getState().active?.id;
+    if (id) useProfiles.getState().update(id, { hintsDone: true });
+    useHints.getState().stop();
+  },
   mapOpened(): void {
     const step = useHints.getState().step;
     if (step === null) return;

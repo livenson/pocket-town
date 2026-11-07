@@ -451,11 +451,12 @@ export const en = {
   },
   hints: {
     plus: 'Tap the plus to find things',
-    cake: 'Pick the cake',
+    cake: 'Feed a friend: pick the cake below',
     give: 'Give it to a friend: tap a glowing spot',
     fed: 'Bippa! They love it.',
     map: 'Now try the map',
     hear: 'Hear the hint',
+    hide: 'No more hints',
   },
 
   // Settings

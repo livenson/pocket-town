@@ -442,11 +442,12 @@ export const et: Strings = {
   },
   hints: {
     plus: 'Puuduta plussi, et asju leida',
-    cake: 'Vali kook',
+    cake: 'Anna sõbrale süüa: vali all kook',
     give: 'Anna see sõbrale: puuduta helendavat kohta',
     fed: 'Bippa! Talle meeldib.',
     map: 'Proovi nüüd kaarti',
     hear: 'Kuula vihjet',
+    hide: 'Rohkem vihjeid pole vaja',
   },
 
   settingsLabels: {

@@ -87,3 +87,22 @@ test('the splash carries on by itself', async ({ page }) => {
     timeout: 8000,
   });
 });
+
+test('the first-play hints can be closed, and then stay away', async ({ page }) => {
+  await page.goto('./');
+  await tap(page, button(page, /loading/));
+  await tap(page, button(page, '9'));
+  await tap(page, button(page, 'New player'));
+  await tap(page, button(page, 'Done'));
+  await tap(page, button(page, 'Play'));
+  const hint = page.getByRole('button', { name: /^Hear the hint/ });
+  await expect(hint).toBeVisible();
+  await tap(page, button(page, 'No more hints'));
+  await expect(hint).toHaveCount(0);
+  // Back in, later: still no hints for this player.
+  await tap(page, button(page, 'Home'));
+  await tap(page, button(page, 'World'));
+  await tap(page, page.getByRole('button', { name: /^Go into My house/ }));
+  await expect(page.getByRole('group', { name: 'Time' })).toBeVisible();
+  await expect(hint).toHaveCount(0);
+});

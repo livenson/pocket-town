@@ -585,10 +585,7 @@ html[data-calm='true'] .hooray-play {
 /* ---------- First-play hint bubble ---------- */
 
 .hint-bubble {
-  position: absolute;
-  z-index: 25;
-  top: calc(var(--safe-top) + var(--icon-btn) + 14px);
-  left: calc(var(--safe-left) + var(--characters-w) + var(--dock-gap));
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -604,8 +601,35 @@ html[data-calm='true'] .hooray-play {
   animation: toast-in 250ms var(--pt-ease);
 }
 
-html[data-layout='phone'] .hint-bubble {
+/* The bubble and its close button sit together where the hint goes. */
+.hint-bubble-wrap {
+  position: absolute;
+  z-index: 25;
+  top: calc(var(--safe-top) + var(--icon-btn) + 14px);
+  left: calc(var(--safe-left) + var(--characters-w) + var(--dock-gap));
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+html[data-layout='phone'] .hint-bubble-wrap {
   left: var(--safe-left);
+}
+
+.hint-bubble__close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--pt-paper);
+  color: var(--pt-ink);
+  box-shadow: 0 3px 0 rgba(42, 22, 64, 0.18);
+}
+
+.hint-bubble__close:focus-visible {
+  outline: 4px solid var(--pt-marigold);
+  outline-offset: 2px;
 }
 
 .hint-bubble__icon {

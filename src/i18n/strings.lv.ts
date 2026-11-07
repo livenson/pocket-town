@@ -444,11 +444,12 @@ export const lv: Strings = {
   },
   hints: {
     plus: 'Pieskaries plusam, lai atrastu lietas',
-    cake: 'Paņem kūku',
+    cake: 'Pabaro draugu: paņem kūku apakšā',
     give: 'Iedod to draugam: pieskaries spīdošai vietai',
     fed: 'Bippa! Tas garšo!',
     map: 'Tagad pamēģini karti',
     hear: 'Klausīties padomu',
+    hide: 'Vairs nevajag padomu',
   },
 
   settingsLabels: {
