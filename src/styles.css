@@ -1,0 +1,136 @@
+/* Global styles. Colours and sizes come from src/design/tokens.ts as --pt-* variables. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+html {
+  background: #ffe6cf; /* ground, before the token variables are applied */
+  background: var(--pt-ground);
+  color: var(--pt-ink);
+  font-family: var(--pt-font-body);
+  font-weight: 700;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  /* The whole game surface: no double-tap zoom, no long-press callouts or text selection. */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  overscroll-behavior: none;
+}
+
+/* The Pixi stage handles every gesture itself. */
+.stage,
+.stage canvas {
+  touch-action: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 4px solid var(--pt-ink);
+  outline-offset: 4px;
+}
+
+/* --- M0 placeholder screen --- */
+
+.placeholder {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+  text-align: center;
+}
+
+.placeholder__title {
+  margin: 0;
+  font-family: var(--pt-font-display);
+  font-weight: 800;
+  font-size: clamp(48px, 12vw, 104px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--pt-ink);
+}
+
+/* --- Pressable "toy" button (the full Button component arrives in M1) --- */
+
+.toy-button {
+  --shadow: var(--pt-press-shadow);
+  width: 112px;
+  height: 112px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--pt-radius-xl);
+  cursor: pointer;
+  transform: translateY(0);
+  transition:
+    transform var(--pt-press-ms) var(--pt-ease),
+    box-shadow var(--pt-press-ms) var(--pt-ease);
+}
+
+.toy-button--primary {
+  background: var(--pt-tomato);
+  color: #fff;
+  box-shadow: 0 6px 0 var(--pt-tomato-shadow);
+}
+
+.toy-button--primary:active {
+  transform: translateY(6px);
+  box-shadow: 0 0 0 var(--pt-tomato-shadow);
+}
+
+.toy-button__face {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.toy-button__face[data-bounce] {
+  animation: toy-pop 260ms var(--pt-ease);
+}
+
+@keyframes toy-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.18, 0.86);
+  }
+  70% {
+    transform: scale(0.94, 1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

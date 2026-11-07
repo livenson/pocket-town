@@ -1,0 +1,9 @@
+/* Self-hosted fonts (never load fonts from a third-party URL).
+   Baloo 2 ships weights up to 800; Nunito up to 900. */
+@import '@fontsource/baloo-2/600.css';
+@import '@fontsource/baloo-2/700.css';
+@import '@fontsource/baloo-2/800.css';
+@import '@fontsource/nunito/600.css';
+@import '@fontsource/nunito/700.css';
+@import '@fontsource/nunito/800.css';
+@import '@fontsource/nunito/900.css';
