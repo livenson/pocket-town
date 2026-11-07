@@ -55,3 +55,18 @@ export function useCalmMotion(): boolean {
 export function isCalmMotion(): boolean {
   return useSettings.getState().calmMotion || matches(REDUCED);
 }
+
+const subscribeResize = (onChange: () => void) => {
+  if (typeof window === 'undefined') return () => undefined;
+  window.addEventListener('resize', onChange);
+  return () => window.removeEventListener('resize', onChange);
+};
+
+/** Viewport width in CSS px, kept up to date. */
+export function useViewportWidth(): number {
+  return useSyncExternalStore(
+    subscribeResize,
+    () => (typeof window === 'undefined' ? 1024 : window.innerWidth),
+    () => 1024,
+  );
+}

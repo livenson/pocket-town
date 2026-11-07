@@ -65,3 +65,12 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 - **Voice-over** speaks a control's label on long-press (touch, 450 ms) or hover (mouse, 600 ms). A long-press that spoke does not also press the button, so children can "ask" what a button does. The Web Speech wrapper prefers an on-device voice so text never goes to a network voice.
 - **Lint:** `jsx-a11y/prefer-tag-over-role` is off (`role="group"` and `role="dialog"` on a `div` are valid ARIA, and native `<dialog>` would fight the sheet animation); `typescript/consistent-return` is off in favour of the compiler's `noImplicitReturns`, which understands exhaustive `switch` statements.
 - **Dev dependencies added:** `fake-indexeddb` (unit-test the IndexedDB settings store in jsdom) and `@axe-core/playwright` (WCAG 2.1 AA checks on every screen in e2e). Neither ships to players.
+
+## 2026-11-07: M2 stage choices
+
+- **One Pixi Application, lazy-loaded.** `src/stage/stage.ts` creates the app once and moves its canvas into whichever screen hosts it. The stage code is a separate chunk, so Pixi is not in the first download (the splash, menus and gate load without it).
+- **`pixi.js/unsafe-eval`** is imported so Pixi never needs `eval`/`new Function`; the production Content Security Policy stays strict (no `unsafe-eval`).
+- **Room fitting.** Landscape: "contain", top-aligned, letterboxed in the ground colour at the sides; the floor runs on below the room behind the bottom docks (as in `Scene-Tablet.dc.html`). Portrait (phones and tablets): "contain" would make the room tiny, so it is scaled to fill about 55% of the height and the sides are cropped, as in `Scene-Phone.dc.html`. The follow-cam (M4) will pan within it.
+- **Portrait tablets** put the time pill and camera above a full-width object drawer; the drawer shows as many tiles per page as fit (3–6).
+- **Character textures.** Each character's drawing is cached as a texture per appearance and eye state (`cacheAsTexture`, resolution 3 so it stays crisp when the room is scaled up), and redrawn only when the eyes change.
+- **Screenshot tests** compare the stage at three viewports against baselines made on Linux, the CI platform (`npm run e2e:screenshots`, which runs in the Playwright Docker image). On other platforms that one test is skipped. `?still` freezes the stage clock at zero for these pictures; `#scene` opens the play stage directly.

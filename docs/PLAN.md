@@ -47,14 +47,14 @@ Acceptance: every component reachable by keyboard and screen reader; contrast ch
 
 Goal: a living room on screen with characters drawn in code.
 
-- [ ] Pixi `Application` attached under the React shell, resized to the stage container, `resolution: devicePixelRatio` capped at 2, `autoDensity: true`, WebGL preference with WebGPU allowed when available.
-- [ ] Logical stage coordinates: each room is 900 × 560 logical units (see `design-reference/Room.dc.html`), scaled to fit with letterboxing in the apricot ground colour.
-- [ ] `PegView` (see `DESIGN.md` → "Peg-folk"): body, band, head, hair styles (bob, puff, bun, crop, none), eyes (open, sleep, wow), cheeks, mouth, helpers (wheelchair, hearing aid, prosthetic arm). Built from `Graphics`; cache to textures per appearance for performance.
-- [ ] Motion: idle breathing bob, walk hop with squash and stretch, turn by flipping x, happy jump, sleep sway. All through one small tween/easing utility on the Pixi ticker. Calm motion reduces amplitude and removes hops.
-- [ ] `RoomView`: wall, floor band, skirting, door(s), window, and furniture drawn from `content/furniture.ts` definitions (flat shapes with inset shading, 6 px aubergine outlines on key pieces).
-- [ ] Depth sorting by y within the floor band.
-- [ ] Intent bubble above each character: white circle with a 3 px drop shadow, icon from `icons.ts`, optional progress ring (see `SIM.md` → "Legibility").
-- [ ] Performance budget: 60 fps on an iPad 9th generation with 8 characters and 30 furniture pieces; hold at least 50 fps with 3 rooms simulated off-screen.
+- [x] Pixi `Application` attached under the React shell, resized to the stage container, `resolution: devicePixelRatio` capped at 2, `autoDensity: true`, WebGL preference with WebGPU allowed when available.
+- [x] Logical stage coordinates: each room is 900 × 560 logical units (see `design-reference/Room.dc.html`), scaled to fit with letterboxing in the apricot ground colour.
+- [x] `PegView` (see `DESIGN.md` → "Peg-folk"): body, band, head, hair styles (bob, puff, bun, crop, none), eyes (open, sleep, wow), cheeks, mouth, helpers (wheelchair, hearing aid, prosthetic arm). Built from `Graphics`; cache to textures per appearance for performance.
+- [x] Motion: idle breathing bob, walk hop with squash and stretch, turn by flipping x, happy jump, sleep sway. All through one small tween/easing utility on the Pixi ticker. Calm motion reduces amplitude and removes hops.
+- [x] `RoomView`: wall, floor band, skirting, door(s), window, and furniture drawn from `content/furniture.ts` definitions (flat shapes with inset shading, 6 px aubergine outlines on key pieces).
+- [x] Depth sorting by y within the floor band.
+- [x] Intent bubble above each character: white circle with a 3 px drop shadow, icon from `icons.ts`, optional progress ring (see `SIM.md` → "Legibility").
+- [ ] Performance budget: 60 fps on an iPad 9th generation with 8 characters and 30 furniture pieces; hold at least 50 fps with 3 rooms simulated off-screen. (Desktop Chrome holds the display's full rate with the starter room; needs a check on a real iPad, and the 3-room case comes with M3.)
 
 Acceptance: a static room with five characters idling and one walking back and forth; e2e screenshot comparison at three viewports.
 

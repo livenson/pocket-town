@@ -1,11 +1,12 @@
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { strings } from '../../i18n/strings.en';
 import { useSettings } from '../../state/settings';
 import { useUi } from '../../state/ui';
 import { IconButton } from '../../ui/IconButton';
 import { Sheet } from '../../ui/Sheet';
-import { useLayoutMode } from '../media';
+import { useLayoutMode, useViewportWidth } from '../media';
 import { ObjectDrawer } from '../ObjectDrawer';
+import { StageHost } from '../StageHost';
 import { TimePill } from '../TimePill';
 
 function CharactersDock() {
@@ -18,7 +19,7 @@ function CharactersDock() {
 }
 
 /** The play screen: the stage in the middle, tools on the same edges everywhere. */
-export function SceneScreen({ stage }: { stage?: ReactNode }) {
+export function SceneScreen() {
   const layout = useLayoutMode();
   const leftHanded = useSettings((s) => s.leftHanded);
   const go = useUi((s) => s.go);
@@ -27,11 +28,19 @@ export function SceneScreen({ stage }: { stage?: ReactNode }) {
   const setSheetOpen = useUi((s) => s.setPlusSheetOpen);
   const [sheetTab, setSheetTab] = useState<'characters' | 'things'>('things');
   const phone = layout === 'phone';
+  const width = useViewportWidth();
+  // Tiles that fit beside the docks: ~100 px each after the arrows (2 × 76 px).
+  const portrait = typeof window !== 'undefined' && window.innerHeight > width;
+  const iconBtn = layout === 'tablet' ? 64 : 56;
+  const drawerWidth = portrait
+    ? width - (iconBtn + 28) - 72
+    : width - (iconBtn + 28) - (iconBtn * 3 + 20) - 104;
+  const perPage = Math.max(3, Math.min(6, Math.floor((drawerWidth - 2 * (iconBtn + 12)) / 100)));
 
   return (
     <div className="scene" data-hand={leftHanded ? 'left' : 'right'}>
       <div className="stage" aria-label={strings.stage} role="region">
-        {stage}
+        <StageHost />
       </div>
 
       <div className="dock dock--top-left">
@@ -66,7 +75,7 @@ export function SceneScreen({ stage }: { stage?: ReactNode }) {
 
       {!phone && (
         <section className="dock dock--drawer" aria-label={strings.thingsDrawer}>
-          <ObjectDrawer perPage={layout === 'desktop' ? 6 : 5} />
+          <ObjectDrawer perPage={perPage} />
         </section>
       )}
 

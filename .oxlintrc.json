@@ -29,7 +29,8 @@
     "typescript/no-misused-promises": "error",
     "typescript/await-thenable": "error",
     "jsx-a11y/prefer-tag-over-role": "off",
-    "typescript/consistent-return": "off"
+    "typescript/consistent-return": "off",
+    "unicorn/no-array-fill-with-reference-type": "off"
   },
   "overrides": [
     {

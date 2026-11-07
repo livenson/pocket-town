@@ -37,6 +37,10 @@ function initialNavFromHash(): NavState {
   if (typeof location !== 'undefined' && location.hash === '#kit') {
     return { ...initialNav, screen: 'kit', unlocked: true };
   }
+  // Straight into the play stage, for visual checks and tests.
+  if (typeof location !== 'undefined' && location.hash === '#scene') {
+    return { ...initialNav, screen: 'scene', history: ['hub'] };
+  }
   return initialNav;
 }
 
