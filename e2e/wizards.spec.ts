@@ -87,7 +87,7 @@ test('the avatar wizard: steps in any order, dice per step, undo, done', async (
   await tap(page, page.getByRole('button', { name: /loading/ }));
   await tap(page, b(page, '10'));
   await tap(page, b(page, 'New player'));
-  await tap(page, b(page, 'Change details'));
+  await tap(page, b(page, 'Pick each part'));
   for (const step of ['Hair', 'Clothes', 'Accessories', 'Body', 'Personality', 'Name']) {
     await tap(page, b(page, step));
     await expect(b(page, step)).toHaveAttribute('aria-current', 'step');

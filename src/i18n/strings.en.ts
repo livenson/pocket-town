@@ -157,10 +157,11 @@ export const en = {
     grownUpSetup: 'Grown-up? Set up here',
     newPlayer: 'New player',
     whoIsPlaying: 'Who is playing? Tap the plus to make a new player.',
-    rollHelp: 'Roll the dice, or tick when you like it.',
+    rollHelp:
+      'Roll the dice, or tick when you like it. The pencil lets you pick each part yourself.',
     hearHelp: 'Hear what to do',
     roll: 'Roll a new character',
-    changeDetails: 'Change details',
+    changeDetails: 'Pick each part',
     yourCharacter: 'Your character',
     hooray: (name: string) => `Hooray, ${name}!`,
     player: (name: string) => `Play as ${name}`,

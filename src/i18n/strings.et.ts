@@ -151,10 +151,11 @@ export const et: Strings = {
     grownUpSetup: 'Täiskasvanu? Seadista siin',
     newPlayer: 'Uus mängija',
     whoIsPlaying: 'Kes mängib? Puuduta plussi, et teha uus mängija.',
-    rollHelp: 'Veereta täringut või vajuta linnukest, kui meeldib.',
+    rollHelp:
+      'Veereta täringut või vajuta linnukest, kui meeldib. Pliiatsiga saad iga osa ise valida.',
     hearHelp: 'Kuula, mida teha',
     roll: 'Veereta uus tegelane',
-    changeDetails: 'Muuda üksikasju',
+    changeDetails: 'Vali iga osa',
     yourCharacter: 'Sinu tegelane',
     hooray: (name: string) => `Hurraa, ${name}!`,
     player: (name: string) => `Mängi: ${name}`,

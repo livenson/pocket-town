@@ -455,6 +455,12 @@ html[data-calm='true'] .hooray-play {
   border-radius: 24px;
 }
 
+/* The pencil's label has room beside the big dice: whole words, never split. */
+.dice-controls .text-label {
+  max-width: 120px;
+  overflow-wrap: normal;
+}
+
 .dice-button {
   display: grid;
   place-items: center;

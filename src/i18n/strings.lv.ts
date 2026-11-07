@@ -153,10 +153,11 @@ export const lv: Strings = {
     grownUpSetup: 'Pieaugušais? Iestatīšana šeit',
     newPlayer: 'Jauns spēlētājs',
     whoIsPlaying: 'Kas spēlē? Pieskaries plusam, lai izveidotu jaunu spēlētāju.',
-    rollHelp: 'Met kauliņu vai pieskaries ķeksītim, kad patīk.',
+    rollHelp:
+      'Met kauliņu vai pieskaries ķeksītim, kad patīk. Ar zīmuli vari izvēlēties katru daļu.',
     hearHelp: 'Klausīties, ko darīt',
     roll: 'Uzmest jaunu tēlu',
-    changeDetails: 'Mainīt detaļas',
+    changeDetails: 'Izvēlies katru daļu',
     yourCharacter: 'Tavs tēls',
     hooray: (name: string) => `Urrā, ${name}!`,
     player: (name: string) => `Spēlēt: ${name}`,
