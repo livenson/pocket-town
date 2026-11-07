@@ -14,7 +14,7 @@ Read these before writing code, in this order:
 
 | Concern | Choice | Notes |
 |---|---|---|
-| Language | TypeScript, `strict: true` | No `any` except at untyped library edges. |
+| Language | TypeScript 7 (native compiler), `strict: true` | No `any` except at untyped library edges. |
 | Build | Vite | `base: '/pocket-town/'` for GitHub Pages. |
 | Play stage | PixiJS v8 (latest 8.x), used imperatively | One `Application`, one canvas. Do not use `@pixi/react` for the stage: the sim updates every frame and must not go through React reconciliation. |
 | UI shell (menus, wizards, docks, sheets, cards, settings) | React 19 rendering normal DOM | Real `<button>`, `<input>`, `<label>` for accessibility, voice-over and keyboard use. |
@@ -27,7 +27,7 @@ Read these before writing code, in this order:
 | Offline and install | `vite-plugin-pwa` | App shell and assets cached; plays fully offline. |
 | Unit tests | Vitest | Sim, undo/redo, save/load and migrations. |
 | End-to-end tests | Playwright | Phone, tablet and desktop viewports with touch emulation. |
-| Lint/format | ESLint (typescript-eslint) + Prettier | |
+| Lint/format | oxlint (type-aware, via `oxlint-tsgolint`) + Prettier | Replaced ESLint: typescript-eslint cannot run on TypeScript 7 (see `docs/DECISIONS.md`). |
 
 Avoid adding further runtime dependencies without a clear reason; record any you add in `docs/DECISIONS.md` with one line of justification.
 
@@ -73,7 +73,7 @@ design-reference/       prototypes from the design canvas (read-only reference)
 - `npm run preview`: serve `dist/` at `/pocket-town/`.
 - `npm test`: Vitest.
 - `npm run e2e`: Playwright against `npm run preview`.
-- `npm run lint`: ESLint + Prettier check.
+- `npm run lint`: oxlint + Prettier check.
 
 ## How to work
 

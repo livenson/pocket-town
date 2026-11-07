@@ -1,0 +1,16 @@
+# Generated output
+dist
+dev-dist
+coverage
+playwright-report
+test-results
+package-lock.json
+public
+
+# Reference material and provided files: kept exactly as handed over
+design-reference
+src/design/tokens.ts
+src/design/icons.ts
+docs
+CLAUDE.md
+HANDOFF.md
