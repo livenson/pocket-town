@@ -3170,8 +3170,10 @@ html[data-layout='phone'] .character-actions__houses {
   height: 50px;
   border-radius: 50%;
   background: var(--pt-peach);
-  overflow: hidden;
-  pointer-events: none;
+  overflow: visible;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
   transform: translate(-50%, -50%);
   transition:
     left 300ms linear,
@@ -3179,6 +3181,23 @@ html[data-layout='phone'] .character-actions__houses {
   box-shadow:
     0 0 0 4px #fff,
     0 6px 0 4px rgba(42, 22, 64, 0.2);
+}
+
+.map-pin > svg {
+  border-radius: 50%;
+}
+
+/* A larger, invisible touch area: a walking pin is a moving target. */
+.map-pin::before {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+}
+
+.map-pin:focus-visible {
+  outline: 4px solid var(--pt-marigold);
+  outline-offset: 2px;
 }
 
 .map-pin[data-travelling] {

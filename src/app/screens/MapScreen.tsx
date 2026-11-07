@@ -4,6 +4,7 @@ import type { IconName } from '../../design/icons';
 import { buildingName, strings } from '../../i18n';
 import { minuteOfDay } from '../../sim/clock';
 import type { Bot, World } from '../../sim/types';
+import { usePlay } from '../../state/play';
 import { useUi } from '../../state/ui';
 import { Icon } from '../../ui/Icon';
 import { IconButton } from '../../ui/IconButton';
@@ -109,6 +110,9 @@ function TimeDial({ minute }: { minute: number }) {
 export function MapScreen() {
   const world = useWorldTick(4);
   const home = useUi((s) => s.home);
+  const go = useUi((s) => s.go);
+  const setRoom = useUi((s) => s.setRoom);
+  const follow = usePlay((s) => s.follow);
   const buildings = allBuildings();
   return (
     <div className="world-map">
@@ -149,12 +153,19 @@ export function MapScreen() {
           const k = bot.travel ? 0 : here.indexOf(bot);
           const dx = bot.travel ? 0 : (k - (here.length - 1) / 2) * 44;
           return (
-            <span
+            <button
+              type="button"
               key={bot.id}
               className="map-pin"
               data-travelling={bot.travel ? true : undefined}
-              role="img"
               aria-label={label}
+              onClick={() => {
+                // Go and watch them: the follow camera keeps up, even on the road.
+                playSfx('tap');
+                if (!bot.travel) setRoom(bot.place.roomId);
+                follow(bot.id);
+                go('scene');
+              }}
               style={{
                 left: `calc(${at.x * 100}% + ${dx}px)`,
                 top: `calc(${at.y * 100}% - ${bot.travel ? 30 : 88}px)`,
@@ -162,7 +173,7 @@ export function MapScreen() {
               }}
             >
               <PegPortrait appearance={bot.appearance} size={50} crop="head" />
-            </span>
+            </button>
           );
         })}
       </div>

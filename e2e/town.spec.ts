@@ -67,7 +67,7 @@ test('coming back after a while shows the postcard, which a tap skips; the town 
   // The cake the child placed is still there; everyone is still in town.
   await expect(page.getByRole('button', { name: 'Cake, pick it up' })).toBeAttached();
   await tap(page, b(page, 'World'));
-  await expect(page.getByRole('img', { name: /^Moku is / })).toBeAttached();
+  await expect(page.getByRole('button', { name: /^Moku is / })).toBeAttached();
 });
 
 test('a short break does not show the postcard', async ({ page }) => {
@@ -93,15 +93,15 @@ test('the world map shows every building, who is where, and the time of day', as
     ).toBeVisible();
   }
   await expect(page.getByRole('img', { name: /^Time of day: / })).toBeVisible();
-  await expect(page.getByRole('img', { name: /^(Moku|Pim|Lumo|Nella|Oki|Tavi) is / })).toHaveCount(
-    6,
-  );
+  await expect(
+    page.getByRole('button', { name: /^(Moku|Pim|Lumo|Nella|Oki|Tavi) is / }),
+  ).toHaveCount(6);
   await tap(page, b(page, 'Go into Café'));
   await expect(page.getByRole('group', { name: 'Time' })).toBeVisible();
 });
 
 test('my characters: make one with the dice, then say goodbye', async ({ page }) => {
-  const pins = () => page.getByRole('img', { name: / is (at|on the way)/ });
+  const pins = () => page.getByRole('button', { name: / is (at|on the way)/ });
   await page.goto('./#scene');
   await tap(page, b(page, 'Home'));
   await expect(page.locator('.hub-diorama__room').first()).toBeVisible();
@@ -141,4 +141,12 @@ test('a building on the map opens with a real press (finger down, a pause, up)',
   await page.waitForTimeout(150);
   await page.mouse.up();
   await expect(page.getByRole('group', { name: 'Time' })).toBeVisible();
+});
+
+test('tapping someone on the map goes to watch them', async ({ page }) => {
+  await page.goto('./#scene');
+  await tap(page, b(page, 'World'));
+  await tap(page, page.getByRole('button', { name: /^Moku is / }));
+  await expect(page.getByRole('group', { name: 'Time' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: /Moku/ })).toBeVisible();
 });
