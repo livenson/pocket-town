@@ -27,6 +27,9 @@ export const tuning = {
 
   /** Night: 22:00–07:00. Sleep is preferred, everything else damped. */
   nightStartMinute: 22 * 60,
+  /** Sleep that starts in the day is a nap: it ends after this, so an evening nap
+   *  does not turn into a 12-hour night (nobody wakes before morning). */
+  napMaxMinutes: 150,
   nightEndMinute: 7 * 60,
   nightSleepBoost: 4,
   /** At night, bedtime pulls even when a bot is not tired. */

@@ -57,6 +57,8 @@ export const et: Strings = {
   rooms: {
     'home-living': 'köök',
     'home-bedroom': 'magamistuba',
+    'neighbour-main': 'elutuba',
+    'neighbour-bedroom': 'magamistuba',
   },
 
   card: {

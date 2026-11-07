@@ -335,6 +335,9 @@ function updateBot(world: World, bot: Bot, dm: number): void {
       if (doing.activity === 'visit') {
         doing.duration = Math.min(doing.duration, tuning.visitMaxMinutes);
       }
+      if (doing.activity === 'sleep' && !isNight(world.minute)) {
+        doing.duration = Math.min(doing.duration, tuning.napMaxMinutes);
+      }
     }
     updateChat(world, bot);
     const current = bot.now;

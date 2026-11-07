@@ -59,6 +59,8 @@ export const lv: Strings = {
   rooms: {
     'home-living': 'virtuve',
     'home-bedroom': 'guļamistaba',
+    'neighbour-main': 'dzīvojamā istaba',
+    'neighbour-bedroom': 'guļamistaba',
   },
 
   card: {

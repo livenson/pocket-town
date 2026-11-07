@@ -59,6 +59,8 @@ export const en = {
   rooms: {
     'home-living': 'kitchen',
     'home-bedroom': 'bedroom',
+    'neighbour-main': 'living room',
+    'neighbour-bedroom': 'bedroom',
   } as Record<string, string>,
 
   // Bot card
