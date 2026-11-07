@@ -1,11 +1,17 @@
 import { playSfx } from '../../audio/audio';
-import { allBuildings, type BuildingKind } from '../../content/rooms';
+import { allBuildings, type BuildingDef, type BuildingKind } from '../../content/rooms';
 import type { IconName } from '../../design/icons';
-import { useUi } from '../../state/ui';
 import { buildingName, strings } from '../../i18n';
+import { minuteOfDay } from '../../sim/clock';
+import type { Bot, World } from '../../sim/types';
+import { useUi } from '../../state/ui';
 import { Icon } from '../../ui/Icon';
+import { IconButton } from '../../ui/IconButton';
+import { PegPortrait } from '../../ui/PegPortrait';
+import { useShowTextLabels } from '../../ui/labels';
 import { useVoiceLabel } from '../../ui/useVoiceLabel';
-import { ScreenFrame } from './ScreenFrame';
+import { useWorldTick } from '../game';
+import { TimePill } from '../TimePill';
 
 const ICON: Record<BuildingKind, IconName> = {
   house: 'house',
@@ -15,55 +21,158 @@ const ICON: Record<BuildingKind, IconName> = {
   musicHall: 'note',
 };
 
-function BuildingButton({
-  id,
-  name,
-  kind,
-  roof,
-}: {
-  id: string;
-  name: string;
-  kind: BuildingKind;
-  roof: string;
-}) {
+/** Where a bot's pin sits: by its building, or part-way along the path when travelling. */
+function pinAt(bot: Bot): { x: number; y: number } | null {
+  if (bot.travel) {
+    const from = allBuildings().find((b) => b.id === bot.travel?.from)?.map;
+    const to = allBuildings().find((b) => b.id === bot.travel?.to)?.map;
+    if (!from || !to) return null;
+    const t = Math.min(1, Math.max(0, bot.travel.t));
+    return { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t };
+  }
+  return allBuildings().find((b) => b.id === bot.place.buildingId)?.map ?? null;
+}
+
+function Building({ b, world }: { b: BuildingDef; world: World }) {
   const go = useUi((s) => s.go);
   const setRoom = useUi((s) => s.setRoom);
-  const voice = useVoiceLabel(name);
-  const building = allBuildings().find((b) => b.id === id);
+  const words = useShowTextLabels();
+  const name = buildingName(b.id);
+  const label = strings.town.goInto(name);
+  const voice = useVoiceLabel(label);
+  // A guest is someone here whose home is elsewhere (houses only).
+  const guest =
+    b.kind === 'house'
+      ? world.bots.find((x) => !x.travel && x.place.buildingId === b.id && x.homeId !== b.id)
+      : undefined;
   return (
     <button
       type="button"
-      className="map-building"
-      style={{ borderTopColor: roof }}
-      aria-label={name}
+      className={`map-building map-building--${b.kind}`}
+      style={{ left: `${b.map.x * 100}%`, top: `${b.map.y * 100}%` }}
+      aria-label={guest ? `${label}. ${strings.town.visitor}` : label}
       {...voice}
       onClick={() => {
         playSfx('tap');
-        const room = building?.rooms[0];
+        const room = b.rooms[0];
         if (room) setRoom(room.id);
         go('scene');
       }}
     >
-      <Icon name={ICON[kind]} size={56} strokeWidth={3} />
+      <span className="map-building__roof" style={{ background: b.roofColor }} aria-hidden="true" />
+      <span className="map-building__body" aria-hidden="true">
+        <Icon name={ICON[b.kind]} size={30} />
+      </span>
+      {guest && (
+        <span className="map-building__flag" aria-hidden="true">
+          <span className="map-building__flag-face">
+            <PegPortrait appearance={guest.appearance} size={34} crop="head" />
+          </span>
+        </span>
+      )}
+      {words && <span className="map-building__label">{name}</span>}
     </button>
   );
 }
 
-/** D1 world map. M7 draws the town with bot pins; for now, a way into every building. */
-export function MapScreen() {
+/** Sun or moon by the time of day, and how far round the day is. */
+function TimeDial({ minute }: { minute: number }) {
+  const m = minuteOfDay(minute);
+  const h = m / 60;
+  const part =
+    h >= 22 || h < 6
+      ? strings.town.night
+      : h < 10
+        ? strings.town.morning
+        : h < 18
+          ? strings.town.day
+          : strings.town.evening;
+  const night = h >= 20 || h < 6;
+  const angle = (m / 1440) * 360;
   return (
-    <ScreenFrame title={strings.screens.map}>
-      <div className="map-grid">
-        {allBuildings().map((b) => (
-          <BuildingButton
-            key={b.id}
-            id={b.id}
-            name={buildingName(b.id)}
-            kind={b.kind}
-            roof={b.roofColor}
+    <div className="time-dial" role="img" aria-label={`${strings.town.timeOfDay}: ${part}`}>
+      <span
+        className="time-dial__face"
+        style={{ transform: `rotate(${angle}deg)` }}
+        aria-hidden="true"
+      >
+        <span className="time-dial__hand" />
+      </span>
+      <span className="time-dial__icon" aria-hidden="true">
+        <Icon name={night ? 'moon' : 'sun'} size={28} />
+      </span>
+    </div>
+  );
+}
+
+/** D1 world map: the town, who is where, and the time of day. Tap a building to go in. */
+export function MapScreen() {
+  const world = useWorldTick(4);
+  const home = useUi((s) => s.home);
+  const buildings = allBuildings();
+  return (
+    <div className="world-map">
+      <h1 className="visually-hidden">{strings.screens.map}</h1>
+      <div className="world-map__land" aria-hidden="true">
+        <span className="world-map__road world-map__road--h" />
+        <span className="world-map__road world-map__road--v" />
+        <span className="world-map__pond" />
+        {[
+          [0.66, 0.66],
+          [0.72, 0.7],
+          [0.92, 0.64],
+          [0.06, 0.52],
+          [0.94, 0.36],
+        ].map(([x, y], i) => (
+          <span
+            key={i}
+            className="world-map__tree"
+            style={{ left: `${(x ?? 0) * 100}%`, top: `${(y ?? 0) * 100}%` }}
           />
         ))}
       </div>
-    </ScreenFrame>
+      <div className="world-map__places">
+        {buildings.map((b) => (
+          <Building key={b.id} b={b} world={world} />
+        ))}
+        {world.bots.map((bot, i) => {
+          const at = pinAt(bot);
+          if (!at) return null;
+          const place = buildingName(bot.travel ? bot.travel.to : bot.place.buildingId);
+          const label = bot.travel
+            ? strings.town.walking(bot.name, place)
+            : strings.town.at(bot.name, place);
+          // Several pins at one building fan out around it.
+          const here = world.bots.filter(
+            (x) => !x.travel && x.place.buildingId === bot.place.buildingId,
+          );
+          const k = bot.travel ? 0 : here.indexOf(bot);
+          const dx = bot.travel ? 0 : (k - (here.length - 1) / 2) * 44;
+          return (
+            <span
+              key={bot.id}
+              className="map-pin"
+              data-travelling={bot.travel ? true : undefined}
+              role="img"
+              aria-label={label}
+              style={{
+                left: `calc(${at.x * 100}% + ${dx}px)`,
+                top: `calc(${at.y * 100}% - ${bot.travel ? 30 : 88}px)`,
+                zIndex: 20 + i,
+              }}
+            >
+              <PegPortrait appearance={bot.appearance} size={50} crop="head" />
+            </span>
+          );
+        })}
+      </div>
+      <div className="world-map__top">
+        <IconButton icon="home" label={strings.home} shortcut="H" onClick={home} />
+        <TimeDial minute={world.minute} />
+      </div>
+      <div className="world-map__bottom">
+        <TimePill />
+      </div>
+    </div>
   );
 }

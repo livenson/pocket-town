@@ -4,7 +4,12 @@ import type { Appearance } from '../content/appearance';
 import { randomLook, randomName, randomTraits } from '../content/looks';
 import type { TraitId } from '../content/traits';
 
+/** What the avatar wizard is making: a new player, a new character, or a change. */
+export type CreationTarget =
+  { kind: 'newPlayer' } | { kind: 'newBot' } | { kind: 'editBot'; botId: string };
+
 interface CreationStore {
+  target: CreationTarget;
   /** Age picked for the new player (null: not asked yet). */
   age: number | null;
   appearance: Appearance;
@@ -13,11 +18,12 @@ interface CreationStore {
   rolls: number;
   setAge: (age: number | null) => void;
   roll: () => void;
-  set: (patch: Partial<Pick<CreationStore, 'appearance' | 'name' | 'traits'>>) => void;
+  set: (patch: Partial<Pick<CreationStore, 'appearance' | 'name' | 'traits' | 'target'>>) => void;
   reset: () => void;
 }
 
 export const useCreation = create<CreationStore>()((set, get) => ({
+  target: { kind: 'newPlayer' },
   age: null,
   appearance: randomLook(),
   name: randomName(),
@@ -34,6 +40,7 @@ export const useCreation = create<CreationStore>()((set, get) => ({
   set: (patch) => set(patch),
   reset: () =>
     set({
+      target: { kind: 'newPlayer' },
       age: null,
       appearance: randomLook(),
       name: randomName(),

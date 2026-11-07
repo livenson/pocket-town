@@ -65,10 +65,13 @@ test('every screen is reachable and passes axe (WCAG 2.1 AA)', async ({ page }) 
   await expectAccessible(page, 'hub');
 
   await press(page, 'World');
-  await expect(page.getByRole('heading', { name: 'World' })).toBeVisible();
+  await expect(page.getByRole('img', { name: /^Time of day/ })).toBeVisible();
   await expectAccessible(page, 'map');
 
-  await press(page, 'My house');
+  await page
+    .getByRole('button', { name: /^Go into My house/ })
+    .first()
+    .click();
   await expect(page.getByRole('group', { name: 'Time' })).toBeVisible();
   await expectAccessible(page, 'scene');
 
@@ -238,7 +241,7 @@ test('keyboard shortcuts work on the scene', async ({ page, browserName }) => {
     'true',
   );
   await page.keyboard.press('m');
-  await expect(page.getByRole('heading', { name: 'World' })).toBeVisible();
+  await expect(page.getByRole('img', { name: /^Time of day/ })).toBeVisible();
   await page.keyboard.press('h');
   await expect(page.getByRole('button', { name: 'World' })).toBeVisible();
 });

@@ -82,7 +82,14 @@ export function HoldButton({
         onPointerUp={() => stop(true)}
         onPointerCancel={() => stop(true)}
         onLostPointerCapture={() => stop(true)}
-        onPointerLeave={() => stop(true)}
+        // With pointer capture the browser sends "leave" events at the start of a
+        // press, so sliding off is checked by position instead.
+        onPointerMove={(e: PointerEvent<HTMLButtonElement>) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          const off =
+            e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+          if (off) stop(true);
+        }}
         onPointerEnter={(e) => {
           if (e.pointerType === 'mouse') speak(label);
         }}

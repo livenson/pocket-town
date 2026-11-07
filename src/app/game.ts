@@ -5,6 +5,7 @@ import { create } from 'zustand';
 import { playSfx } from '../audio/audio';
 import { loadSave, writeSave } from '../persist/save';
 import type { Command } from '../sim/commands';
+import { AWAY_MIN_MS, awayGameMinutes, catchUp } from '../sim/away';
 import { History } from '../sim/history';
 import type { World } from '../sim/types';
 import { createWorld, entryRoom, makeBot } from '../sim/world';
@@ -87,6 +88,16 @@ export const game = {
   },
 };
 
+/**
+ * Back after a while: catch the town up on the time away (capped at two game days)
+ * and show the postcard of what happened.
+ */
+export function comeBack(world: World, awayMs: number): void {
+  if (awayMs < AWAY_MIN_MS) return;
+  const moments = catchUp(world, awayGameMinutes(awayMs));
+  if (moments.length > 0) useUi.getState().setPostcard(moments);
+}
+
 /** The player's own character lives in the starter house like everyone else. */
 export function playerBotId(profile: Pick<Profile, 'id'>): string {
   return `me-${profile.id}`;
@@ -130,6 +141,7 @@ export async function enterProfile(id: string): Promise<void> {
   if (!save && profiles.length === 1) save = await loadSave(null).catch(() => null);
   const world = save?.world ?? createWorld((Date.now() % 2147483647) | 0);
   ensurePlayerBot(world, profile);
+  if (save) comeBack(world, Date.now() - save.savedAt);
   profileId = id;
   history.clear();
   sim.load(world);
@@ -145,6 +157,8 @@ export async function startGame(): Promise<void> {
   saving = !fresh;
   const save = fresh ? null : await loadSave(null).catch(() => null);
   if (save) {
+    // The town from before profiles: only caught up when opened straight into play.
+    if (location.hash === '#scene') comeBack(save.world, Date.now() - save.savedAt);
     sim.load(save.world);
     useUi.getState().setRoom(save.ui.roomId);
   }
@@ -172,6 +186,38 @@ export function useWorldTick(fps = 4): World {
   }, [fps]);
   void version;
   return sim.world;
+}
+
+/** Save what the avatar wizard made: a new character, or changes to one. */
+export function saveCharacter(): void {
+  const c = useCreation.getState();
+  const t = c.target;
+  if (t.kind === 'newBot') {
+    game.do({
+      type: 'addBot',
+      id: `c${Date.now().toString(36)}`,
+      name: c.name,
+      appearance: c.appearance,
+      traits: c.traits,
+      homeId: 'home',
+    });
+  } else if (t.kind === 'editBot') {
+    game.do({
+      type: 'updateBot',
+      botId: t.botId,
+      name: c.name,
+      appearance: c.appearance,
+      traits: c.traits,
+    });
+    // Changing your own character changes your profile face too.
+    const { profiles, activeId } = useProfiles.getState();
+    const me = profiles.find((p) => p.id === activeId);
+    if (me && playerBotId(me) === t.botId) {
+      useProfiles
+        .getState()
+        .update(me.id, { name: c.name, appearance: c.appearance, traits: c.traits });
+    }
+  }
 }
 
 /** Make the new player from the profile being created, and open their town. */

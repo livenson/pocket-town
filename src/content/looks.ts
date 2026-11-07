@@ -8,13 +8,10 @@ export const hairStyles: HairStyle[] = ['bob', 'puff', 'bun', 'crop', 'none'];
 export const aids: Aid[] = ['none', 'none', 'none', 'wheelchair', 'hearing', 'arm'];
 
 /** Curated names: short, easy to say, from no particular language. */
+/** Curated names: short, easy to say, from no particular language. The starter
+ *  cast's names (Moku, Pim, Lumo, Tavi, Nella, Oki) are left out, so a new
+ *  character never shares a name with someone already in town. */
 export const names = [
-  'Moku',
-  'Pim',
-  'Lumo',
-  'Tavi',
-  'Nella',
-  'Oki',
   'Zeb',
   'Bobo',
   'Kiki',
@@ -33,6 +30,12 @@ export const names = [
   'Wim',
   'Ada',
   'Juno',
+  'Sami',
+  'Toto',
+  'Lilu',
+  'Rafa',
+  'Eko',
+  'Nuno',
 ] as const;
 
 export const allTraits: TraitId[] = [

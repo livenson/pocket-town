@@ -624,18 +624,6 @@ html[data-labels='true'] .carry-pill {
 
 /* ---------- Hub ---------- */
 
-.hub-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 24px;
-  width: min(100%, 900px);
-}
-
-html[data-layout='phone'] .hub-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
 .hub-tile {
   --shade: rgba(42, 22, 64, 0.3);
   position: relative;
@@ -2715,4 +2703,575 @@ html[data-labels='false'] .wizard-section__title span {
   .wizard__preview--house .furnish {
     width: min(100%, 520px);
   }
+}
+
+/* ---------- Hub (M7) ---------- */
+
+.hub {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+  background: var(--pt-sky);
+  overflow: hidden auto;
+}
+
+.hub__cloud {
+  position: absolute;
+  height: 46px;
+  border-radius: 999px;
+  background: #fff;
+  opacity: 0.85;
+}
+
+.hub__cloud--1 {
+  left: 14%;
+  top: 9%;
+  width: 150px;
+}
+
+.hub__cloud--2 {
+  left: 46%;
+  top: 14%;
+  width: 120px;
+  height: 38px;
+  opacity: 0.7;
+}
+
+.hub__hill {
+  position: absolute;
+  left: -4%;
+  bottom: -12%;
+  width: 72%;
+  height: 34%;
+  border-radius: 50%;
+  background: var(--pt-grass);
+}
+
+.hub__bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hub__bar-end {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.hub__me {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--pt-peach);
+  overflow: hidden;
+  box-shadow:
+    0 5px 0 #a9c9e6,
+    0 0 0 4px #fff;
+}
+
+.hub__main {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 28px;
+}
+
+.hub-grid {
+  display: grid;
+}
+
+.hub__main .hub-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  gap: 20px;
+}
+
+.hub-tile {
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--pt-font-display);
+  font-weight: 800;
+  font-size: 22px;
+}
+
+.hub-tile__word {
+  line-height: 1.05;
+  text-align: center;
+}
+
+@media (max-width: 899px) {
+  .hub__main {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+  }
+}
+
+.hub-diorama {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 620px);
+  margin: 0 auto;
+}
+
+.hub-diorama .diorama__roof {
+  width: 100%;
+}
+
+.hub-diorama__rooms {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 92%;
+  padding: 8px;
+  border-radius: 0 0 18px 18px;
+  background: var(--pt-ink);
+}
+
+.hub-diorama[data-rooms='1'] .hub-diorama__rooms {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.hub-diorama__room {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 150px;
+  padding: 8px 6px 4px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-image: linear-gradient(transparent 72%, var(--floor) 72%);
+}
+
+.hub-diorama__people {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hub-diorama__person {
+  position: relative;
+  display: flex;
+}
+
+.hub-diorama__doing {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 0 rgba(42, 22, 64, 0.18);
+}
+
+.built-houses {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Characters gallery ---------- */
+
+.screen--characters .screen__body {
+  /* Start at the top: centring a tall page would push its first row out of reach. */
+  justify-content: flex-start;
+}
+
+.screen--characters .carousel {
+  width: min(100%, 980px);
+}
+
+.character-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-height: 190px;
+  padding: 10px 6px 12px;
+  border-radius: 28px;
+  background: var(--pt-paper);
+  box-shadow: 0 6px 0 #efc39f;
+  transition: transform var(--pt-press-ms) var(--pt-ease);
+}
+
+.character-card:active {
+  transform: translateY(6px);
+  box-shadow: none;
+}
+
+.character-card__portrait svg {
+  height: min(150px, 18vh);
+  width: auto;
+}
+
+.character-card__name {
+  font-family: var(--pt-font-display);
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.character-card__me {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--pt-marigold);
+}
+
+.character-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 8px 0 12px;
+}
+
+.character-actions__who {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.character-actions__buttons,
+.character-actions__houses {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.character-actions__houses {
+  padding: 6px;
+  border-radius: 999px;
+  background: var(--pt-ground);
+}
+
+/* ---------- World map (M7) ---------- */
+
+.world-map {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: var(--pt-grass);
+}
+
+.world-map__land,
+.world-map__places {
+  position: absolute;
+  inset: calc(var(--safe-top) + var(--icon-btn) + 10px) var(--safe-right)
+    calc(var(--safe-bottom) + var(--icon-btn) + 10px) var(--safe-left);
+}
+
+.world-map__road {
+  position: absolute;
+  background: var(--pt-path);
+  border-radius: 32px;
+}
+
+.world-map__road--h {
+  left: -10%;
+  right: -10%;
+  top: 46%;
+  height: 56px;
+}
+
+.world-map__road--v {
+  top: -20%;
+  bottom: -20%;
+  left: 44%;
+  width: 56px;
+}
+
+.world-map__pond {
+  position: absolute;
+  left: 4%;
+  bottom: 2%;
+  width: 20%;
+  height: 22%;
+  border-radius: 50%;
+  background: var(--pt-water);
+  box-shadow: inset 0 -10px 0 rgba(42, 22, 64, 0.1);
+}
+
+.world-map__tree {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--pt-tree);
+  box-shadow: inset -6px -6px 0 rgba(42, 22, 64, 0.15);
+  transform: translate(-50%, -50%);
+}
+
+.map-building {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -60%);
+}
+
+.map-building__roof {
+  width: 118px;
+  height: 52px;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.map-building--musicHall .map-building__roof {
+  clip-path: none;
+  border-radius: 60px 60px 0 0;
+  width: 104px;
+}
+
+.map-building--park .map-building__roof {
+  width: 84px;
+  height: 64px;
+  clip-path: none;
+  border-radius: 50%;
+}
+
+.map-building__body {
+  display: grid;
+  place-items: center;
+  width: 100px;
+  height: 66px;
+  border: 5px solid var(--pt-ink);
+  border-radius: 0 0 14px 14px;
+  background: var(--pt-paper);
+}
+
+.map-building--park .map-building__body {
+  width: 60px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.map-building__label {
+  margin-top: 6px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  background: rgba(255, 248, 240, 0.95);
+  font-family: var(--pt-font-display);
+  font-weight: 800;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.map-building__flag {
+  position: absolute;
+  top: -40px;
+  right: 4px;
+  width: 4px;
+  height: 46px;
+  background: var(--pt-ink);
+}
+
+.map-building__flag-face {
+  position: absolute;
+  left: 4px;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 30px;
+  border-radius: 0 10px 10px 0;
+  background: var(--pt-cornflower);
+  overflow: hidden;
+}
+
+.map-pin {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--pt-peach);
+  overflow: hidden;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition:
+    left 300ms linear,
+    top 300ms linear;
+  box-shadow:
+    0 0 0 4px #fff,
+    0 6px 0 4px rgba(42, 22, 64, 0.2);
+}
+
+.map-pin[data-travelling] {
+  background: #fff;
+}
+
+.world-map__top {
+  position: absolute;
+  z-index: 30;
+  top: var(--safe-top);
+  left: var(--safe-left);
+  right: var(--safe-right);
+  display: flex;
+  justify-content: space-between;
+}
+
+.world-map__bottom {
+  position: absolute;
+  z-index: 30;
+  right: var(--safe-right);
+  bottom: var(--safe-bottom);
+}
+
+.time-dial {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--icon-btn);
+  height: var(--icon-btn);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 5px 0 rgba(42, 22, 64, 0.22);
+}
+
+.time-dial__face {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 3px dashed #e3b48f;
+}
+
+.time-dial__hand {
+  position: absolute;
+  left: 50%;
+  top: -6px;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  background: var(--pt-tomato);
+}
+
+.time-dial__icon {
+  color: var(--pt-marigold-shadow);
+}
+
+/* ---------- Postcard ---------- */
+
+.postcard {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(42, 22, 64, 0.55);
+  animation: fade-in 250ms var(--pt-ease);
+}
+
+.postcard__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: min(100%, 760px);
+  padding: 24px 22px;
+  border-radius: 34px;
+  background: var(--pt-paper);
+  box-shadow: 0 8px 0 rgba(42, 22, 64, 0.3);
+  transform: rotate(-1.2deg);
+}
+
+.postcard__title {
+  font-family: var(--pt-font-display);
+  font-weight: 800;
+  font-size: clamp(26px, 4vw, 38px);
+}
+
+.postcard__moments {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+.postcard__moment {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 6px 10px;
+  border-radius: 22px;
+  background: var(--pt-ground);
+  animation: pop-in 320ms var(--pt-ease) both;
+}
+
+.postcard__icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 3px 0 rgba(42, 22, 64, 0.16);
+}
+
+.postcard__caption {
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.postcard__skip {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  background: var(--pt-tomato);
+  color: #fff;
+  box-shadow: 0 5px 0 var(--pt-tomato-shadow);
+}
+
+/* Phones: when a screen has controls on both sides, the title gets its own row. */
+html[data-layout='phone'] .screen__bar:has(.screen__bar-end > *) {
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'start end'
+    'title title';
+}
+html[data-layout='phone'] .screen__bar:has(.screen__bar-end > *) .screen__bar-start {
+  grid-area: start;
+}
+html[data-layout='phone'] .screen__bar:has(.screen__bar-end > *) .screen__bar-end {
+  grid-area: end;
+}
+html[data-layout='phone'] .screen__bar:has(.screen__bar-end > *) .screen__title {
+  grid-area: title;
+}
+html[data-layout='phone'] .dice-button--small {
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
 }

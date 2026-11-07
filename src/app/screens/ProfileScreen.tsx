@@ -74,6 +74,7 @@ export function ProfileScreen() {
             onClick={() => {
               playSfx('tap');
               useCreation.getState().roll();
+              useCreation.getState().set({ target: { kind: 'newPlayer' } });
               // First launch: the age was asked already. Later players are asked now.
               go(pendingAge !== null && profiles.length === 0 ? 'diceAvatar' : 'age');
             }}

@@ -6,7 +6,7 @@ import './ui/ui.css';
 import './app/app.css';
 import { App } from './app/App';
 import { installAudioUnlock } from './audio/audio';
-import { startGame } from './app/game';
+import { comeBack, startGame } from './app/game';
 import { sim } from './app/simRunner';
 import { applyTokenCssVars } from './design/cssVars';
 import { requestPersistentStorage } from './persist/idbStorage';
@@ -20,9 +20,16 @@ void requestPersistentStorage();
 void startGame();
 if (!new URLSearchParams(location.search).has('still')) {
   sim.start();
+  let hiddenAt = 0;
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) sim.stop();
-    else sim.start();
+    if (document.hidden) {
+      hiddenAt = Date.now();
+      sim.stop();
+    } else {
+      // Back after a while: the town lived on; show what happened.
+      if (hiddenAt > 0) comeBack(sim.world, Date.now() - hiddenAt);
+      sim.start();
+    }
   });
 }
 

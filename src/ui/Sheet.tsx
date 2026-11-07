@@ -22,6 +22,13 @@ export function Sheet({ open, label, onClose, children, header }: SheetProps) {
   const dragStart = useRef<number | null>(null);
   const titleId = useId();
 
+  // The latest onClose, without re-running the focus handling when a parent re-renders
+  // (that would pull focus away from a control being held).
+  const closeRef = useRef(onClose);
+  useEffect(() => {
+    closeRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     if (!open) return;
     restoreFocus.current =
@@ -31,7 +38,7 @@ export function Sheet({ open, label, onClose, children, header }: SheetProps) {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.stopPropagation();
-        onClose();
+        closeRef.current();
       }
     };
     window.addEventListener('keydown', onKey, true);
@@ -39,7 +46,7 @@ export function Sheet({ open, label, onClose, children, header }: SheetProps) {
       window.removeEventListener('keydown', onKey, true);
       restoreFocus.current?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 

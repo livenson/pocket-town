@@ -51,6 +51,18 @@ describe('HoldButton', () => {
     vi.useRealTimers();
   });
 
+  it('a pointer press is not cancelled by the "leave" events capture sends', () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
+    const onConfirm = vi.fn<() => void>();
+    render(<HoldButton label="Hold to delete" onConfirm={onConfirm} />);
+    const b = screen.getByRole('button', { name: 'Hold to delete' });
+    fireEvent.pointerDown(b, { pointerId: 1 });
+    fireEvent.pointerLeave(b, { pointerId: 1 });
+    void act(() => vi.advanceTimersByTime(800));
+    expect(onConfirm).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
   it('works by holding Space', () => {
     vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
     const onConfirm = vi.fn<() => void>();

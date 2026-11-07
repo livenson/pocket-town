@@ -133,10 +133,10 @@ Acceptance: e2e builds a house from scratch with each step, undoes three changes
 
 ## M7: hub, map, gallery and coming back
 
-- [ ] Home hub (B2): the child's house as a live diorama with bots visible, and 4 big tiles: World, My characters, My house, Friends (Friends is shown locked with "ask a grown-up" and explains it is coming later).
-- [ ] My characters gallery (B3): paged cards, new, dice, hold for edit / copy / move house / remove (remove is hold-to-confirm and undoable).
-- [ ] World map (D1): my house, a neighbour house, café, park, library, music hall; bot portrait pins; tap a building to enter; time-of-day dial.
-- [ ] "While you were away" postcard: on return after more than 10 minutes, simulate the elapsed time in coarse steps (capped at 2 game days), then show 3–4 picture moments (who ate, slept, visited, played music) for 5–10 s; tap anywhere skips.
+- [x] Home hub (B2): the child's house as a live diorama with bots visible, and 4 big tiles: World, My characters, My house, Friends (Friends is shown locked with "ask a grown-up" and explains it is coming later).
+- [x] My characters gallery (B3): paged cards, new, dice, hold for edit / copy / move house / remove (remove is hold-to-confirm and undoable).
+- [x] World map (D1): my house, a neighbour house, café, park, library, music hall; bot portrait pins; tap a building to enter; time-of-day dial.
+- [x] "While you were away" postcard: on return after more than 10 minutes, simulate the elapsed time in coarse steps (capped at 2 game days), then show 3–4 picture moments (who ate, slept, visited, played music) for 5–10 s; tap anywhere skips.
 
 Acceptance: e2e: close and reopen with the clock advanced; postcard shows and can be skipped; state is consistent.
 

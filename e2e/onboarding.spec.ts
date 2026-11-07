@@ -39,13 +39,13 @@ test('first launch to first friend fed, in under 15 taps and 60 seconds', async 
   await expect(hint).toHaveAccessibleName(/Now try the map/);
   await expect(page.locator('.hint-glow').first()).toBeVisible();
   await tap(page, button(page, 'Map'));
-  await expect(page.getByRole('heading', { name: 'World' })).toBeVisible();
+  await expect(page.getByRole('img', { name: /^Time of day/ })).toBeVisible();
 
   expect(taps).toBeLessThan(15);
   expect(fedAt - started).toBeLessThan(60_000);
 
   // The hints never come back for this player.
-  await page.getByRole('button', { name: 'My house', exact: true }).click();
+  await page.getByRole('button', { name: /^Go into My house/ }).click();
   await expect(page.getByRole('button', { name: /^Hear the hint/ })).toHaveCount(0);
 });
 

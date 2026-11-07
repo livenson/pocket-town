@@ -28,7 +28,9 @@ type Inverse =
   | { kind: 'moveObject'; id: string; object: PlacedObject }
   | { kind: 'restoreObject'; object: PlacedObject; index: number }
   /** The houses and every bot's control state, as they were (house commands). */
-  | { kind: 'town'; houses: HouseDef[]; bots: { id: string; state: BotControlState }[] };
+  | { kind: 'town'; houses: HouseDef[]; bots: { id: string; state: BotControlState }[] }
+  /** The whole cast, as it was (adding, changing or removing a character). */
+  | { kind: 'cast'; bots: Bot[] };
 
 interface Entry {
   cmd: Command;
@@ -61,6 +63,10 @@ function capture(world: World, cmd: Command): Inverse | null {
       const o = world.objects.find((x) => x.id === cmd.id);
       return o ? { kind: 'moveObject', id: o.id, object: clone(o) } : null;
     }
+    case 'addBot':
+    case 'updateBot':
+    case 'removeBot':
+      return { kind: 'cast', bots: clone(world.bots) };
     case 'setHouse':
     case 'removeHouse':
     case 'housewarming':
@@ -98,6 +104,9 @@ function revert(world: World, inv: Inverse): void {
     }
     case 'restoreObject':
       world.objects.splice(Math.min(inv.index, world.objects.length), 0, clone(inv.object));
+      return;
+    case 'cast':
+      world.bots = clone(inv.bots);
       return;
     case 'town':
       world.houses = clone(inv.houses);

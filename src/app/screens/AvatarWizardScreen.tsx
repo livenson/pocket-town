@@ -37,7 +37,7 @@ import { PegPortrait } from '../../ui/PegPortrait';
 import { StepRail } from '../../ui/StepRail';
 import { useShowTextLabels } from '../../ui/labels';
 import { useVoiceLabel } from '../../ui/useVoiceLabel';
-import { finishCreation } from '../game';
+import { finishCreation, saveCharacter } from '../game';
 
 type StepId =
   | 'start'
@@ -265,7 +265,13 @@ export function AvatarWizardScreen() {
 
   const done = () => {
     playSfx('confirm');
-    void finishCreation().then(() => go('hooray'));
+    const target = useCreation.getState().target;
+    if (target.kind === 'newPlayer') {
+      void finishCreation().then(() => go('hooray'));
+      return;
+    }
+    saveCharacter();
+    back();
   };
 
   const stepDone = (id: StepId) => visited.has(id) && id !== step;

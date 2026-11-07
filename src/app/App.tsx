@@ -10,6 +10,7 @@ import type { ScreenId } from './machine';
 import { useCalmMotion, useLayoutMode } from './media';
 import { AgeScreen } from './screens/AgeScreen';
 import { AvatarWizardScreen } from './screens/AvatarWizardScreen';
+import { CharactersScreen } from './screens/CharactersScreen';
 import { HouseWizardScreen } from './screens/HouseWizardScreen';
 import { DiceAvatarScreen } from './screens/DiceAvatarScreen';
 import { HoorayScreen } from './screens/HoorayScreen';
@@ -19,11 +20,11 @@ import { HubScreen } from './screens/HubScreen';
 import { KitScreen } from './screens/KitScreen';
 import { MapScreen } from './screens/MapScreen';
 import { PhotoScreen } from './screens/PhotoScreen';
-import { PlaceholderScreen } from './screens/PlaceholderScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { SceneScreen } from './screens/SceneScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { SplashScreen } from './screens/SplashScreen';
+import { Postcard } from './Postcard';
 import { ShortcutsOverlay } from './ShortcutsOverlay';
 
 function renderScreen(screen: ScreenId): ReactElement {
@@ -56,10 +57,10 @@ function renderScreen(screen: ScreenId): ReactElement {
       return <PhotoScreen />;
     case 'avatarWizard':
       return <AvatarWizardScreen />;
+    case 'characters':
+      return <CharactersScreen />;
     case 'houseWizard':
       return <HouseWizardScreen />;
-    case 'characters':
-      return <PlaceholderScreen title={strings.screens[screen]} />;
   }
 }
 
@@ -98,6 +99,7 @@ export function App() {
         {renderScreen(screen)}
       </div>
       <ShortcutsOverlay />
+      <Postcard />
       <Toasts />
     </>
   );

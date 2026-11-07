@@ -131,3 +131,11 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 - **"My house" in the hub always starts a new house**; built houses appear below it and on the map. The pencil in a built house edits that house.
 - **Narrow screens** stack the wizards (steps along the top, picture, then options); the house picture sizes its own row so it can never cover the steps.
 - **Pixi's accessibility system is removed**: on touch devices it added a hidden "enable accessibility" button; the DOM target layer already provides accessible controls.
+
+## 2026-11-07: M7 hub, gallery, map and coming back
+
+- **Hub** shows the player's home (their character's house) as a live cut-away: each room with whoever is in it and what they are doing; tap a room to go in. The face top-left switches player. Built houses sit below the four tiles.
+- **My characters** pages through everyone in town. The dice adds a surprise character; "new" opens the avatar wizard for a new character; tapping a card opens change / copy / move house / hold-to-say-goodbye (not for your own character). All of it goes on the undo stack (the whole cast is remembered for these steps). The curated names leave out the starter cast's names so no two characters share one.
+- **World map** is drawn in the DOM: roads, pond, trees, each building with its own roof and icon, portrait pins for who is where (pins move along the road while travelling), a visitor flag with the guest's face on houses with a guest, a time-of-day dial, and the time controls.
+- **"While you were away"**: when a town is opened (or the app comes back from the background) more than 10 minutes after its last save, the town runs forward for the time away (one game hour per step, capped at two game days, 10 real minutes = 20 game hours) and a postcard shows 3–4 moments, preferring different characters and different kinds of thing (visiting, music, eating, sleeping, playing, chatting). It shows only once the player is in their town, closes itself after 8 s, and any tap skips it.
+- **Hold buttons** no longer cancel when a press starts: with pointer capture the browser sends "leave" events immediately, so sliding off is now checked by position. **Sheets** no longer move focus when their parent re-renders (that also cancelled holds). Both bugs would have hit children on touch screens.

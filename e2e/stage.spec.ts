@@ -42,7 +42,7 @@ test('the map leads into every building', async ({ page }) => {
     const mapButton = page.getByRole('button', { name: 'Map', exact: true });
     if (touch) await mapButton.tap();
     else await mapButton.click();
-    const building = page.getByRole('button', { name, exact: true });
+    const building = page.getByRole('button', { name: new RegExp(`^Go into ${name}`) }).first();
     if (touch) await building.tap();
     else await building.click();
     await expect(canvas(page)).toBeVisible();

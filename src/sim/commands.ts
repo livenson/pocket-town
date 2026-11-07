@@ -1,13 +1,16 @@
 // What the child can do to the world (docs/SIM.md → The child's influence ladder).
 // Every command is a plain object so it can be recorded, undone and replayed.
 import type { ActivityId } from '../content/activities';
+import type { Appearance } from '../content/appearance';
 import type { HouseDef } from '../content/house';
+import type { TraitId } from '../content/traits';
 import { giveEffects } from '../content/objects';
+import { findBuilding } from '../content/rooms';
 import { syncHouses } from './houses';
 import { tuning } from '../content/tuning';
 import { emit, startGoHome, startVisit } from './step';
 import type { Place, World } from './types';
-import { clampToFloor, getBot, routeTo } from './world';
+import { clampToFloor, entryRoom, getBot, makeBot, routeTo } from './world';
 
 export type Command =
   | { type: 'give'; botId: string; kind: string }
@@ -25,7 +28,24 @@ export type Command =
   | { type: 'removeHouse'; id: string }
   | { type: 'moveIn'; botId: string; houseId: string }
   /** Neighbours come round to see the new house. */
-  | { type: 'housewarming'; houseId: string };
+  | { type: 'housewarming'; houseId: string }
+  /** The characters gallery: a new character, a changed one, a goodbye. */
+  | {
+      type: 'addBot';
+      id: string;
+      name: string;
+      appearance: Appearance;
+      traits: [TraitId, TraitId, TraitId];
+      homeId: string;
+    }
+  | {
+      type: 'updateBot';
+      botId: string;
+      name: string;
+      appearance: Appearance;
+      traits: [TraitId, TraitId, TraitId];
+    }
+  | { type: 'removeBot'; botId: string };
 
 /** Apply a child command. Returns false when it does not apply (unknown bot, etc.). */
 export function apply(world: World, cmd: Command): boolean {
@@ -172,7 +192,7 @@ export function apply(world: World, cmd: Command): boolean {
     }
     case 'moveIn': {
       const bot = getBot(world, cmd.botId);
-      if (!bot || !world.houses.some((h) => h.id === cmd.houseId)) return false;
+      if (!bot || findBuilding(cmd.houseId)?.kind !== 'house') return false;
       bot.homeId = cmd.houseId;
       if (bot.mode === 'frozen') return true;
       bot.mode = 'auto';
@@ -188,6 +208,36 @@ export function apply(world: World, cmd: Command): boolean {
         .slice(0, 3);
       for (const g of guests) startVisit(world, g, cmd.houseId);
       return guests.length > 0;
+    }
+    case 'addBot': {
+      if (getBot(world, cmd.id)) return false;
+      const room = entryRoom(cmd.homeId);
+      world.bots.push(
+        makeBot(
+          {
+            id: cmd.id,
+            name: cmd.name,
+            appearance: cmd.appearance,
+            traits: cmd.traits,
+            homeId: cmd.homeId,
+          },
+          { buildingId: room.buildingId, roomId: room.id, x: 450, y: 470 },
+        ),
+      );
+      return true;
+    }
+    case 'updateBot': {
+      const bot = getBot(world, cmd.botId);
+      if (!bot) return false;
+      bot.name = cmd.name;
+      bot.appearance = structuredClone(cmd.appearance);
+      bot.traits = [...cmd.traits];
+      return true;
+    }
+    case 'removeBot': {
+      const before = world.bots.length;
+      world.bots = world.bots.filter((b) => b.id !== cmd.botId);
+      return world.bots.length < before;
     }
   }
 }

@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { initialNav, navigate, type NavEvent, type NavState, type ScreenId } from '../app/machine';
 import type { IconName } from '../design/icons';
+import type { Moment } from '../sim/away';
 
 export type TimeSpeed = 'pause' | 'play' | 'fast';
 
@@ -19,6 +20,9 @@ interface UiStore {
   /** The house open in the house wizard (null: building a new one). */
   editingHouseId: string | null;
   setEditingHouse: (id: string | null) => void;
+  /** "While you were away" moments to show, or null. */
+  postcard: Moment[] | null;
+  setPostcard: (moments: Moment[] | null) => void;
   time: TimeSpeed;
   shortcutsOpen: boolean;
   plusSheetOpen: boolean;
@@ -56,6 +60,8 @@ export const useUi = create<UiStore>()((set, get) => ({
   setRoom: (roomId) => set({ roomId }),
   editingHouseId: null,
   setEditingHouse: (editingHouseId) => set({ editingHouseId }),
+  postcard: null,
+  setPostcard: (postcard) => set({ postcard }),
   time: 'play',
   shortcutsOpen: false,
   plusSheetOpen: false,
