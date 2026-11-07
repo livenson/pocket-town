@@ -8,6 +8,7 @@ import { usePlay } from '../state/play';
 import { Carousel } from '../ui/Carousel';
 import { Icon } from '../ui/Icon';
 import { IconButton } from '../ui/IconButton';
+import { useShowTextLabels } from '../ui/labels';
 import { useVoiceLabel } from '../ui/useVoiceLabel';
 
 interface TileProps {
@@ -23,6 +24,7 @@ function ObjectTile({ id, label, icon, tint }: TileProps) {
   const carry = useCarrySource(id, { from: 'drawer' });
   const inHand = usePlay((s) => s.carrying?.kind === id && s.carrying.source.from === 'drawer');
   const hinted = useHints((s) => s.step === 'cake' && id === 'cake');
+  const words = useShowTextLabels();
   return (
     <button
       type="button"
@@ -36,6 +38,11 @@ function ObjectTile({ id, label, icon, tint }: TileProps) {
       onClickCapture={voice.onClickCapture}
     >
       <Icon name={icon} size={46} />
+      {words && (
+        <span className="object-tile__name" aria-hidden="true">
+          {label}
+        </span>
+      )}
     </button>
   );
 }

@@ -542,12 +542,27 @@ html[data-labels='false'] .toast {
 .object-tile {
   display: grid;
   place-items: center;
+  align-content: center;
+  gap: 2px;
   height: 92px;
   min-width: 64px;
   border-radius: 22px;
   color: var(--pt-ink);
   box-shadow: 0 5px 0 rgba(42, 22, 64, 0.15);
   transition: transform var(--pt-press-ms) var(--pt-ease);
+}
+
+/* The thing's name under its icon when text labels are on (ages 9 and up). */
+.object-tile__name {
+  max-width: 100%;
+  padding: 0 6px;
+  font-family: var(--pt-font-display);
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.05;
+  text-align: center;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .object-tile:active {
