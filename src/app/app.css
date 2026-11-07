@@ -3542,3 +3542,106 @@ html[data-layout='phone'] .dice-button--small {
 html[data-layout='phone'] .decor-toolbar {
   top: calc(var(--safe-top) + var(--icon-btn) + 16px);
 }
+
+/* ---------- Animals on the world map ---------- */
+
+.world-map__critters {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.critter {
+  position: absolute;
+  z-index: 15;
+  transform: translate(-50%, -80%);
+  transition-property: left, top;
+  transition-timing-function: linear;
+  pointer-events: none;
+}
+
+.critter__body {
+  display: grid;
+  place-items: center;
+  min-width: 56px;
+  min-height: 56px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.critter__body:focus-visible {
+  outline: 4px solid var(--pt-marigold);
+  outline-offset: 2px;
+}
+
+.critter__picture {
+  animation: critter-bob 0.9s ease-in-out infinite;
+  filter: drop-shadow(0 4px 0 rgba(42, 22, 64, 0.15));
+}
+
+.critter__picture[data-left] {
+  scale: -1 1;
+}
+
+.critter__picture[data-hop] {
+  animation:
+    critter-hop 0.5s var(--pt-ease),
+    critter-bob 0.9s 0.5s ease-in-out infinite;
+}
+
+.critter[data-id='bird'] .critter__picture,
+.critter[data-id='butterfly'] .critter__picture {
+  animation-duration: 0.45s;
+}
+
+@keyframes critter-bob {
+  50% {
+    translate: 0 -4px;
+  }
+}
+
+@keyframes critter-hop {
+  40% {
+    translate: 0 -26px;
+  }
+}
+
+.critter__bubble {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 220px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--pt-paper);
+  color: var(--pt-ink);
+  font: 800 16px/1.2 var(--pt-font-display);
+  text-align: center;
+  box-shadow: 0 4px 0 rgba(42, 22, 64, 0.18);
+  pointer-events: auto;
+}
+
+.critter__bubble--go {
+  background: var(--pt-marigold);
+  cursor: pointer;
+}
+
+html[data-calm='true'] .critter__picture {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .critter__picture {
+    animation: none !important;
+  }
+}

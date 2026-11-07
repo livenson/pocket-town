@@ -93,6 +93,13 @@ export const NAMES = [
   'glowing-star',
   'ribbon',
   'trophy',
+  // animals on the world map
+  'cat',
+  'dog',
+  'duck',
+  'bird',
+  'butterfly',
+  'hedgehog',
 ];
 
 const pkgDir = new URL('../node_modules/@iconify-json/fluent-emoji-flat/', import.meta.url);

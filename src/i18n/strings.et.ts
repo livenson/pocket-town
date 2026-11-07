@@ -124,6 +124,36 @@ export const et: Strings = {
     'park-pond': 'tiigiaed',
   },
 
+  critters: {
+    names: {
+      cat: 'Kass',
+      dog: 'Koer',
+      duck: 'Part',
+      bird: 'Lind',
+      butterfly: 'Liblikas',
+      hedgehog: 'Siil',
+    },
+    tap: (name: string) => `${name}: puuduta, et kuulda tema mõtet`,
+    go: (place: string) => `Mine sinna: ${place}`,
+    ideas: {
+      fastest: 'Mina olen linnas kõige kiirem!',
+      ducks: 'Mulle meeldivad pardid.',
+      clouds: 'See pilv näeb välja nagu kook!',
+      dance: 'Kas tantsime?',
+      nap: 'Ma tegin päikese käes lõunaund.',
+      hello: 'Tere! Tore sind näha!',
+      stick: 'Ma otsin oksa.',
+      secret: 'Ma tean saladust: siin on kõik toredad.',
+      cake: 'Kooki kohvikus?',
+      park: 'Lähme parki!',
+      story: 'Ma tahan raamatukogus lugu kuulata.',
+      music: 'Ma kuulsin muusikamajast muusikat!',
+      home: 'Lähme koju mängima.',
+      neighbours: 'Naabritel on uus köök!',
+      pond: 'Tiigiaias on kalad!',
+    },
+  },
+
   decorate: {
     start: 'Kujunda seda tuba',
     done: 'Valmis',

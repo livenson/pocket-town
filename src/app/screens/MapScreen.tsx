@@ -13,6 +13,7 @@ import { PegPortrait } from '../../ui/PegPortrait';
 import { useShowTextLabels } from '../../ui/labels';
 import { useVoiceLabel } from '../../ui/useVoiceLabel';
 import { game, useWorldTick } from '../game';
+import { MapCritters } from '../MapCritters';
 import { TimePill } from '../TimePill';
 
 const ICON: Record<BuildingKind, IconName> = {
@@ -193,6 +194,7 @@ export function MapScreen() {
         <span className="world-map__road world-map__road--v" />
       </div>
       <Decor world={world} />
+      <MapCritters />
       <div className="world-map__places">
         {buildings.map((b) => (
           <Building key={b.id} b={b} world={world} />

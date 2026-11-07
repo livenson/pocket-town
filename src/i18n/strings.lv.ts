@@ -126,6 +126,36 @@ export const lv: Strings = {
     'park-pond': 'dīķa dārzs',
   },
 
+  critters: {
+    names: {
+      cat: 'Kaķis',
+      dog: 'Suns',
+      duck: 'Pīle',
+      bird: 'Putns',
+      butterfly: 'Taurenis',
+      hedgehog: 'Ezis',
+    },
+    tap: (name: string) => `${name}: pieskaries, lai dzirdētu ideju`,
+    go: (place: string) => `Iet uz turieni: ${place}`,
+    ideas: {
+      fastest: 'Es esmu ātrākais pilsētā!',
+      ducks: 'Man patīk pīles.',
+      clouds: 'Tas mākonis izskatās pēc kūkas!',
+      dance: 'Vai padejosim?',
+      nap: 'Es pasnaudu saulītē.',
+      hello: 'Sveiks! Prieks tevi redzēt!',
+      stick: 'Es meklēju zariņu.',
+      secret: 'Es zinu noslēpumu: te visi ir jauki.',
+      cake: 'Kūka kafejnīcā?',
+      park: 'Ejam uz parku!',
+      story: 'Es gribu stāstu bibliotēkā.',
+      music: 'Es dzirdēju mūziku mūzikas namā!',
+      home: 'Ejam mājās spēlēties.',
+      neighbours: 'Kaimiņiem ir jauna virtuve!',
+      pond: 'Dīķa dārzā ir zivis!',
+    },
+  },
+
   decorate: {
     start: 'Iekārto šo istabu',
     done: 'Gatavs',

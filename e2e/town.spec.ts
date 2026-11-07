@@ -194,3 +194,13 @@ test('decorating: add a bed by tapping, turn it, take it away, and undo', async 
   await tap(page, b(page, 'Done decorating'));
   await expect(b(page, 'Decorate this room')).toBeVisible();
 });
+
+test('animals wander the map; tap one and it shares an idea', async ({ page }) => {
+  await page.goto('./#scene');
+  await tap(page, b(page, 'World'));
+  const animals = page.getByRole('button', { name: /: tap to hear its idea$/ });
+  await expect(animals).toHaveCount(6);
+  // The duck stays on the pond, out of everyone's way: tap it.
+  await page.getByRole('button', { name: 'Duck: tap to hear its idea' }).dispatchEvent('click');
+  await expect(page.locator('.critter__bubble')).toHaveCount(1);
+});

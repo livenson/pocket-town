@@ -126,6 +126,36 @@ export const en = {
     'park-pond': 'pond garden',
   } as Record<string, string>,
 
+  critters: {
+    names: {
+      cat: 'Cat',
+      dog: 'Dog',
+      duck: 'Duck',
+      bird: 'Bird',
+      butterfly: 'Butterfly',
+      hedgehog: 'Hedgehog',
+    } as Record<string, string>,
+    tap: (name: string) => `${name}: tap to hear its idea`,
+    go: (place: string) => `Go there: ${place}`,
+    ideas: {
+      fastest: "I'm the fastest in town!",
+      ducks: 'I like the ducks.',
+      clouds: 'That cloud looks like a cake!',
+      dance: 'Shall we dance?',
+      nap: 'I had a nap in the sun.',
+      hello: 'Hello! Nice to see you!',
+      stick: "I'm looking for a stick.",
+      secret: 'I know a secret: everyone here is nice.',
+      cake: 'Cake at the café?',
+      park: "Let's go to the park!",
+      story: 'I want a story at the library.',
+      music: 'I heard music in the music hall!',
+      home: "Let's go home and play.",
+      neighbours: 'The neighbours have a new kitchen!',
+      pond: 'The pond garden has fish!',
+    } as Record<string, string>,
+  },
+
   decorate: {
     start: 'Decorate this room',
     done: 'Done decorating',
