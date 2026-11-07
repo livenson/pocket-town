@@ -124,18 +124,20 @@
 }
 
 .text-label {
-  max-width: 140px;
-  padding: 2px 8px;
-  border-radius: 999px;
+  /* Words wrap onto two lines rather than overlap a neighbour or get cut off
+     (Estonian and Latvian words are often longer than English ones). */
+  width: max-content;
+  max-width: calc(var(--icon-btn) + 8px);
+  padding: 2px 6px;
+  border-radius: 10px;
   background: var(--pt-paper);
   color: var(--pt-ink);
   font-weight: 900;
-  font-size: 20px;
-  line-height: 1.15;
+  font-size: 15px;
+  line-height: 1.1;
   text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+  hyphens: auto;
   pointer-events: none;
 }
 

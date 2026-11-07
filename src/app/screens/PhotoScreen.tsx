@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { strings } from '../../i18n/strings.en';
+import { strings } from '../../i18n';
 import { deletePhoto, listPhotos, loadPhoto, type PhotoInfo } from '../../persist/photos';
 import { HoldButton } from '../../ui/HoldButton';
 import { Icon } from '../../ui/Icon';

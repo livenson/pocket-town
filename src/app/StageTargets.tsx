@@ -5,9 +5,8 @@ import type { MouseEvent } from 'react';
 import { game, useWorldTick } from './game';
 import { placeOn, useCarrySource } from '../input/carry';
 import { playSfx } from '../audio/audio';
-import { objectKinds } from '../content/objects';
 import { findRoom } from '../content/rooms';
-import { strings } from '../i18n/strings.en';
+import { strings, thingName } from '../i18n';
 import type { Bot, PlacedObject } from '../sim/types';
 import { usePlay } from '../state/play';
 import { useUi } from '../state/ui';
@@ -20,10 +19,7 @@ function BotTarget({ bot }: { bot: Bot }) {
   const selected = usePlay((s) => s.selectedBotId === bot.id);
   const openCard = usePlay((s) => s.openCard);
   const label = carrying
-    ? strings.giveTo(
-        objectKinds.find((o) => o.id === carrying.kind)?.label ?? carrying.kind,
-        bot.name,
-      )
+    ? strings.giveTo(thingName(carrying.kind), bot.name)
     : strings.botHere(bot.name, doingLabel(bot));
   const voice = useVoiceLabel(label);
   return (
@@ -51,9 +47,7 @@ function BotTarget({ bot }: { bot: Bot }) {
 
 function ObjectTarget({ object }: { object: PlacedObject }) {
   const carrying = usePlay((s) => s.carrying);
-  const label = strings.thingHere(
-    objectKinds.find((o) => o.id === object.kind)?.label ?? object.kind,
-  );
+  const label = strings.thingHere(thingName(object.kind));
   const carry = useCarrySource(object.kind, { from: 'object', objectId: object.id });
   const voice = useVoiceLabel(label);
   // While carrying something else, things on the floor are not targets.

@@ -1,7 +1,8 @@
-// All visible and spoken text lives here. Children never need to read it: every
-// label is also an icon, and is spoken on long-press (touch) or hover (desktop).
+// English: the reference language. Every other language must have the same keys
+// (the Strings type below makes TypeScript check that). Children never need to
+// read: every label is also an icon, and is spoken on long-press or hover.
 
-export const strings = {
+export const en = {
   appName: 'Pocket Town',
 
   // Shell and navigation
@@ -35,7 +36,7 @@ export const strings = {
 
   // Play stage
   floor: 'Floor',
-  floorSpot: ['Floor, left', 'Floor, middle', 'Floor, right'] as const,
+  floorSpot: ['Floor, left', 'Floor, middle', 'Floor, right'],
   frontDoor: 'Front door: go outside',
   doorTo: (room: string) => `Door to the ${room}`,
   carrying: (thing: string) => `Carrying ${thing}. Tap a glowing spot or a character.`,
@@ -164,6 +165,65 @@ export const strings = {
     hooray: (name: string) => `Hooray, ${name}!`,
     player: (name: string) => `Play as ${name}`,
   },
+  avatar: {
+    steps: {
+      start: 'Start',
+      body: 'Body',
+      face: 'Face',
+      hair: 'Hair',
+      clothes: 'Clothes',
+      accessories: 'Accessories',
+      colours: 'Colours',
+      personality: 'Personality',
+      name: 'Name',
+    } as Record<string, string>,
+    stepsLabel: 'Steps, any order',
+    surpriseStep: 'Surprise this step',
+    spin: 'Drag the stand to spin',
+    blank: 'Start plain',
+    dice: 'Surprise me',
+    copy: (name: string) => `Copy ${name}`,
+    shape: 'Shape',
+    shapes: { tall: 'Tall', mid: 'Middle', short: 'Short' } as Record<string, string>,
+    helpers: 'Helpers',
+    aids: {
+      none: 'No helper',
+      wheelchair: 'Wheelchair',
+      arm: 'Helper arm',
+      hearing: 'Hearing aid',
+    } as Record<string, string>,
+    skin: 'Skin',
+    skinTone: (n: number) => `Skin tone ${n}`,
+    mouth: 'Smile',
+    mouths: { smile: 'Smile', grin: 'Big grin', calm: 'Calm' } as Record<string, string>,
+    hairStyle: 'Hair style',
+    hairStyles: {
+      bob: 'Bob',
+      puff: 'Puff',
+      bun: 'Bun',
+      crop: 'Short crop',
+      none: 'No hair',
+    } as Record<string, string>,
+    hairColour: 'Hair colour',
+    pattern: 'Pattern',
+    patterns: { plain: 'Plain', stripes: 'Stripes', dots: 'Dots', collar: 'Collar' } as Record<
+      string,
+      string
+    >,
+    outfit: 'Clothes colour',
+    accessory: 'Accessory',
+    accessories: { none: 'Nothing', glasses: 'Glasses', bow: 'Bow', hat: 'Hat' } as Record<
+      string,
+      string
+    >,
+    accent: 'Extra colour',
+    colour: (n: number) => `Colour ${n}`,
+    traitsHelp: 'Pick three. They decide what your character likes to do.',
+    chosen: 'chosen',
+    rollName: 'Roll a name',
+    typeName: 'Type a name',
+    names: 'Names',
+  },
   hints: {
     plus: 'Tap the plus to find things',
     cake: 'Pick the cake',
@@ -231,49 +291,62 @@ export const strings = {
     ['Ctrl Shift Z', 'Redo'],
     ['Esc', 'Close'],
     ['?', 'Show shortcuts'],
-  ] as const,
-} as const;
+  ] as [string, string][],
 
-const ONES = [
-  'zero',
-  'one',
-  'two',
-  'three',
-  'four',
-  'five',
-  'six',
-  'seven',
-  'eight',
-  'nine',
-  'ten',
-  'eleven',
-  'twelve',
-  'thirteen',
-  'fourteen',
-  'fifteen',
-  'sixteen',
-  'seventeen',
-  'eighteen',
-  'nineteen',
-] as const;
-const TENS = [
-  '',
-  '',
-  'twenty',
-  'thirty',
-  'forty',
-  'fifty',
-  'sixty',
-  'seventy',
-  'eighty',
-  'ninety',
-] as const;
+  // Things in the drawer
+  objects: {
+    cake: 'Cake',
+    starCookie: 'Star cookie',
+    salad: 'Salad',
+    heartCandy: 'Heart candy',
+    dinner: 'Dinner plate',
+    ball: 'Ball',
+    blocks: 'Blocks',
+    pillow: 'Pillow',
+    musicBox: 'Music box',
+    drum: 'Drum',
+    storybook: 'Storybook',
+    pottedPlant: 'Potted plant',
+    tree: 'Little tree',
+  } as Record<string, string>,
+  traits: {
+    snacky: 'Snacky',
+    sleepy: 'Sleepy',
+    chatty: 'Chatty',
+    musical: 'Musical',
+    explorer: 'Explorer',
+    tidy: 'Tidy',
+    brave: 'Brave',
+    gardener: 'Gardener',
+    sporty: 'Sporty',
+    shy: 'Shy',
+  } as Record<string, string>,
+  buildings: {
+    home: 'My house',
+    neighbour: 'Neighbour house',
+    cafe: 'Café',
+    park: 'Park',
+    library: 'Library',
+    musicHall: 'Music hall',
+  } as Record<string, string>,
 
-/** 0–99 in English words, e.g. 47 → "forty-seven". */
-export function numberToWords(n: number): string {
-  if (!Number.isInteger(n) || n < 0 || n > 99) throw new RangeError(`Out of range: ${n}`);
-  if (n < 20) return ONES[n] ?? '';
-  const tens = TENS[Math.floor(n / 10)] ?? '';
-  const ones = n % 10;
-  return ones === 0 ? tens : `${tens}-${ONES[ones] ?? ''}`;
-}
+  // Language choice (grown-up area)
+  language: {
+    label: 'Language',
+    auto: 'Same as this device',
+    note: 'Voice-over needs a voice for this language on this device. Without one, it stays quiet.',
+  },
+};
+
+/** The shape every language follows: the same keys, any words. */
+type Widen<T> = T extends string
+  ? string
+  : T extends (...args: infer A) => string
+    ? (...args: A) => string
+    : T extends readonly (infer U)[]
+      ? Widen<U>[]
+      : T extends object
+        ? { [K in keyof T]: Widen<T[K]> }
+        : T;
+
+export type Strings = Widen<typeof en>;

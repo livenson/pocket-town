@@ -1,7 +1,7 @@
 import type { ChangeEvent } from 'react';
 import { playSfx } from '../../audio/audio';
 import type { IconName } from '../../design/icons';
-import { strings } from '../../i18n/strings.en';
+import { strings } from '../../i18n';
 import { useSettings, type BotEnergy, type Settings } from '../../state/settings';
 import { Icon } from '../../ui/Icon';
 import { useShowTextLabels } from '../../ui/labels';
@@ -12,21 +12,21 @@ import { ScreenFrame } from './ScreenFrame';
 const L = strings.settingsLabels;
 
 type VolumeKey = 'effectsVolume' | 'musicVolume' | 'voiceVolume';
-const VOLUMES: { key: VolumeKey; icon: IconName; label: string }[] = [
+const volumes = (): { key: VolumeKey; icon: IconName; label: string }[] => [
   { key: 'effectsVolume', icon: 'sparkle', label: L.effects },
   { key: 'musicVolume', icon: 'note', label: L.music },
   { key: 'voiceVolume', icon: 'talk', label: L.voice },
 ];
 
 type ToggleKey = 'voiceOver' | 'textLabels' | 'leftHanded' | 'calmMotion';
-const TOGGLES: { key: ToggleKey; icon: IconName; label: string }[] = [
+const toggles = (): { key: ToggleKey; icon: IconName; label: string }[] => [
   { key: 'voiceOver', icon: 'speaker', label: L.voiceOver },
   { key: 'textLabels', icon: 'tag', label: L.textLabels },
   { key: 'leftHanded', icon: 'hand', label: L.leftHanded },
   { key: 'calmMotion', icon: 'wave', label: L.calmMotion },
 ];
 
-const ENERGY: { value: BotEnergy; icon: IconName; label: string }[] = [
+const energies = (): { value: BotEnergy; icon: IconName; label: string }[] => [
   { value: 'lively', icon: 'sun', label: L.lively },
   { value: 'calm', icon: 'moon', label: L.calm },
   { value: 'paused', icon: 'pause', label: L.paused },
@@ -43,7 +43,7 @@ export function SettingsScreen() {
     <ScreenFrame title={strings.screens.settings} className="screen--settings">
       <div className="settings">
         <section className="settings__group">
-          {VOLUMES.map((v) => (
+          {volumes().map((v) => (
             <label key={v.key} className="settings__row">
               <span className="settings__icon" aria-hidden="true">
                 <Icon name={v.icon} />
@@ -67,7 +67,7 @@ export function SettingsScreen() {
           ))}
         </section>
         <section className="settings__group">
-          {TOGGLES.map((t) => (
+          {toggles().map((t) => (
             <div key={t.key} className="settings__row">
               <span className="settings__icon" aria-hidden="true">
                 <Icon name={t.icon} />
@@ -96,7 +96,7 @@ export function SettingsScreen() {
               </span>
             )}
             <div className="segmented" role="group" aria-label={L.botEnergy}>
-              {ENERGY.map((e) => (
+              {energies().map((e) => (
                 <IconButton
                   key={e.value}
                   icon={e.icon}

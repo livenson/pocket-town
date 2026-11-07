@@ -5,7 +5,7 @@ import { activityLook, nudgeIdeas, type ActivityId } from '../content/activities
 import { findRoom } from '../content/rooms';
 import { traits } from '../content/traits';
 import type { IconName } from '../design/icons';
-import { strings } from '../i18n/strings.en';
+import { strings, traitName } from '../i18n';
 import type { Bot } from '../sim/types';
 import { usePlay } from '../state/play';
 import { useUi } from '../state/ui';
@@ -184,10 +184,10 @@ function CardBody({ bot }: { bot: Bot }) {
                 role="listitem"
                 className="card-trait"
                 style={{ background: TRAIT_BG[t] }}
-                aria-label={traits[t].label}
+                aria-label={traitName(t)}
               >
                 <Icon name={traits[t].icon} size={28} />
-                {words && <span className="visually-hidden">{traits[t].label}</span>}
+                {words && <span className="visually-hidden">{traitName(t)}</span>}
               </span>
             ))}
           </div>

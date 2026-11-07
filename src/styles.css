@@ -30,6 +30,13 @@ html {
   text-size-adjust: 100%;
 }
 
+/* Baloo 2 has no proper glyphs for Latvian long vowels (ā ē ī ū): the macron lands
+   beside the letter. Nunito draws them correctly, so Latvian uses it for display. */
+html[lang='lv'] {
+  /* !important: the token variables are set inline on <html> at startup. */
+  --pt-font-display: Nunito, system-ui, sans-serif !important;
+}
+
 html[data-layout='phone'],
 html[data-layout='desktop'] {
   --icon-btn: 56px;

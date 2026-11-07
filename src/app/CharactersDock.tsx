@@ -1,6 +1,6 @@
 import { playSfx } from '../audio/audio';
 import { activityLook } from '../content/activities';
-import { strings } from '../i18n/strings.en';
+import { strings } from '../i18n';
 import type { Bot } from '../sim/types';
 import { usePlay } from '../state/play';
 import { useUi } from '../state/ui';

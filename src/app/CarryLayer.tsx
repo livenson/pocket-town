@@ -1,6 +1,6 @@
 import { dropCarried, putAwayCarried } from '../input/carry';
 import { objectKinds } from '../content/objects';
-import { strings } from '../i18n/strings.en';
+import { strings, thingName } from '../i18n';
 import { usePlay } from '../state/play';
 import { HoldButton } from '../ui/HoldButton';
 import { Icon } from '../ui/Icon';
@@ -23,7 +23,7 @@ export function CarryLayer() {
           <span className="carry-pill__hint" aria-hidden="true">
             <Icon name="hand" size={22} />
           </span>
-          <span className="visually-hidden">{strings.carrying(kind.label)}</span>
+          <span className="visually-hidden">{strings.carrying(thingName(kind.id))}</span>
           {carrying.source.from === 'object' && (
             <HoldButton label={strings.putAway} onConfirm={putAwayCarried} />
           )}

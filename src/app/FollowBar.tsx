@@ -1,6 +1,6 @@
 import { town, type BuildingKind } from '../content/rooms';
 import type { IconName } from '../design/icons';
-import { strings } from '../i18n/strings.en';
+import { buildingName, strings } from '../i18n';
 import { usePlay } from '../state/play';
 import { Icon } from '../ui/Icon';
 import { IconButton } from '../ui/IconButton';
@@ -37,7 +37,7 @@ export function FollowBar() {
               key={`${b}-${i}`}
               className="follow-bar__crumb"
               data-here={here || undefined}
-              aria-label={building?.name}
+              aria-label={buildingName(b)}
             >
               <Icon name={building ? ICON[building.kind] : 'house'} size={24} />
             </li>

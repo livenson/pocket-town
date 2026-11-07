@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { strings } from '../../i18n/strings.en';
+import { strings } from '../../i18n';
 import { usePlay } from '../../state/play';
 import { useSettings } from '../../state/settings';
 import { useUi } from '../../state/ui';

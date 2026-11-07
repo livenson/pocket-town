@@ -1,5 +1,5 @@
 import { useEffect, type ReactElement } from 'react';
-import { strings } from '../i18n/strings.en';
+import { applyLanguageSetting, currentLanguage, strings } from '../i18n';
 import { useKeyboardShortcuts } from '../input/shortcuts';
 import { useSettings } from '../state/settings';
 import { useUi } from '../state/ui';
@@ -73,13 +73,22 @@ function useDocumentAttributes(): void {
   }, [layout, calm, labels, leftHanded]);
 }
 
+/** Follow the language setting; re-render everything when it changes. */
+function useLanguage(): string {
+  const setting = useSettings((s) => s.language);
+  // Apply during render so this render already uses the right words.
+  applyLanguageSetting(setting);
+  return currentLanguage();
+}
+
 export function App() {
   const screen = useUi((s) => s.nav.screen);
+  const language = useLanguage();
   useDocumentAttributes();
   useKeyboardShortcuts();
   return (
     <>
-      <div key={screen} className="screen-transition" data-screen={screen}>
+      <div key={`${screen}:${language}`} className="screen-transition" data-screen={screen}>
         {renderScreen(screen)}
       </div>
       <ShortcutsOverlay />

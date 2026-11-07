@@ -3,7 +3,7 @@ import { activityLook } from '../content/activities';
 import { NEEDS, type NeedKey } from '../content/tuning';
 import type { IconName } from '../design/icons';
 import { color } from '../design/tokens';
-import { strings } from '../i18n/strings.en';
+import { strings } from '../i18n';
 import type { Bot } from '../sim/types';
 
 const C = strings.card;

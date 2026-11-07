@@ -2,7 +2,7 @@
 // They run once per player and never come back after the map is tapped.
 import { create } from 'zustand';
 import { speak } from '../audio/speech';
-import { strings } from '../i18n/strings.en';
+import { strings } from '../i18n';
 import { useProfiles } from '../state/profiles';
 
 export type HintStep = 'plus' | 'cake' | 'give' | 'fed' | 'map';

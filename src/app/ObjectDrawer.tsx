@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { categories, objectKinds, type ObjectCategory } from '../content/objects';
 import type { IconName } from '../design/icons';
-import { strings } from '../i18n/strings.en';
+import { strings, thingName } from '../i18n';
 import { useCarrySource } from '../input/carry';
 import { useHints } from './hints';
 import { usePlay } from '../state/play';
@@ -66,7 +66,7 @@ export function ObjectDrawer({ perPage, columns }: { perPage: number; columns?: 
         perPage={perPage}
         columns={columns}
         items={items.map((o) => (
-          <ObjectTile key={o.id} id={o.id} label={o.label} icon={o.icon} tint={o.tint} />
+          <ObjectTile key={o.id} id={o.id} label={thingName(o.id)} icon={o.icon} tint={o.tint} />
         ))}
       />
     </div>

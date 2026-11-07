@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, MouseEvent } from 'react';
 import { playSfx } from '../audio/audio';
 import type { SfxName } from '../audio/sfx';
 import type { IconName } from '../design/icons';
-import { strings } from '../i18n/strings.en';
+import { strings } from '../i18n';
 import { Icon } from './Icon';
 import { useShowTextLabels } from './labels';
 import { useVoiceLabel } from './useVoiceLabel';
@@ -20,12 +20,15 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   sound?: SfxName | null;
 }
 
-const DEFAULTS: Record<ButtonVariant, { icon?: IconName; label?: string; sound: SfxName }> = {
+const defaultsFor = (): Record<
+  ButtonVariant,
+  { icon?: IconName; label?: string; sound: SfxName }
+> => ({
   primary: { sound: 'tap' },
   secondary: { sound: 'tap' },
   dice: { icon: 'dice', label: strings.surpriseMe, sound: 'dice' },
   done: { icon: 'check', label: strings.done, sound: 'confirm' },
-};
+});
 
 /** Pressable "toy" button: solid bottom shadow that compresses when pressed. */
 export function Button({
@@ -38,7 +41,7 @@ export function Button({
   onClick,
   ...rest
 }: ButtonProps) {
-  const defaults = DEFAULTS[variant];
+  const defaults = defaultsFor()[variant];
   const name = label ?? defaults.label ?? '';
   const glyph = icon ?? defaults.icon;
   const textLabels = useShowTextLabels();

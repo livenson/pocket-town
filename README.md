@@ -6,7 +6,7 @@ characters live their own routines. No score, no goal, no way to lose.
 
 **Play it:** https://livenson.github.io/pocket-town/
 
-It runs in the browser on tablets, phones and desktops, installs as an app (PWA), and plays
+It speaks English, Estonian and Latvian (grown-ups choose in the grown-up area), and it runs in the browser on tablets, phones and desktops, installs as an app (PWA), and plays
 fully offline. Nothing leaves the device: no accounts, analytics, ads or third-party requests.
 
 ## Development

@@ -107,3 +107,15 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 - **Measured:** the e2e run reaches the map in 9–10 taps (target: under 15) and feeds the first friend in about 8 s of scripted play (target: under 60 s for an adult acting like a child).
 - **Landscape fit keeps the floor above the drawer.** On wide screens (16:9 laptops) "contain" put the characters' feet behind the object drawer; the room is now scaled so the floor line where characters stand (y ≈ 500) ends above the bottom docks, letterboxing the sides a little more.
 - **Without a GPU (or in automated test browsers) the stage draws at most 30 frames a second.** CI runners render WebGL in software, and drawing at full rate starved input handling. CI also runs e2e with 2 workers, a 60 s test timeout and 2 retries.
+
+## 2026-11-07: languages (English, Estonian, Latvian)
+
+- **One dictionary per language** in `src/i18n/strings.<lang>.ts`. English is the reference; the `Strings` type (derived from English) makes TypeScript reject a translation with a missing or extra key, and a unit test checks no label is empty. Phrases with names are small functions, so word order can differ per language.
+- **One live `strings` object.** Switching language deep-copies the new words into it, keeping nested objects' identity, so code holding `strings.card` stays current; the app re-renders on change. Content names (drawer things, traits, buildings) also come from the dictionary.
+- **Choosing:** grown-ups pick the language in the grown-up area (behind the gate). The default, "same as this device", follows the browser language (et → Estonian, lv → Latvian, anything else → English). `<html lang>` follows the choice.
+- **Parental gate numbers** are written in the chosen language (`src/i18n/numbers.ts`): "forty-seven", "nelikümmend seitse", "četrdesmit septiņi".
+- **Voice-over** uses an on-device voice for the chosen language and stays quiet when the device has none (rather than reading Estonian or Latvian with an English voice). Many iPads have no Estonian or Latvian voice; recorded voice can replace the Web Speech wrapper later.
+- **Latvian display font:** Baloo 2 lacks proper glyphs for ā ē ī ū (the macron lands beside the letter), so Latvian uses Nunito for display text too. Estonian letters render correctly in Baloo 2.
+- **Gender-neutral Latvian:** activities are verbs ("ēd", "guļ"), traits and moods are nouns ("Drosme", "Prieks"), so no label assumes a character's gender.
+- **Word labels wrap** onto two lines at the button's width instead of being cut off, since Estonian and Latvian words are often longer.
+- **The translations were written by Claude and need a native speaker's review** before children use them.

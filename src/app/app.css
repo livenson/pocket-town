@@ -612,6 +612,12 @@ html[data-layout='phone'] .hint-bubble {
   color: var(--pt-ink);
 }
 
+/* Word labels under the top buttons need room: hints and the carry pill sit lower. */
+html[data-labels='true'] .hint-bubble,
+html[data-labels='true'] .carry-pill {
+  margin-top: 44px;
+}
+
 .scene[data-carrying] .hint-bubble {
   top: calc(var(--safe-top) + var(--icon-btn) * 2 + 40px);
 }
@@ -1059,6 +1065,56 @@ html[data-layout='phone'] .gate__card {
   line-height: 1.5;
   text-align: center;
   user-select: text;
+}
+
+.grown-up__section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 24px;
+  background: var(--pt-paper);
+}
+
+.grown-up__heading {
+  margin: 0;
+  font-family: var(--pt-font-display);
+  font-weight: 800;
+  font-size: 22px;
+}
+
+.grown-up__note {
+  font-size: 14px !important;
+  color: var(--pt-muted-text);
+}
+
+.language-picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.language-choice {
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 4px 0 #e3b48f;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.language-choice[aria-pressed='true'] {
+  background: var(--pt-ink);
+  color: #fff;
+  box-shadow: 0 4px 0 #120a1c;
+}
+
+.language-choice[aria-pressed='true']::before {
+  content: '✓ ';
 }
 
 /* ---------- Settings ---------- */

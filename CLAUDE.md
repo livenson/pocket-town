@@ -59,7 +59,7 @@ src/
   audio/                ZzFX sounds, Pocketese voice, speech wrapper
   persist/              save schema, migrations, idb-keyval adapter, autosave
   content/              data: rooms, furniture, foods, traits, names (pure data)
-  i18n/                 strings.en.ts (all visible text lives here)
+  i18n/                 strings.en.ts (reference), strings.et.ts, strings.lv.ts; all visible text lives here
 tests/                  vitest unit tests mirroring src/
 e2e/                    playwright specs
 docs/                   brief, plan, design, sim spec, decisions
@@ -87,3 +87,4 @@ design-reference/       prototypes from the design canvas (read-only reference)
 - Keep `docs/PLAN.md` checkboxes up to date as tasks are completed.
 - Test on a real iPad and an Android tablet when possible (the owner will do this from the Pages URL). Design for Safari on iPadOS first; it is the strictest target.
 - Never commit secrets. There are none needed: this is a static site.
+- Every new visible or spoken word goes into all three dictionaries in `src/i18n/` (English, Estonian, Latvian); the `Strings` type fails the build when one is missing.

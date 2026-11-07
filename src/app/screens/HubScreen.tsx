@@ -1,6 +1,6 @@
 import { playSfx } from '../../audio/audio';
 import type { IconName } from '../../design/icons';
-import { strings } from '../../i18n/strings.en';
+import { strings } from '../../i18n';
 import { useUi } from '../../state/ui';
 import { Icon } from '../../ui/Icon';
 import { IconButton } from '../../ui/IconButton';
@@ -16,7 +16,7 @@ interface HubTile {
   locked?: boolean;
 }
 
-const TILES: HubTile[] = [
+const tiles = (): HubTile[] => [
   { icon: 'globe', label: strings.hub.world, tone: 'teal', to: 'map' },
   { icon: 'peg', label: strings.hub.myCharacters, tone: 'tomato', to: 'characters' },
   { icon: 'house', label: strings.hub.myHouse, tone: 'marigold', to: 'houseWizard' },
@@ -66,7 +66,7 @@ export function HubScreen() {
       }
     >
       <div className="hub-grid">
-        {TILES.map((t) => (
+        {tiles().map((t) => (
           <Tile key={t.label} tile={t} />
         ))}
       </div>

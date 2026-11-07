@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { playSfx } from '../audio/audio';
-import { strings } from '../i18n/strings.en';
+import { strings } from '../i18n';
 import { savePhoto } from '../persist/photos';
 import { usePlay } from '../state/play';
 import { useUi } from '../state/ui';

@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { strings } from '../../i18n/strings.en';
+import { strings } from '../../i18n';
 import { useUi } from '../../state/ui';
 import { IconButton } from '../../ui/IconButton';
 import { speak } from '../../audio/speech';

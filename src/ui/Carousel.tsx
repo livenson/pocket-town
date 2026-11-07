@@ -1,7 +1,7 @@
 import { useRef, useState, type ReactNode } from 'react';
 import type { PointerEvent } from 'react';
 import { playSfx } from '../audio/audio';
-import { strings } from '../i18n/strings.en';
+import { strings } from '../i18n';
 import { IconButton } from './IconButton';
 
 export interface CarouselProps {

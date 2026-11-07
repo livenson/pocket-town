@@ -3,6 +3,8 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { idbStorage } from '../persist/idbStorage';
 
+import type { Language } from '../i18n/languages';
+
 export type BotEnergy = 'lively' | 'calm' | 'paused';
 
 export interface Settings {
@@ -17,6 +19,8 @@ export interface Settings {
   leftHanded: boolean;
   calmMotion: boolean;
   botEnergy: BotEnergy;
+  /** 'auto' follows the device language. Set by grown-ups. */
+  language: Language | 'auto';
 }
 
 export const defaultSettings: Settings = {
@@ -28,6 +32,7 @@ export const defaultSettings: Settings = {
   leftHanded: false,
   calmMotion: false,
   botEnergy: 'lively',
+  language: 'auto',
 };
 
 interface SettingsStore extends Settings {

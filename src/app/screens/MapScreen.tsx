@@ -2,7 +2,7 @@ import { playSfx } from '../../audio/audio';
 import { town, type BuildingKind } from '../../content/rooms';
 import type { IconName } from '../../design/icons';
 import { useUi } from '../../state/ui';
-import { strings } from '../../i18n/strings.en';
+import { buildingName, strings } from '../../i18n';
 import { Icon } from '../../ui/Icon';
 import { useVoiceLabel } from '../../ui/useVoiceLabel';
 import { ScreenFrame } from './ScreenFrame';
@@ -55,7 +55,13 @@ export function MapScreen() {
     <ScreenFrame title={strings.screens.map}>
       <div className="map-grid">
         {town.map((b) => (
-          <BuildingButton key={b.id} id={b.id} name={b.name} kind={b.kind} roof={b.roofColor} />
+          <BuildingButton
+            key={b.id}
+            id={b.id}
+            name={buildingName(b.id)}
+            kind={b.kind}
+            roof={b.roofColor}
+          />
         ))}
       </div>
     </ScreenFrame>

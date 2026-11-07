@@ -1,8 +1,13 @@
-import { strings } from '../i18n/strings.en';
+import { strings } from '../i18n';
 import { useUi, type TimeSpeed } from '../state/ui';
 import { IconButton } from '../ui/IconButton';
 
-const OPTIONS: { speed: TimeSpeed; icon: 'pause' | 'play' | 'ff'; label: string; key: string }[] = [
+const options = (): {
+  speed: TimeSpeed;
+  icon: 'pause' | 'play' | 'ff';
+  label: string;
+  key: string;
+}[] => [
   { speed: 'pause', icon: 'pause', label: strings.pause, key: 'Space' },
   { speed: 'play', icon: 'play', label: strings.play, key: 'Space' },
   { speed: 'fast', icon: 'ff', label: strings.faster, key: 'F' },
@@ -14,7 +19,7 @@ export function TimePill() {
   const setTime = useUi((s) => s.setTime);
   return (
     <div className="time-pill" role="group" aria-label={strings.time}>
-      {OPTIONS.map((o) => (
+      {options().map((o) => (
         <IconButton
           key={o.speed}
           icon={o.icon}

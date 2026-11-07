@@ -1,6 +1,6 @@
 import { speak } from '../audio/speech';
 import type { IconName } from '../design/icons';
-import { strings } from '../i18n/strings.en';
+import { strings } from '../i18n';
 import { Icon } from '../ui/Icon';
 import { useShowTextLabels } from '../ui/labels';
 import { useHints, type HintStep } from './hints';

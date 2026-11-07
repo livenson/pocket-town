@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { playSfx } from '../../audio/audio';
 import { starterCast } from '../../content/characters';
-import { strings } from '../../i18n/strings.en';
+import { strings } from '../../i18n';
 import { useProfiles } from '../../state/profiles';
 import { useUi } from '../../state/ui';
 import { PegPortrait } from '../../ui/PegPortrait';

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { playSfx } from '../../audio/audio';
 import { speak } from '../../audio/speech';
-import { strings } from '../../i18n/strings.en';
+import { strings } from '../../i18n';
 import { useCreation } from '../../state/creation';
 import { useUi } from '../../state/ui';
 import { Icon } from '../../ui/Icon';

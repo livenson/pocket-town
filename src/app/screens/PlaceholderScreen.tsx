@@ -1,4 +1,4 @@
-import { strings } from '../../i18n/strings.en';
+import { strings } from '../../i18n';
 import { useUi } from '../../state/ui';
 import { Button } from '../../ui/Button';
 import { Icon } from '../../ui/Icon';

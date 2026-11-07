@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { IconName } from '../../design/icons';
-import { strings } from '../../i18n/strings.en';
+import { strings } from '../../i18n';
 import { useUi } from '../../state/ui';
 import { Button } from '../../ui/Button';
 import { Carousel } from '../../ui/Carousel';
