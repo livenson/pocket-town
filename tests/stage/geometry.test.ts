@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Appearance } from '../../src/content/appearance';
+import { bodyExtras, headExtras } from '../../src/stage/peg/extras';
 import { pegGeometry } from '../../src/stage/peg/geometry';
 
 const base: Appearance = {
@@ -7,7 +8,6 @@ const base: Appearance = {
   outfit: '#EF4B2F',
   hair: '#2A1640',
   hairStyle: 'bob',
-  aid: 'none',
 };
 
 describe('peg geometry (DESIGN.md → Peg-folk)', () => {
@@ -47,12 +47,35 @@ describe('peg geometry (DESIGN.md → Peg-folk)', () => {
     expect({ cap: g.cap !== null, locks: g.locks !== null, top: g.top !== null }).toEqual(expected);
   });
 
-  it('adds helpers: wheelchair widens the figure; hearing aid and arm', () => {
-    const wc = pegGeometry(150, { ...base, aid: 'wheelchair' });
-    expect(wc.wheelchair).not.toBeNull();
-    expect(wc.RW).toBeCloseTo(wc.W * 1.25);
-    expect(pegGeometry(150, { ...base, aid: 'hearing' }).hear).not.toBeNull();
-    expect(pegGeometry(150, { ...base, aid: 'arm' }).arm).not.toBeNull();
-    expect(pegGeometry(150, base).wheelchair).toBeNull();
+  it('animals get ears and a nose; people do not', () => {
+    const person = headExtras(pegGeometry(150, base), base).length;
+    for (const kind of ['cat', 'dog', 'bear', 'bunny', 'mouse'] as const) {
+      const a = { ...base, kind };
+      expect(headExtras(pegGeometry(150, a), a).length).toBeGreaterThan(person);
+    }
+  });
+
+  it('long hair reaches the shoulders; spikes and pigtails are extra shapes', () => {
+    const bob = pegGeometry(150, { ...base, hairStyle: 'bob' });
+    const long = pegGeometry(150, { ...base, hairStyle: 'long' });
+    expect(long.locks?.[0].h ?? 0).toBeGreaterThan(bob.locks?.[0].h ?? 0);
+    const plain = headExtras(pegGeometry(150, { ...base, hairStyle: 'crop' }), base).length;
+    for (const hairStyle of ['spiky', 'pigtails'] as const) {
+      const a = { ...base, hairStyle };
+      expect(headExtras(pegGeometry(150, a), a).length).toBeGreaterThan(plain);
+    }
+  });
+
+  it('draws every new pattern, accessory and freckles', () => {
+    for (const pattern of ['heart', 'star'] as const) {
+      const a = { ...base, pattern };
+      expect(bodyExtras(pegGeometry(150, a), a).length).toBeGreaterThan(0);
+    }
+    for (const accessory of ['headband', 'flower', 'crown'] as const) {
+      const a = { ...base, accessory };
+      expect(headExtras(pegGeometry(150, a), a).length).toBeGreaterThan(0);
+    }
+    const f = { ...base, freckles: true };
+    expect(headExtras(pegGeometry(150, f), f).length).toBe(6);
   });
 });

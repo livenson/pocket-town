@@ -7,7 +7,6 @@ describe('surprise me', () => {
     expect(look).toMatchObject({
       hairStyle: expect.any(String),
       skin: expect.stringMatching(/^#/),
-      aid: expect.any(String),
     });
   });
 

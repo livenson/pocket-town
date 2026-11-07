@@ -5,7 +5,7 @@ import { speak } from '../../audio/speech';
 import {
   shapeScale,
   type Accessory,
-  type Aid,
+  type Kind,
   type Appearance,
   type BodyShape,
   type HairStyle,
@@ -15,7 +15,7 @@ import {
 import { starterCast } from '../../content/characters';
 import {
   allTraits,
-  aids,
+  kinds,
   hairStyles,
   names,
   randomLook,
@@ -64,14 +64,8 @@ const STEPS: { id: StepId; icon: IconName }[] = [
 
 const SHAPES: BodyShape[] = ['tall', 'mid', 'short'];
 const MOUTHS: Mouth[] = ['smile', 'grin', 'calm'];
-const PATTERNS: Pattern[] = ['plain', 'stripes', 'dots', 'collar'];
-const ACCESSORIES: Accessory[] = ['none', 'glasses', 'bow', 'hat'];
-const AID_ICONS: Record<Aid, IconName> = {
-  none: 'close',
-  wheelchair: 'wheelchair',
-  arm: 'arm',
-  hearing: 'ear',
-};
+const PATTERNS: Pattern[] = ['plain', 'stripes', 'dots', 'collar', 'heart', 'star'];
+const ACCESSORIES: Accessory[] = ['none', 'glasses', 'bow', 'hat', 'headband', 'flower', 'crown'];
 const ACCENTS = ['#FFF8F0', ...outfitColors];
 function pick<T>(items: readonly T[], fallback: T): T {
   return items[Math.floor(Math.random() * items.length)] ?? fallback;
@@ -224,7 +218,7 @@ export function AvatarWizardScreen() {
         change({ appearance: r, name: randomName(draft.name), traits: randomTraits() });
         break;
       case 'body':
-        look({ shape: pick(SHAPES, 'mid'), aid: pick(aids, 'none'), skin: r.skin });
+        look({ shape: pick(SHAPES, 'mid'), kind: pick(kinds, 'person'), skin: r.skin });
         break;
       case 'face':
         look({ mouth: pick(MOUTHS, 'smile') });
@@ -294,7 +288,6 @@ export function AvatarWizardScreen() {
                       outfit: '#D9C3B0',
                       hair: hairColors[1],
                       hairStyle: 'crop',
-                      aid: 'none',
                     },
                   })
                 }
@@ -352,7 +345,6 @@ export function AvatarWizardScreen() {
                       hairStyle: 'none',
                       outfit: '#D9C3B0',
                       skin: '#C9AE97',
-                      aid: 'none',
                       accessory: 'none',
                       pattern: 'plain',
                     }}
@@ -361,15 +353,20 @@ export function AvatarWizardScreen() {
                 </Choice>
               ))}
             </Section>
-            <Section icon="sparkle" title={A.helpers}>
-              {(['none', 'wheelchair', 'arm', 'hearing'] as const).map((id) => (
+            <Section icon="peg" title={A.kind} columns={3}>
+              {kinds.map((k: Kind) => (
                 <Choice
-                  key={id}
-                  label={A.aids[id] ?? id}
-                  selected={a.aid === id}
-                  onPick={() => look({ aid: id })}
+                  key={k}
+                  label={A.kinds[k] ?? k}
+                  selected={(a.kind ?? 'person') === k}
+                  tall
+                  onPick={() => look({ kind: k })}
                 >
-                  <Icon name={AID_ICONS[id]} size={40} />
+                  <PegPortrait
+                    appearance={{ ...a, kind: k, accessory: 'none' }}
+                    size={96}
+                    crop="head"
+                  />
                 </Choice>
               ))}
             </Section>
@@ -385,19 +382,34 @@ export function AvatarWizardScreen() {
         );
       case 'face':
         return (
-          <Section icon="face" title={A.mouth} columns={3}>
-            {MOUTHS.map((m) => (
-              <Choice
-                key={m}
-                label={A.mouths[m] ?? m}
-                selected={(a.mouth ?? 'smile') === m}
-                tall
-                onPick={() => look({ mouth: m })}
-              >
-                <PegPortrait appearance={{ ...a, mouth: m }} size={110} crop="head" />
-              </Choice>
-            ))}
-          </Section>
+          <>
+            <Section icon="face" title={A.mouth} columns={3}>
+              {MOUTHS.map((m) => (
+                <Choice
+                  key={m}
+                  label={A.mouths[m] ?? m}
+                  selected={(a.mouth ?? 'smile') === m}
+                  tall
+                  onPick={() => look({ mouth: m })}
+                >
+                  <PegPortrait appearance={{ ...a, mouth: m }} size={110} crop="head" />
+                </Choice>
+              ))}
+            </Section>
+            <Section icon="face" title={A.cheeks} columns={3}>
+              {[false, true].map((f) => (
+                <Choice
+                  key={String(f)}
+                  label={f ? A.freckles : A.noFreckles}
+                  selected={(a.freckles ?? false) === f}
+                  tall
+                  onPick={() => look({ freckles: f })}
+                >
+                  <PegPortrait appearance={{ ...a, freckles: f }} size={110} crop="head" />
+                </Choice>
+              ))}
+            </Section>
+          </>
         );
       case 'hair':
         return (

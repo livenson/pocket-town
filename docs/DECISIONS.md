@@ -148,3 +148,9 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 - **Words**: the tool's spoken prompts are in en, et and lv, but in a dev-only dictionary (`src/dev/feedback/strings.ts`) rather than the game's, so they don't ship.
 - **Dev dependencies**: `html-to-image`, to take a screenshot of the DOM (with the WebGL stage's current frame swapped in as an image), and `@vitejs/plugin-basic-ssl`, because tablets only allow the microphone over https. Both are dev-only and never bundled.
 - **Safety in the loop**: one change at a time. `take` needs a clean working tree, so the change being proposed is the only thing in it. New feedback waits while a change is in flight.
+
+## 2026-11-07: Avatar options: animals in, helpers out (owner's call)
+
+- **Removed: wheelchair, hearing aid and prosthetic arm** (the "Helpers" choice in the body step), at the owner's request after play-testing. This overrides the line in `docs/BRIEF.md` that lists them. Saves that still have an `aid` value simply draw without it. Lumo, Nella and Tavi in the starter cast no longer have one.
+- **Added: person or animal** in the body step: cat, dog, bear, bunny or mouse. Same peg body; ears, nose and whiskers come from the shared extras shapes, so the portraits and the play stage match. The skin colour is the fur. The dice picks an animal about half the time.
+- **Added: more looks.** Hair: long, spiky, pigtails. Clothes: heart and star badges. Accessories: headband, flower, crown. Face: freckles (dark on light skin, light on dark skin, so they always show).

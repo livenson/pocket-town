@@ -1,7 +1,7 @@
 // Draw a peg-folk character into a Graphics, following design-reference/Peg.dc.html.
 import { Graphics } from 'pixi.js';
 import { color } from '../../design/tokens';
-import { ellipseBox, ellipticalRect, hex, pctCorners } from '../draw';
+import { ellipseBox, ellipticalRect, hex } from '../draw';
 import type { Appearance, Box, Eyes, PegGeometry } from './geometry';
 import { pegGeometry } from './geometry';
 import { bodyExtras, headExtras, mouthPrims, type Prim } from './extras';
@@ -16,11 +16,8 @@ export function drawPeg(
   const geo = pegGeometry(size, a, eyes);
   const g = new Graphics();
   const { W, d, body, bodyCorners } = geo;
-  const thin = Math.max(1.5, d * 0.03);
-  const wc = geo.wheelchair;
 
-  // Behind the body: wheelchair push handle, hair puff or bun.
-  if (wc) g.roundRect(wc.handle.x, wc.handle.y, wc.handle.w, wc.handle.h, size * 0.03).fill(INK);
+  // Behind the body: hair puff or bun.
   if (geo.top) ellipseBox(g, geo.top).fill(hex(a.hair));
 
   // Body (felt outfit) with a light inset on the left and a darker one on the right.
@@ -34,23 +31,6 @@ export function drawPeg(
     alpha: 0.22,
   });
   drawPrims(g, bodyExtras(geo, a));
-
-  if (geo.arm) {
-    ellipticalRect(g, geo.arm, pctCorners(geo.arm, 0.45, 0.2))
-      .fill(0xa9b3c6)
-      .stroke({ width: thin, color: INK });
-  }
-
-  if (wc) {
-    const r = wc.wheel.w / 2;
-    const cx = wc.wheel.x + r;
-    const cy = wc.wheel.y + r;
-    g.circle(cx, cy, r - wc.wheelBorder / 2)
-      .fill({ color: 0xffffff, alpha: 0.28 })
-      .stroke({ width: wc.wheelBorder, color: INK });
-    ellipseBox(g, wc.hub).fill(INK);
-    ellipseBox(g, wc.caster).fill(INK);
-  }
 
   // Head with a soft shade at the bottom-right.
   const hr = d / 2;
@@ -84,12 +64,6 @@ export function drawPeg(
   if (mouth) drawPrims(g, mouth);
   else drawMouth(g, geo.mouth, geo.mouthShape, geo.lineWidth);
 
-  if (geo.hear) {
-    ellipticalRect(g, geo.hear, pctCorners(geo.hear, 0.4))
-      .fill(hex(color.teal))
-      .stroke({ width: thin, color: 0xffffff });
-  }
-
   drawPrims(g, headExtras(geo, a));
   return { g, geo };
 }
@@ -98,7 +72,7 @@ function drawPrims(g: Graphics, prims: Prim[]): void {
   for (const p of prims) {
     if (p.t === 'rect')
       g.roundRect(p.x, p.y, p.w, p.h, p.r).fill({ color: hex(p.fill), alpha: p.alpha ?? 1 });
-    else if (p.t === 'poly') g.poly(p.pts).fill(hex(p.fill));
+    else if (p.t === 'poly') g.poly(p.pts).fill({ color: hex(p.fill), alpha: p.alpha ?? 1 });
     else if (p.t === 'line')
       g.moveTo(p.x1, p.y1)
         .lineTo(p.x2, p.y2)

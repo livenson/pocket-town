@@ -71,7 +71,8 @@ function Prims({ prims }: { prims: Prim[] }) {
             />
           );
         }
-        if (p.t === 'poly') return <polygon key={i} points={p.pts.join(' ')} fill={p.fill} />;
+        if (p.t === 'poly')
+          return <polygon key={i} points={p.pts.join(' ')} fill={p.fill} opacity={p.alpha} />;
         if (p.t === 'line') {
           return (
             <line
@@ -123,8 +124,6 @@ export function PegPortrait({
   const H = 150;
   const g = pegGeometry(H, a, eyes);
   const ink = color.ink;
-  const thin = Math.max(1.5, g.d * 0.03);
-  const wc = g.wheelchair;
   const viewBox =
     crop === 'head' ? `${-8} ${-6} ${g.W + 16} ${g.W + 16}` : `${-4} ${-24} ${g.RW + 8} ${H + 28}`;
   const [vbW, vbH] = crop === 'head' ? [g.W + 16, g.W + 16] : [g.RW + 8, H + 28];
@@ -142,22 +141,12 @@ export function PegPortrait({
       focusable="false"
       className="peg-portrait"
     >
-      {wc && (
-        <rect
-          x={wc.handle.x}
-          y={wc.handle.y}
-          width={wc.handle.w}
-          height={wc.handle.h}
-          rx={H * 0.03}
-          fill={ink}
-        />
-      )}
       {g.top && <Ellipse b={g.top} fill={a.hair} />}
       <path d={ellipticalRectPath(g.body, g.bodyCorners)} fill={a.outfit} />
-      <clipPath id={`body-${a.outfit}-${a.aid}`}>
+      <clipPath id={`body-${a.outfit}-${a.kind ?? 'person'}`}>
         <path d={ellipticalRectPath(g.body, g.bodyCorners)} />
       </clipPath>
-      <g clipPath={`url(#body-${a.outfit}-${a.aid})`}>
+      <g clipPath={`url(#body-${a.outfit}-${a.kind ?? 'person'})`}>
         <rect x={0} y={g.body.y} width={g.W * 0.09} height={g.body.h} fill="#fff" opacity={0.2} />
         <rect
           x={g.W * 0.92}
@@ -178,28 +167,6 @@ export function PegPortrait({
         opacity={0.22}
       />
       <Prims prims={bodyExtras(g, a)} />
-      {g.arm && (
-        <path
-          d={ellipticalRectPath(g.arm, pct(g.arm, 0.45, 0.2))}
-          fill="#A9B3C6"
-          stroke={ink}
-          strokeWidth={thin}
-        />
-      )}
-      {wc && (
-        <>
-          <circle
-            cx={wc.wheel.x + wc.wheel.w / 2}
-            cy={wc.wheel.y + wc.wheel.w / 2}
-            r={wc.wheel.w / 2 - wc.wheelBorder / 2}
-            fill="rgba(255,255,255,.28)"
-            stroke={ink}
-            strokeWidth={wc.wheelBorder}
-          />
-          <Ellipse b={wc.hub} fill={ink} />
-          <Ellipse b={wc.caster} fill={ink} />
-        </>
-      )}
       <circle cx={hcx} cy={hcy} r={hr} fill={a.skin} />
       <clipPath id={`head-${a.skin}`}>
         <circle cx={hcx} cy={hcy} r={hr} />
@@ -256,14 +223,6 @@ export function PegPortrait({
         />
       )}
       <Prims prims={headExtras(g, a)} />
-      {g.hear && (
-        <path
-          d={ellipticalRectPath(g.hear, pct(g.hear, 0.4))}
-          fill={color.teal}
-          stroke="#fff"
-          strokeWidth={thin}
-        />
-      )}
     </svg>
   );
 }

@@ -21,13 +21,12 @@ describe('motion', () => {
     expect(maxCalm).toBeLessThan(max);
   });
 
-  it('walking hops and squashes on landing; calm motion removes hops; wheelchairs roll', () => {
-    expect(-walkPose(0.5, false, false).dy).toBeGreaterThan(8); // mid-air
-    const landing = walkPose(0.02, false, false);
+  it('walking hops and squashes on landing; calm motion removes hops', () => {
+    expect(-walkPose(0.5, false).dy).toBeGreaterThan(8); // mid-air
+    const landing = walkPose(0.02, false);
     expect(landing.scaleY).toBeLessThan(1); // squash
     expect(landing.scaleX).toBeGreaterThan(1);
-    expect(-walkPose(0.5, true, false).dy).toBeLessThan(1); // calm: no hop
-    expect(walkPose(0.5, false, true).dy).toBe(0); // rolls
+    expect(-walkPose(0.5, true).dy).toBeLessThan(1); // calm: no hop
   });
 
   it('a happy jump goes up and comes back down', () => {

@@ -2,7 +2,14 @@
 // numbers, no Pixi, so it can be unit-tested. Coordinates: origin top-left of the
 // peg's box; the feet are at y = H.
 
-import type { Appearance, Eyes } from '../../content/appearance';
+import type {
+  Accessory,
+  Appearance,
+  Eyes,
+  HairStyle,
+  Kind,
+  Pattern,
+} from '../../content/appearance';
 
 export type { Appearance, Eyes };
 
@@ -22,7 +29,7 @@ export interface Corners {
 export interface PegGeometry {
   H: number;
   W: number;
-  /** Full width including a wheelchair. */
+  /** Full width of the figure (the same as W). */
   RW: number;
   d: number;
   head: Box;
@@ -41,11 +48,11 @@ export interface PegGeometry {
   lineWidth: number;
   mouthStyle: 'smile' | 'grin' | 'calm';
   /** Stripes or dots across the body, and a collar. */
-  pattern: 'plain' | 'stripes' | 'dots' | 'collar';
-  accessory: 'none' | 'glasses' | 'bow' | 'hat';
-  hear: Box | null;
-  arm: Box | null;
-  wheelchair: { handle: Box; wheel: Box; wheelBorder: number; hub: Box; caster: Box } | null;
+  pattern: Pattern;
+  accessory: Accessory;
+  hairStyle: HairStyle;
+  freckles: boolean;
+  kind: Kind;
 }
 
 /** Elliptical corners from CSS percentages of the box size. */
@@ -86,13 +93,13 @@ export function pegGeometry(size: number, a: Appearance, eyes: Eyes = 'open'): P
     x: hx - d * 0.05,
     y: hy - d * 0.05,
     w: d * 1.1,
-    h: d * (st === 'crop' ? 0.34 : 0.44),
+    h: d * (st === 'crop' || st === 'spiky' ? 0.34 : 0.44),
   };
 
   return {
     H,
     W,
-    RW: a.aid === 'wheelchair' ? W * 1.25 : W,
+    RW: W,
     d,
     head: { x: hx, y: hy, w: d, h: d },
     body,
@@ -101,10 +108,20 @@ export function pegGeometry(size: number, a: Appearance, eyes: Eyes = 'open'): P
     cap: st === 'none' ? null : cap,
     capCorners: corners(cap, [0.5, 0.5, 0.3, 0.3], [0.82, 0.82, 0.22, 0.22]),
     locks:
-      st === 'bob'
+      st === 'bob' || st === 'long'
         ? [
-            { x: hx - d * 0.05, y: hy + d * 0.18, w: d * 0.2, h: d * 0.58 },
-            { x: hx + d * 0.85, y: hy + d * 0.18, w: d * 0.2, h: d * 0.58 },
+            {
+              x: hx - d * 0.05,
+              y: hy + d * 0.18,
+              w: d * 0.2,
+              h: d * (st === 'long' ? 0.98 : 0.58),
+            },
+            {
+              x: hx + d * 0.85,
+              y: hy + d * 0.18,
+              w: d * 0.2,
+              h: d * (st === 'long' ? 0.98 : 0.58),
+            },
           ]
         : null,
     top:
@@ -128,18 +145,8 @@ export function pegGeometry(size: number, a: Appearance, eyes: Eyes = 'open'): P
     mouthStyle: a.mouth ?? 'smile',
     pattern: a.pattern ?? 'plain',
     accessory: a.accessory ?? 'none',
-    hear:
-      a.aid === 'hearing' ? { x: hx - d * 0.06, y: hy + d * 0.44, w: d * 0.14, h: d * 0.22 } : null,
-    arm: a.aid === 'arm' ? { x: W * 0.02, y: by + bh * 0.22, w: W * 0.17, h: bh * 0.44 } : null,
-    wheelchair:
-      a.aid === 'wheelchair'
-        ? {
-            handle: { x: W * 0.84, y: by - bh * 0.08, w: H * 0.05, h: bh * 0.8 },
-            wheel: { x: W * 0.42, y: H * 0.53, w: H * 0.46, h: H * 0.46 },
-            wheelBorder: H * 0.05,
-            hub: { x: W * 0.42 + H * 0.2, y: H * 0.53 + H * 0.2, w: H * 0.06, h: H * 0.06 },
-            caster: { x: W * 0.02, y: H * 0.87, w: H * 0.12, h: H * 0.12 },
-          }
-        : null,
+    hairStyle: st,
+    freckles: a.freckles === true,
+    kind: a.kind ?? 'person',
   };
 }

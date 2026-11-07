@@ -40,17 +40,12 @@ export function idlePose(timeS: number, phase: number, calm: boolean): Pose {
 
 /**
  * Walking. `stepPhase` grows by one per hop. Each hop lifts the character and it
- * squashes as it lands. Calm motion glides without hops; wheelchairs roll.
+ * squashes as it lands. Calm motion glides without hops.
  */
-export function walkPose(stepPhase: number, calm: boolean, rolls: boolean): Pose {
-  if (calm || rolls) {
+export function walkPose(stepPhase: number, calm: boolean): Pose {
+  if (calm) {
     const s = Math.sin(stepPhase * Math.PI * 2);
-    return {
-      dy: rolls ? 0 : -Math.abs(s) * 0.8,
-      scaleX: 1,
-      scaleY: 1,
-      rotation: rolls ? 0 : s * 0.01,
-    };
+    return { dy: -Math.abs(s) * 0.8, scaleX: 1, scaleY: 1, rotation: s * 0.01 };
   }
   const p = stepPhase - Math.floor(stepPhase);
   const lift = Math.sin(p * Math.PI); // 0 → 1 → 0 over one hop

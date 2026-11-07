@@ -31,7 +31,6 @@ describe('the characters gallery', () => {
       outfit: '#EF4B2F',
       hair: '#2A1640',
       hairStyle: 'bob' as const,
-      aid: 'none' as const,
     };
     h.do(w, {
       type: 'addBot',

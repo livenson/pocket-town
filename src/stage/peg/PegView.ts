@@ -59,7 +59,7 @@ export class PegView extends Container {
 
   private drawArt(): Graphics {
     const { g, geo } = drawPeg(this.size, this.appearance, this.eyes);
-    // Feet at the origin, centred on the body (not the wheelchair).
+    // Feet at the origin, centred on the body.
     g.pivot.set(geo.W / 2, geo.H);
     // One texture per appearance and eye state: cheap to draw many characters.
     // High resolution so it stays crisp when the room is scaled up on big screens.
@@ -138,7 +138,6 @@ export class PegView extends Container {
   update(dtS: number, timeS: number, calm: boolean): void {
     this.tweens.update(dtS * 1000);
     let pose: Pose = restPose;
-    const rolls = this.appearance.aid === 'wheelchair';
 
     if (this.targetX !== null) {
       const dx = this.targetX - this.x;
@@ -153,11 +152,11 @@ export class PegView extends Container {
         this.facing = dir;
         this.x += dir * step;
         this.stepPhase += step * HOPS_PER_UNIT;
-        pose = walkPose(this.stepPhase, calm, rolls);
+        pose = walkPose(this.stepPhase, calm);
       }
     }
     if (this.targetX === null && this.walkingNow) {
-      pose = walkPose(this.stepPhase, calm, rolls);
+      pose = walkPose(this.stepPhase, calm);
     } else if (this.targetX === null) {
       if (this.activity === 'sleep') pose = sleepPose(timeS, this.phase, calm);
       else if (this.activity === 'dance') pose = dancePose(timeS, this.phase, calm);

@@ -543,7 +543,6 @@ export function HouseWizardScreen() {
                   outfit: '#EF4B2F',
                   hair: '#2A1640',
                   hairStyle: 'bob',
-                  aid: 'none',
                 }
               }
               size={110}

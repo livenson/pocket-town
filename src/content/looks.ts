@@ -1,11 +1,32 @@
 // Random looks and names for "surprise me" (the dice). Pure data and functions.
 import { hairColors, outfitColors, skinTones } from '../design/tokens';
-import type { Aid, Appearance, HairStyle } from './appearance';
+import type { Appearance, HairStyle, Kind } from './appearance';
 import type { TraitId } from './traits';
 
-export const hairStyles: HairStyle[] = ['bob', 'puff', 'bun', 'crop', 'none'];
-/** Helpers appear often enough to be ordinary, never as a special case. */
-export const aids: Aid[] = ['none', 'none', 'none', 'wheelchair', 'hearing', 'arm'];
+export const hairStyles: HairStyle[] = [
+  'bob',
+  'puff',
+  'bun',
+  'crop',
+  'long',
+  'spiky',
+  'pigtails',
+  'none',
+];
+/** Every kind of character: the dice picks an animal about half the time. */
+export const kinds: Kind[] = ['person', 'cat', 'dog', 'bear', 'bunny', 'mouse'];
+const rollKinds: Kind[] = [
+  'person',
+  'person',
+  'person',
+  'person',
+  'person',
+  'cat',
+  'dog',
+  'bear',
+  'bunny',
+  'mouse',
+];
 
 /** Curated names: short, easy to say, from no particular language. */
 /** Curated names: short, easy to say, from no particular language. The starter
@@ -63,7 +84,7 @@ export function randomLook(random: () => number = Math.random): Appearance {
     outfit: pickOne(outfitColors, random),
     skin: pickOne(skinTones, random),
     hair: pickOne(hairColors, random),
-    aid: pickOne(aids, random),
+    kind: pickOne(rollKinds, random),
   };
 }
 
