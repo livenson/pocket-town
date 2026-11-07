@@ -29,6 +29,8 @@ export type Command =
   | { type: 'moveIn'; botId: string; houseId: string }
   /** Neighbours come round to see the new house. */
   | { type: 'housewarming'; houseId: string }
+  /** A tree or the pond on the map, changed by the child. */
+  | { type: 'setDecor'; id: string; variant: number }
   /** The characters gallery: a new character, a changed one, a goodbye. */
   | {
       type: 'addBot';
@@ -197,6 +199,10 @@ export function apply(world: World, cmd: Command): boolean {
       if (bot.mode === 'frozen') return true;
       bot.mode = 'auto';
       startGoHome(world, bot, true);
+      return true;
+    }
+    case 'setDecor': {
+      world.decor = { ...world.decor, [cmd.id]: cmd.variant };
       return true;
     }
     case 'housewarming': {

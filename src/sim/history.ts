@@ -30,7 +30,8 @@ type Inverse =
   /** The houses and every bot's control state, as they were (house commands). */
   | { kind: 'town'; houses: HouseDef[]; bots: { id: string; state: BotControlState }[] }
   /** The whole cast, as it was (adding, changing or removing a character). */
-  | { kind: 'cast'; bots: Bot[] };
+  | { kind: 'cast'; bots: Bot[] }
+  | { kind: 'decor'; id: string; variant: number | undefined };
 
 interface Entry {
   cmd: Command;
@@ -75,6 +76,8 @@ function capture(world: World, cmd: Command): Inverse | null {
         houses: clone(world.houses),
         bots: world.bots.map((b) => ({ id: b.id, state: botState(b) })),
       };
+    case 'setDecor':
+      return { kind: 'decor', id: cmd.id, variant: world.decor?.[cmd.id] };
     case 'removeObject': {
       const index = world.objects.findIndex((x) => x.id === cmd.id);
       const o = world.objects[index];
@@ -108,6 +111,13 @@ function revert(world: World, inv: Inverse): void {
     case 'cast':
       world.bots = clone(inv.bots);
       return;
+    case 'decor': {
+      const decor = { ...world.decor };
+      if (inv.variant === undefined) delete decor[inv.id];
+      else decor[inv.id] = inv.variant;
+      world.decor = decor;
+      return;
+    }
     case 'town':
       world.houses = clone(inv.houses);
       for (const { id, state } of inv.bots) {

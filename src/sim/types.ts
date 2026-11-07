@@ -110,4 +110,6 @@ export interface World {
   nextEventSeq: number;
   /** Houses the child built in the house wizard. */
   houses: HouseDef[];
+  /** How the child changed the map's trees and pond: decoration id → variant. */
+  decor?: Record<string, number>;
 }

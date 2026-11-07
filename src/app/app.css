@@ -3053,6 +3053,9 @@ html[data-layout='phone'] .character-actions__houses {
   position: absolute;
   inset: calc(var(--safe-top) + var(--icon-btn) + 10px) var(--safe-right)
     calc(var(--safe-bottom) + var(--icon-btn) + 10px) var(--safe-left);
+  /* Spans the map but only its buildings and pins take taps, so the trees and
+     the pond below can be tapped too. */
+  pointer-events: none;
 }
 
 .world-map__road {
@@ -3081,19 +3084,94 @@ html[data-layout='phone'] .character-actions__houses {
   bottom: 2%;
   width: 20%;
   height: 22%;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
   background: var(--pt-water);
   box-shadow: inset 0 -10px 0 rgba(42, 22, 64, 0.1);
+  cursor: pointer;
+}
+
+/* Pond kinds: plain, ducks, lily pads, fountain. */
+.world-map__pond[data-variant='1'] {
+  background:
+    radial-gradient(circle at 35% 45%, var(--pt-marigold) 0 9px, transparent 10px),
+    radial-gradient(circle at 62% 55%, var(--pt-marigold) 0 7px, transparent 8px), var(--pt-water);
+}
+
+.world-map__pond[data-variant='2'] {
+  background:
+    radial-gradient(circle at 30% 40%, var(--pt-grass) 0 11px, transparent 12px),
+    radial-gradient(circle at 58% 62%, var(--pt-grass) 0 9px, transparent 10px),
+    radial-gradient(circle at 72% 35%, #ffa9c6 0 6px, transparent 7px), var(--pt-water);
+}
+
+.world-map__pond[data-variant='3'] {
+  background:
+    radial-gradient(circle at 50% 50%, #fff 0 8px, transparent 9px),
+    radial-gradient(
+      circle at 50% 50%,
+      transparent 0 18px,
+      rgba(255, 255, 255, 0.7) 19px 22px,
+      transparent 23px
+    ),
+    var(--pt-water);
+}
+
+.world-map__decor {
+  position: absolute;
+  inset: 0;
+}
+
+.world-map__places > * {
+  pointer-events: auto;
 }
 
 .world-map__tree {
   position: absolute;
   width: 56px;
   height: 56px;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
   background: var(--pt-tree);
   box-shadow: inset -6px -6px 0 rgba(42, 22, 64, 0.15);
   transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: transform var(--pt-press-ms) var(--pt-ease);
+}
+
+.world-map__tree:active {
+  transform: translate(-50%, -50%) scale(0.92);
+}
+
+.world-map__tree:focus-visible,
+.world-map__pond:focus-visible {
+  outline: 4px solid var(--pt-marigold);
+  outline-offset: 3px;
+}
+
+/* Tree kinds: round, pine, blossom, apple, autumn. */
+.world-map__tree[data-variant='1'] {
+  border-radius: 0;
+  background: #2f7d4a;
+  box-shadow: none;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.world-map__tree[data-variant='2'] {
+  background: #ffa9c6;
+}
+
+.world-map__tree[data-variant='3'] {
+  background:
+    radial-gradient(circle at 30% 35%, var(--pt-tomato) 0 5px, transparent 6px),
+    radial-gradient(circle at 65% 30%, var(--pt-tomato) 0 5px, transparent 6px),
+    radial-gradient(circle at 55% 65%, var(--pt-tomato) 0 5px, transparent 6px), var(--pt-tree);
+}
+
+.world-map__tree[data-variant='4'] {
+  background: #f08c2e;
 }
 
 .map-building {

@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { playSfx } from '../../audio/audio';
 import { allBuildings, type BuildingDef, type BuildingKind } from '../../content/rooms';
 import type { IconName } from '../../design/icons';
@@ -11,7 +12,7 @@ import { IconButton } from '../../ui/IconButton';
 import { PegPortrait } from '../../ui/PegPortrait';
 import { useShowTextLabels } from '../../ui/labels';
 import { useVoiceLabel } from '../../ui/useVoiceLabel';
-import { useWorldTick } from '../game';
+import { game, useWorldTick } from '../game';
 import { TimePill } from '../TimePill';
 
 const ICON: Record<BuildingKind, IconName> = {
@@ -106,6 +107,76 @@ function TimeDial({ minute }: { minute: number }) {
   );
 }
 
+const TREES: [number, number][] = [
+  [0.66, 0.66],
+  [0.72, 0.7],
+  [0.92, 0.64],
+  [0.06, 0.52],
+  [0.94, 0.36],
+];
+const TREE_KINDS = 5;
+const POND_KINDS = 4;
+
+/** The trees and the pond: tap one to change it (saved with the town, undoable). */
+function Decor({ world }: { world: World }) {
+  const change = (id: string, kinds: number) => {
+    playSfx('place');
+    game.do({ type: 'setDecor', id, variant: ((world.decor?.[id] ?? 0) + 1) % kinds });
+  };
+  const pond = world.decor?.pond ?? 0;
+  return (
+    <div className="world-map__decor">
+      <DecorButton
+        className="world-map__pond"
+        variant={pond}
+        label={strings.town.change(strings.town.pondKinds[pond] ?? '')}
+        onClick={() => change('pond', POND_KINDS)}
+      />
+      {TREES.map(([x, y], i) => {
+        const id = `tree-${i}`;
+        const v = world.decor?.[id] ?? 0;
+        return (
+          <DecorButton
+            key={id}
+            className="world-map__tree"
+            variant={v}
+            style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
+            label={strings.town.change(strings.town.treeKinds[v] ?? '')}
+            onClick={() => change(id, TREE_KINDS)}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function DecorButton({
+  className,
+  variant,
+  label,
+  style,
+  onClick,
+}: {
+  className: string;
+  variant: number;
+  label: string;
+  style?: CSSProperties;
+  onClick: () => void;
+}) {
+  const voice = useVoiceLabel(label);
+  return (
+    <button
+      type="button"
+      className={className}
+      data-variant={variant}
+      style={style}
+      aria-label={label}
+      {...voice}
+      onClick={onClick}
+    />
+  );
+}
+
 /** D1 world map: the town, who is where, and the time of day. Tap a building to go in. */
 export function MapScreen() {
   const world = useWorldTick(4);
@@ -120,21 +191,8 @@ export function MapScreen() {
       <div className="world-map__land" aria-hidden="true">
         <span className="world-map__road world-map__road--h" />
         <span className="world-map__road world-map__road--v" />
-        <span className="world-map__pond" />
-        {[
-          [0.66, 0.66],
-          [0.72, 0.7],
-          [0.92, 0.64],
-          [0.06, 0.52],
-          [0.94, 0.36],
-        ].map(([x, y], i) => (
-          <span
-            key={i}
-            className="world-map__tree"
-            style={{ left: `${(x ?? 0) * 100}%`, top: `${(y ?? 0) * 100}%` }}
-          />
-        ))}
       </div>
+      <Decor world={world} />
       <div className="world-map__places">
         {buildings.map((b) => (
           <Building key={b.id} b={b} world={world} />

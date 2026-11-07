@@ -79,3 +79,22 @@ describe('undo and redo', () => {
     expect(h.canRedo).toBe(false);
   });
 });
+
+describe('map decoration', () => {
+  it('changing a tree or the pond is saved in the world and undoes cleanly', () => {
+    const w = createWorld(5);
+    const h = new History();
+    expect(w.decor?.pond).toBeUndefined();
+    h.do(w, { type: 'setDecor', id: 'pond', variant: 1 });
+    h.do(w, { type: 'setDecor', id: 'pond', variant: 2 });
+    h.do(w, { type: 'setDecor', id: 'tree-0', variant: 3 });
+    expect(w.decor).toEqual({ pond: 2, 'tree-0': 3 });
+    h.undo(w);
+    h.undo(w);
+    expect(w.decor).toEqual({ pond: 1 });
+    h.undo(w);
+    expect(w.decor?.pond).toBeUndefined();
+    h.redo(w);
+    expect(w.decor).toEqual({ pond: 1 });
+  });
+});
