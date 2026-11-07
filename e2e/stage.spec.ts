@@ -39,7 +39,7 @@ test('the map leads into every building', async ({ page }) => {
   await expect(canvas(page)).toBeVisible();
   const touch = await page.evaluate(() => navigator.maxTouchPoints > 0);
   for (const name of ['Café', 'Park', 'Library', 'Music hall', 'Neighbour house', 'My house']) {
-    const mapButton = page.getByRole('button', { name: 'Map', exact: true });
+    const mapButton = page.getByRole('button', { name: 'World', exact: true });
     if (touch) await mapButton.tap();
     else await mapButton.click();
     const building = page.getByRole('button', { name: new RegExp(`^Go into ${name}`) }).first();

@@ -63,7 +63,7 @@ test('build a house from scratch through every step, undo three changes, housewa
   await expect(page.getByRole('group', { name: 'Time' })).toBeVisible();
 
   // The new house is on the map and in the hub.
-  await tap(page, b(page, 'Map'));
+  await tap(page, b(page, 'World'));
   await expect(page.getByRole('button', { name: /^Go into House 2/ })).toBeVisible();
   await tap(page, b(page, 'Home'));
   await expect(

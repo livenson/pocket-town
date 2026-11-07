@@ -97,7 +97,7 @@ export function SceneScreen() {
 
           <div className="dock dock--top-right">
             <IconButton
-              icon="map"
+              icon="globe"
               label={strings.map}
               shortcut="M"
               className={hintStep === 'map' ? 'hint-glow' : undefined}

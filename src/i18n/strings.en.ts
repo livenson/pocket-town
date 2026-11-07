@@ -10,7 +10,7 @@ export const en = {
   back: 'Back',
   undo: 'Undo',
   redo: 'Redo',
-  map: 'Map',
+  map: 'World',
   edit: 'Edit',
   camera: 'Photo',
   play: 'Play',
@@ -408,7 +408,7 @@ export const en = {
   // Keyboard shortcuts overlay
   shortcutList: [
     ['H', 'Home'],
-    ['M', 'Map'],
+    ['M', 'World'],
     ['E', 'Edit'],
     ['Space', 'Pause / play'],
     ['F', 'Faster'],

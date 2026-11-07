@@ -9,7 +9,7 @@ export const et: Strings = {
   back: 'Tagasi',
   undo: 'Võta tagasi',
   redo: 'Tee uuesti',
-  map: 'Kaart',
+  map: 'Maailm',
   edit: 'Muuda',
   camera: 'Foto',
   play: 'Mängi',
@@ -395,7 +395,7 @@ export const et: Strings = {
 
   shortcutList: [
     ['H', 'Kodu'],
-    ['M', 'Kaart'],
+    ['M', 'Maailm'],
     ['E', 'Muuda'],
     ['Tühik', 'Paus / mängi'],
     ['F', 'Kiiremini'],

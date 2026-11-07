@@ -38,7 +38,7 @@ test('first launch to first friend fed, in under 15 taps and 60 seconds', async 
   const fedAt = Date.now();
   await expect(hint).toHaveAccessibleName(/Now try the map/);
   await expect(page.locator('.hint-glow').first()).toBeVisible();
-  await tap(page, button(page, 'Map'));
+  await tap(page, button(page, 'World'));
   await expect(page.getByRole('img', { name: /^Time of day/ })).toBeVisible();
 
   expect(taps).toBeLessThan(15);

@@ -48,7 +48,7 @@ export function KitScreen() {
           <IconButton icon="home" label={strings.home} shortcut="H" />
           <IconButton icon="undo" label={strings.undo} shortcut="Ctrl Z" />
           <IconButton icon="redo" label={strings.redo} aria-disabled sound={null} />
-          <IconButton icon="map" label={strings.map} shortcut="M" />
+          <IconButton icon="globe" label={strings.map} shortcut="M" />
           <HoldButton
             label={strings.kit.holdToDelete}
             onConfirm={() => toast('trash', strings.kit.held)}

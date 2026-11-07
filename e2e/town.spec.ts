@@ -66,7 +66,7 @@ test('coming back after a while shows the postcard, which a tap skips; the town 
   await expect(postcard).toHaveCount(0);
   // The cake the child placed is still there; everyone is still in town.
   await expect(page.getByRole('button', { name: 'Cake, pick it up' })).toBeAttached();
-  await tap(page, b(page, 'Map'));
+  await tap(page, b(page, 'World'));
   await expect(page.getByRole('img', { name: /^Moku is / })).toBeAttached();
 });
 
@@ -86,7 +86,7 @@ test('a short break does not show the postcard', async ({ page }) => {
 
 test('the world map shows every building, who is where, and the time of day', async ({ page }) => {
   await page.goto('./#scene');
-  await tap(page, b(page, 'Map'));
+  await tap(page, b(page, 'World'));
   for (const place of ['My house', 'Neighbour house', 'Café', 'Park', 'Library', 'Music hall']) {
     await expect(
       b(page, `Go into ${place}`).or(b(page, new RegExp(`^Go into ${place}\\.`))),
@@ -131,7 +131,7 @@ test('a building on the map opens with a real press (finger down, a pause, up)',
   page,
 }) => {
   await page.goto('./#scene');
-  await tap(page, b(page, 'Map'));
+  await tap(page, b(page, 'World'));
   const cafe = b(page, 'Go into Café').or(b(page, /^Go into Café\./));
   const box = await cafe.boundingBox();
   if (!box) throw new Error('no café');

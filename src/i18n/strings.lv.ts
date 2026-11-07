@@ -11,7 +11,7 @@ export const lv: Strings = {
   back: 'Atpakaļ',
   undo: 'Atsaukt',
   redo: 'Atkārtot',
-  map: 'Karte',
+  map: 'Pasaule',
   edit: 'Mainīt',
   camera: 'Foto',
   play: 'Spēlēt',
@@ -397,7 +397,7 @@ export const lv: Strings = {
 
   shortcutList: [
     ['H', 'Mājas'],
-    ['M', 'Karte'],
+    ['M', 'Pasaule'],
     ['E', 'Mainīt'],
     ['Atstarpe', 'Pauze / spēlēt'],
     ['F', 'Ātrāk'],
