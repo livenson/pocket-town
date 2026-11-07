@@ -1,30 +1,37 @@
 import { useState } from 'react';
-import { playSfx } from '../audio/audio';
 import { categories, objectKinds, type ObjectCategory } from '../content/objects';
+import type { IconName } from '../design/icons';
 import { strings } from '../i18n/strings.en';
+import { useCarrySource } from '../input/carry';
+import { usePlay } from '../state/play';
 import { Carousel } from '../ui/Carousel';
 import { Icon } from '../ui/Icon';
 import { IconButton } from '../ui/IconButton';
 import { useVoiceLabel } from '../ui/useVoiceLabel';
 
-function ObjectTile({
-  label,
-  icon,
-  tint,
-}: {
+interface TileProps {
+  id: string;
   label: string;
-  icon: Parameters<typeof Icon>[0]['name'];
+  icon: IconName;
   tint: string;
-}) {
+}
+
+/** A thing in the drawer: drag it out, or tap to pick it up (it rides on a marigold halo). */
+function ObjectTile({ id, label, icon, tint }: TileProps) {
   const voice = useVoiceLabel(label);
+  const carry = useCarrySource(id, { from: 'drawer' });
+  const inHand = usePlay((s) => s.carrying?.kind === id && s.carrying.source.from === 'drawer');
   return (
     <button
       type="button"
       className="object-tile"
       style={{ background: tint }}
       aria-label={label}
+      aria-pressed={inHand}
+      data-kind={id}
       {...voice}
-      onClick={() => playSfx('tap')}
+      {...carry}
+      onClickCapture={voice.onClickCapture}
     >
       <Icon name={icon} size={46} />
     </button>
@@ -57,7 +64,7 @@ export function ObjectDrawer({ perPage, columns }: { perPage: number; columns?: 
         perPage={perPage}
         columns={columns}
         items={items.map((o) => (
-          <ObjectTile key={o.id} label={o.label} icon={o.icon} tint={o.tint} />
+          <ObjectTile key={o.id} id={o.id} label={o.label} icon={o.icon} tint={o.tint} />
         ))}
       />
     </div>

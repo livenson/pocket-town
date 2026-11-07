@@ -13,6 +13,7 @@ import { GrownUpScreen } from './screens/GrownUpScreen';
 import { HubScreen } from './screens/HubScreen';
 import { KitScreen } from './screens/KitScreen';
 import { MapScreen } from './screens/MapScreen';
+import { PhotoScreen } from './screens/PhotoScreen';
 import { PlaceholderScreen } from './screens/PlaceholderScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { SceneScreen } from './screens/SceneScreen';
@@ -42,10 +43,11 @@ function renderScreen(screen: ScreenId): ReactElement {
       return <SettingsScreen />;
     case 'kit':
       return <KitScreen />;
+    case 'photo':
+      return <PhotoScreen />;
     case 'avatarWizard':
     case 'houseWizard':
     case 'characters':
-    case 'photo':
       return <PlaceholderScreen title={strings.screens[screen]} />;
   }
 }

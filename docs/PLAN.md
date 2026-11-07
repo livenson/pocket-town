@@ -82,18 +82,18 @@ Acceptance: leave the starter house running for 10 minutes; every bot shows a se
 
 Goal: the core loop. This is the vertical slice to test with children.
 
-- [ ] Pick-and-place controller (`src/input/`): pointer drag with a ghost preview, and tap-to-pick → tap-to-place. While carrying, valid targets glow teal; invalid ones show a red cross badge (never colour alone). Keyboard: arrows move a focus ring between targets, Enter places, Escape drops.
-- [ ] Object drawer (D4): category tabs (food, toys, music, books, plants), paged carousel; on phone portrait it lives in the "+" sheet.
-- [ ] Give an object to a bot: drop on the bot → it reacts (eats, plays, reads) immediately, satisfying the matching need, with hearts rising.
-- [ ] Place an object in the room: snaps to the floor line; becomes an advertisement for bots (food on a plate is never used up; see `SIM.md`).
-- [ ] Bot detail card (D3): portrait, mood face, 3 trait badges, NOW icon with progress ring → NEXT icon, and actions Follow, Call here, Nudge (6 ideas: eat, nap, play ball, read, chat, tidy), Take control, Freeze, Send home. Tablet: right-side panel; phone: bottom sheet; desktop: panel, opened with Enter on the focused bot.
-- [ ] Characters dock (left): portraits of bots in the current room; tap to select, long-press to open the card.
-- [ ] Follow-cam (D5): camera follows the bot across rooms and map; breadcrumb of places; stop button.
-- [ ] Take control: the bot follows taps/drags; autonomy paused until released or the card is closed.
-- [ ] Undo/redo (command pattern) covering everything the child does: placing, moving and removing objects; nudges; calls; giving objects; freeze/unfreeze. At least 50 steps. Bots' autonomous actions are not on the undo stack.
-- [ ] Autosave: debounced 1 s after any change, on `visibilitychange` and `pagehide`; versioned schema; corrupted saves fall back to the last good copy (keep two slots).
-- [ ] Photo (D7): snapshot of the stage (`renderer.extract`) saved to IndexedDB; a small on-device album. No sharing.
-- [ ] Sound: ZzFX effects for tap, pick, place, invalid, eat, sleep, doorbell, happy; "Pocketese" voice (see `DESIGN.md` → "Sound").
+- [x] Pick-and-place controller (`src/input/`): pointer drag with a ghost preview, and tap-to-pick → tap-to-place. While carrying, valid targets glow teal; invalid ones show a red cross badge (never colour alone). Keyboard: arrows move a focus ring between targets, Enter places, Escape drops.
+- [x] Object drawer (D4): category tabs (food, toys, music, books, plants), paged carousel; on phone portrait it lives in the "+" sheet.
+- [x] Give an object to a bot: drop on the bot → it reacts (eats, plays, reads) immediately, satisfying the matching need, with hearts rising.
+- [x] Place an object in the room: snaps to the floor line; becomes an advertisement for bots (food on a plate is never used up; see `SIM.md`).
+- [x] Bot detail card (D3): portrait, mood face, 3 trait badges, NOW icon with progress ring → NEXT icon, and actions Follow, Call here, Nudge (6 ideas: eat, nap, play ball, read, chat, tidy), Take control, Freeze, Send home. Tablet: right-side panel; phone: bottom sheet; desktop: panel, opened with Enter on the focused bot.
+- [x] Characters dock (left): portraits of bots in the current room; tap to select, long-press to open the card.
+- [x] Follow-cam (D5): camera follows the bot across rooms and map; breadcrumb of places; stop button.
+- [x] Take control: the bot follows taps/drags; autonomy paused until released or the card is closed.
+- [x] Undo/redo (command pattern) covering everything the child does: placing, moving and removing objects; nudges; calls; giving objects; freeze/unfreeze. At least 50 steps. Bots' autonomous actions are not on the undo stack.
+- [x] Autosave: debounced 1 s after any change, on `visibilitychange` and `pagehide`; versioned schema; corrupted saves fall back to the last good copy (keep two slots).
+- [x] Photo (D7): snapshot of the stage (`renderer.extract`) saved to IndexedDB; a small on-device album. No sharing.
+- [x] Sound: ZzFX effects for tap, pick, place, invalid, eat, sleep, doorbell, happy; "Pocketese" voice (see `DESIGN.md` → "Sound").
 
 Acceptance: e2e: open the drawer, give cake to a bot (by drag and by tap-tap), undo it, redo it, reload the page and find the same state. Manual: a 6-year-old completes this without help.
 

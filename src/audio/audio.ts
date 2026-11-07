@@ -14,9 +14,17 @@ function context(): AudioContext {
   return ZZFX.audioContext;
 }
 
+/** Audio can only start once the person has tapped, clicked or pressed a key. */
+function mayStart(): boolean {
+  const activation = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } })
+    .userActivation;
+  return activation?.hasBeenActive ?? true;
+}
+
 function unlock(): void {
   const ctx = context();
   if (ctx.state !== 'running') {
+    if (!mayStart()) return;
     void ctx.resume();
     // Playing a one-sample silent buffer inside the gesture is what older iOS
     // versions need before they will let later sounds through.
@@ -52,7 +60,7 @@ export function installAudioUnlock(target: Window = window): void {
 /** Play a named sound effect. Never throws: sound is a nice-to-have, not a requirement. */
 export function playSfx(name: SfxName): void {
   const volume = useSettings.getState().effectsVolume;
-  if (volume <= 0) return;
+  if (volume <= 0 || (context().state !== 'running' && !mayStart())) return;
   try {
     unlock();
     ZZFX.volume = BASE_VOLUME * volume;
@@ -68,7 +76,7 @@ export function playSfx(name: SfxName): void {
  */
 export function speakPocketese(basePitch: number, syllables = 2): void {
   const volume = useSettings.getState().effectsVolume;
-  if (volume <= 0) return;
+  if (volume <= 0 || (context().state !== 'running' && !mayStart())) return;
   try {
     unlock();
     ZZFX.volume = BASE_VOLUME * volume;

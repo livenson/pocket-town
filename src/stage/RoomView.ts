@@ -1,13 +1,13 @@
 // A room in logical units (900 × 560): wall, floor band, skirting, and furniture.
 // Characters and standing furniture share one depth-sorted layer.
-import { Container, Graphics, Rectangle } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 import {
   furnitureKinds,
   type FurnitureKind,
   type FurnitureInstance,
   type Shape,
 } from '../content/furniture';
-import type { DoorDef, RoomDef } from '../content/rooms';
+import type { RoomDef } from '../content/rooms';
 import type { Daylight } from './daylight';
 import { color, stage } from '../design/tokens';
 import { ellipticalRect, hex } from './draw';
@@ -73,8 +73,6 @@ export class RoomView extends Container {
   private readonly moons: Graphics[] = [];
   private readonly clouds: Graphics[] = [];
   private sky: Graphics | null = null;
-  /** Called when the child taps a door. */
-  onDoor: ((door: DoorDef) => void) | null = null;
 
   constructor(def: RoomDef) {
     super();
@@ -152,7 +150,6 @@ export class RoomView extends Container {
     const g: Container = kind.id === 'window' ? this.drawWindow(f, kind) : drawFurniture(kind);
     if (kind.id !== 'window') g.position.set(f.x, f.y);
     g.label = `furniture:${f.id}`;
-    if (kind.id === 'door') this.makeDoor(g, f, kind);
     if (kind.layer === 'wall') this.wallLayer.addChild(g);
     else if (kind.layer === 'floor') this.floorLayer.addChild(g);
     else {
@@ -160,16 +157,6 @@ export class RoomView extends Container {
       this.actors.addChild(g);
     }
     return g;
-  }
-
-  private makeDoor(g: Container, f: FurnitureInstance, kind: FurnitureKind): void {
-    const centre = f.x + kind.w / 2;
-    const door = this.def.doors.find((d) => Math.abs(d.x - centre) < 4);
-    if (!door) return;
-    g.eventMode = 'static';
-    g.cursor = 'pointer';
-    g.hitArea = new Rectangle(0, 0, kind.w, kind.h + 40);
-    g.on('pointertap', () => this.onDoor?.(door));
   }
 
   setDaylight(light: Daylight): void {

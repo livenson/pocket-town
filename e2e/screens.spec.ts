@@ -78,14 +78,15 @@ test('every screen is reachable and passes axe (WCAG 2.1 AA)', async ({ page }) 
   await press(page, 'Pause');
   await expect(page.getByRole('button', { name: 'Pause' })).toHaveAttribute('aria-pressed', 'true');
 
-  for (const [button, title] of [
-    ['Photo', 'Photos'],
-    ['Edit', 'My house'],
-  ] as const) {
-    await press(page, button);
-    await expect(page.getByRole('heading', { name: title })).toBeVisible();
-    await press(page, 'Back');
-  }
+  // Photo mode opens over the stage, and closes again.
+  await press(page, 'Photo');
+  await expect(page.getByRole('button', { name: 'Take photo' })).toBeVisible();
+  await expectAccessible(page, 'camera');
+  await press(page, 'Close camera');
+
+  await press(page, 'Edit');
+  await expect(page.getByRole('heading', { name: 'My house' })).toBeVisible();
+  await press(page, 'Back');
 
   await press(page, 'Home');
   await press(page, 'My characters');

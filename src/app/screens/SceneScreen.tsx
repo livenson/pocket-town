@@ -1,22 +1,21 @@
 import { useState } from 'react';
 import { strings } from '../../i18n/strings.en';
+import { usePlay } from '../../state/play';
 import { useSettings } from '../../state/settings';
 import { useUi } from '../../state/ui';
 import { IconButton } from '../../ui/IconButton';
 import { Sheet } from '../../ui/Sheet';
+import { BotCard } from '../BotCard';
+import { CameraOverlay } from '../CameraOverlay';
+import { CarryLayer } from '../CarryLayer';
+import { CharactersDock } from '../CharactersDock';
+import { FollowBar } from '../FollowBar';
+import { game, useGame } from '../game';
 import { useLayoutMode, useViewportWidth } from '../media';
 import { ObjectDrawer } from '../ObjectDrawer';
 import { StageHost } from '../StageHost';
+import { StageTargets } from '../StageTargets';
 import { TimePill } from '../TimePill';
-
-function CharactersDock() {
-  const go = useUi((s) => s.go);
-  return (
-    <div className="characters-dock__list">
-      <IconButton icon="plus" label={strings.more} onClick={() => go('characters')} />
-    </div>
-  );
-}
 
 /** The play screen: the stage in the middle, tools on the same edges everywhere. */
 export function SceneScreen() {
@@ -26,6 +25,12 @@ export function SceneScreen() {
   const home = useUi((s) => s.home);
   const sheetOpen = useUi((s) => s.plusSheetOpen);
   const setSheetOpen = useUi((s) => s.setPlusSheetOpen);
+  const canUndo = useGame((s) => s.canUndo);
+  const canRedo = useGame((s) => s.canRedo);
+  const following = usePlay((s) => s.followBotId !== null);
+  const carrying = usePlay((s) => s.carrying !== null);
+  const cameraOpen = usePlay((s) => s.cameraOpen);
+  const setCameraOpen = usePlay((s) => s.setCameraOpen);
   const [sheetTab, setSheetTab] = useState<'characters' | 'things'>('things');
   const phone = layout === 'phone';
   const width = useViewportWidth();
@@ -36,36 +41,56 @@ export function SceneScreen() {
     ? width - (iconBtn + 28) - 72
     : width - (iconBtn + 28) - (iconBtn * 3 + 20) - 104;
   const perPage = Math.max(3, Math.min(6, Math.floor((drawerWidth - 2 * (iconBtn + 12)) / 100)));
+  // Picking something up from the phone sheet closes it, so the stage is free to tap.
+  const sheetShown = sheetOpen && !carrying;
 
   return (
-    <div className="scene" data-hand={leftHanded ? 'left' : 'right'}>
+    <div
+      className="scene"
+      data-hand={leftHanded ? 'left' : 'right'}
+      data-carrying={carrying || undefined}
+      data-camera={cameraOpen || undefined}
+    >
       <div className="stage" aria-label={strings.stage} role="region">
         <StageHost />
+        <StageTargets />
       </div>
 
-      <div className="dock dock--top-left">
-        <IconButton icon="home" label={strings.home} shortcut="H" onClick={home} />
-        <IconButton icon="undo" label={strings.undo} shortcut="Ctrl Z" aria-disabled sound={null} />
-        {!phone && (
-          <IconButton
-            icon="redo"
-            label={strings.redo}
-            shortcut="Ctrl Shift Z"
-            aria-disabled
-            sound={null}
-          />
-        )}
-      </div>
+      {following ? (
+        <FollowBar />
+      ) : (
+        <>
+          <div className="dock dock--top-left">
+            <IconButton icon="home" label={strings.home} shortcut="H" onClick={home} />
+            <IconButton
+              icon="undo"
+              label={strings.undo}
+              shortcut="Ctrl Z"
+              aria-disabled={!canUndo || undefined}
+              sound={null}
+              onClick={() => game.undo()}
+            />
+            <IconButton
+              icon="redo"
+              label={strings.redo}
+              shortcut="Ctrl Shift Z"
+              aria-disabled={!canRedo || undefined}
+              sound={null}
+              onClick={() => game.redo()}
+            />
+          </div>
 
-      <div className="dock dock--top-right">
-        <IconButton icon="map" label={strings.map} shortcut="M" onClick={() => go('map')} />
-        <IconButton
-          icon="pencil"
-          label={strings.edit}
-          shortcut="E"
-          onClick={() => go('houseWizard')}
-        />
-      </div>
+          <div className="dock dock--top-right">
+            <IconButton icon="map" label={strings.map} shortcut="M" onClick={() => go('map')} />
+            <IconButton
+              icon="pencil"
+              label={strings.edit}
+              shortcut="E"
+              onClick={() => go('houseWizard')}
+            />
+          </div>
+        </>
+      )}
 
       {!phone && (
         <nav className="dock dock--characters" aria-label={strings.charactersHere}>
@@ -80,7 +105,12 @@ export function SceneScreen() {
       )}
 
       <div className="dock dock--bottom-right">
-        <IconButton icon="camera" label={strings.camera} shortcut="C" onClick={() => go('photo')} />
+        <IconButton
+          icon="camera"
+          label={strings.camera}
+          shortcut="C"
+          onClick={() => setCameraOpen(true)}
+        />
         <TimePill />
       </div>
 
@@ -91,7 +121,7 @@ export function SceneScreen() {
             className="plus-button"
             aria-label={strings.addSheet}
             aria-haspopup="dialog"
-            aria-expanded={sheetOpen}
+            aria-expanded={sheetShown}
             onClick={() => setSheetOpen(true)}
           >
             <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true">
@@ -104,7 +134,7 @@ export function SceneScreen() {
             </svg>
           </button>
           <Sheet
-            open={sheetOpen}
+            open={sheetShown}
             label={strings.addSheet}
             onClose={() => setSheetOpen(false)}
             header={
@@ -132,6 +162,10 @@ export function SceneScreen() {
           </Sheet>
         </>
       )}
+
+      <CarryLayer />
+      <BotCard />
+      <CameraOverlay />
     </div>
   );
 }

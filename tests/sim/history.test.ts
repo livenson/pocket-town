@@ -1,0 +1,81 @@
+import { describe, expect, it } from 'vitest';
+import { History, HISTORY_LIMIT } from '../../src/sim/history';
+import { run } from '../../src/sim/step';
+import { createWorld, getBot } from '../../src/sim/world';
+
+const livingFloor = { buildingId: 'home', roomId: 'home-living', x: 300, y: 500 };
+
+describe('undo and redo', () => {
+  it('undoes and redoes a gift', () => {
+    const w = createWorld(1);
+    const h = new History();
+    const moku = getBot(w, 'moku');
+    const before = moku?.now?.activity ?? null;
+    h.do(w, { type: 'give', botId: 'moku', kind: 'cake' });
+    expect(moku?.now?.targetId).toBe('gift:cake');
+    h.undo(w);
+    expect(moku?.now?.activity ?? null).toBe(before);
+    h.redo(w);
+    expect(moku?.now?.targetId).toBe('gift:cake');
+  });
+
+  it('undoes placing, moving and removing a thing, keeping its id on redo', () => {
+    const w = createWorld(1);
+    const h = new History();
+    h.do(w, { type: 'placeObject', kind: 'ball', place: livingFloor });
+    const id = w.objects[0]?.id;
+    expect(id).toBeTruthy();
+    h.do(w, { type: 'moveObject', id: id ?? '', place: { ...livingFloor, x: 600 } });
+    expect(w.objects[0]?.place.x).toBe(600);
+    h.undo(w);
+    expect(w.objects[0]?.place.x).toBe(300);
+    h.do(w, { type: 'removeObject', id: id ?? '' });
+    expect(w.objects).toHaveLength(0);
+    h.undo(w);
+    expect(w.objects[0]?.id).toBe(id);
+    h.undo(w);
+    expect(w.objects).toHaveLength(0);
+    h.redo(w);
+    expect(w.objects[0]?.id).toBe(id);
+  });
+
+  it('undoes freeze, nudge and take-control', () => {
+    const w = createWorld(2);
+    const h = new History();
+    const pim = getBot(w, 'pim');
+    h.do(w, { type: 'freeze', botId: 'pim', on: true });
+    expect(pim?.mode).toBe('frozen');
+    h.undo(w);
+    expect(pim?.mode).toBe('auto');
+    h.do(w, { type: 'nudge', botId: 'pim', activity: 'read' });
+    expect(pim?.nudge).toBe('read');
+    h.undo(w);
+    expect(pim?.nudge).toBeNull();
+    h.do(w, { type: 'control', botId: 'pim', on: true });
+    h.undo(w);
+    expect(pim?.mode).toBe('auto');
+  });
+
+  it("does not record the bots' own choices, and keeps at least 50 steps", () => {
+    const w = createWorld(3);
+    const h = new History();
+    run(w, 500);
+    expect(h.canUndo).toBe(false);
+    for (let i = 0; i < 60; i++)
+      h.do(w, { type: 'placeObject', kind: 'cake', place: { ...livingFloor, x: 100 + i } });
+    let undos = 0;
+    while (h.undo(w)) undos++;
+    expect(undos).toBeGreaterThanOrEqual(50);
+    expect(undos).toBeLessThanOrEqual(HISTORY_LIMIT);
+  });
+
+  it('a new action clears the redo steps', () => {
+    const w = createWorld(3);
+    const h = new History();
+    h.do(w, { type: 'placeObject', kind: 'cake', place: livingFloor });
+    h.undo(w);
+    expect(h.canRedo).toBe(true);
+    h.do(w, { type: 'placeObject', kind: 'ball', place: livingFloor });
+    expect(h.canRedo).toBe(false);
+  });
+});

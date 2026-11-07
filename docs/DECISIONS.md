@@ -85,3 +85,14 @@ Sources: [Best web game engines for 2026 (cinevva)](https://app.cinevva.com/guid
 - **Tidy** only ever removes things a bot left out (a gift ball after play). Anything the child places or moves is marked as the child's and is never touched by bots.
 - **Sounds** for state changes (chime on a new activity, jingle on a need met, doorbell, Pocketese blips while chatting) play only for the room on screen, at most one of each per frame.
 - **Test hooks in the URL:** `?seed=N` for a reproducible town, `?hour=N` to start at a time of day, `?still` to freeze for screenshots, `#scene` to open the play stage.
+
+## 2026-11-07: M4 core-loop choices
+
+- **A DOM target layer over the canvas.** Every character, placed thing, door, the floor and three floor spots is a real `<button>` positioned over the stage each frame (`src/stage/targets.ts`). One mechanism serves taps, drop targets (`elementFromPoint`), keyboard focus, screen readers and e2e tests; the Pixi canvas itself takes no input.
+- **Tap a character to open its card** (the plan says long-press). Long-press already means "say what this is" everywhere else, and a six-year-old is more likely to tap; the card is one tap away from the stage, the dock and the keyboard (Enter on a focused character).
+- **Redo on phones too.** The phone mock shows only undo in the top bar; the hard rule "undo/redo everywhere" wins, and five 56 px buttons fit on a 390 px phone.
+- **Undo** records, for each child command, how to put things back: the touched bot's control state (not its position, so nobody teleports) or the placed thing. Redo re-applies the command; placed things keep their id. 100 steps.
+- **Saves**: schema 1 with a migration table, written to two slots in turn (`pocket-town:save:a`/`b`) with a generation number; loading takes the newest slot that parses and passes shape checks, so a broken write always leaves the previous good copy. Saved 1 s after every child change, every 30 s, and on `visibilitychange`/`pagehide`. `?seed` and `?still` start fresh and never save.
+- **Putting a placed thing away** is press-and-hold (destructive), from the "carrying" pill.
+- **Photos** are stored as bytes plus a type, not as `Blob`s, because WebKit can refuse Blobs in IndexedDB. The album keeps the newest 60 and never offers sharing.
+- **Sounds before the first tap are skipped** (browsers block audio until a user gesture), so opening the app never logs autoplay warnings.

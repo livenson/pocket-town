@@ -6,8 +6,10 @@ import { objectKinds } from '../content/objects';
 import type { IconName } from '../design/icons';
 import { color } from '../design/tokens';
 import type { Bot, World } from '../sim/types';
+import { pegGeometry } from './peg/geometry';
 import { PegView, type PegActivity } from './peg/PegView';
 import type { RoomView } from './RoomView';
+import { setTargetRect } from './targets';
 
 const PEG_SIZE = 122;
 const EMOTE_COLOR: Partial<Record<IconName, string>> = {
@@ -91,7 +93,8 @@ export class SimView {
         playSfx('jingle');
         jingled = true;
       } else if (e.type === 'start' && !chimed) {
-        playSfx('chime');
+        const a = e.activity;
+        playSfx(a === 'eat' ? 'eat' : a === 'sleep' || a === 'nap' ? 'sleep' : 'chime');
         chimed = true;
       }
     }
@@ -110,6 +113,14 @@ export class SimView {
       const y = bot.prev.y + (bot.place.y - bot.prev.y) * alpha;
       const walking = bot.moving && bot.mode !== 'frozen';
       peg.follow(x, y, bot.facing, walking, walking ? 'idle' : poseFor(bot), dtS, timeS, calm);
+      // The tappable button over this character (DOM target layer).
+      const g = pegGeometry(PEG_SIZE, bot.appearance);
+      setTargetRect(`bot:${bot.id}`, {
+        x: x - g.RW / 2 - 6,
+        y: y - PEG_SIZE - 6,
+        w: g.RW + 12,
+        h: PEG_SIZE + 12,
+      });
 
       // A happy reaction (a gift, a wish come true) is a jump.
       const seen = this.lastHappy.get(bot.id) ?? -1;

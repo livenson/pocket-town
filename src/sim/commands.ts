@@ -117,7 +117,14 @@ export function apply(world: World, cmd: Command): boolean {
       return true;
     }
     case 'placeObject': {
-      const id = cmd.id ?? `o${world.nextObjectId++}`;
+      const id = cmd.id ?? `o${world.nextObjectId}`;
+      if (world.objects.some((o) => o.id === id)) return false;
+      // Keep the counter ahead of any id used, so new objects never collide.
+      const n = Number(id.slice(1));
+      world.nextObjectId = Math.max(
+        world.nextObjectId,
+        Number.isFinite(n) ? n + 1 : world.nextObjectId + 1,
+      );
       const spot = clampToFloor(cmd.place.x, cmd.place.y);
       world.objects.push({
         id,
