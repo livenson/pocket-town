@@ -1,5 +1,6 @@
-// More food for the object drawer, drawn in the same style as icons.ts (32×32,
-// stroke only, round caps). Kept separate so the provided icon file stays as it was.
+// More food for the object drawer, and a few town icons (plane, basket, plaster),
+// drawn in the same style as icons.ts (32×32, stroke only, round caps). Kept
+// separate so the provided icon file stays as it was.
 import { icons, type IconName } from './icons';
 
 const C = (x: number, y: number, r: number) =>
@@ -15,6 +16,15 @@ export const foodIcons = {
   soup: 'M5 16h22a11 11 0 0 1-22 0zM12 12c-2-2 2-3 0-6M20 12c-2-2 2-3 0-6',
   cupcake: 'M9 17l2 10h10l2-10zM8 17c-1-6 4-9 8-9s9 3 8 9zM14 21v4M18 21v4' + C(16, 6, 1.6),
   watermelon: 'M5 13a11 11 0 0 0 22 0zM8 13a8 8 0 0 0 16 0' + D(12, 17) + D(16, 19) + D(20, 17),
+  // Town places: the airport, the shop and the hospital.
+  plane:
+    'M3 18h19c3 0 6-1 6-3s-3-3-6-3H9L6 7H3l1 11z' +
+    'M12 12l-2-6h3l6 6M12 18l-2 6h3l6-6' +
+    D(22, 15),
+  basket: 'M4 13h24l-3 13H7zM10 13l4-8M22 13l-4-8M11 17v5M16 17v5M21 17v5',
+  plaster:
+    'M6.2 20.2L20.2 6.2a4 4 0 0 1 5.6 5.6L11.8 25.8a4 4 0 0 1-5.6-5.6z' +
+    'M13.2 16L16 13.2 18.8 16 16 18.8z',
 };
 
 export type FoodIconName = keyof typeof foodIcons;

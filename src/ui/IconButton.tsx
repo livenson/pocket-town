@@ -1,13 +1,13 @@
 import type { ButtonHTMLAttributes, MouseEvent } from 'react';
 import { playSfx } from '../audio/audio';
 import type { SfxName } from '../audio/sfx';
-import type { IconName } from '../design/icons';
+import type { AnyIconName } from '../design/foodIcons';
 import { Icon } from './Icon';
 import { useShowTextLabels } from './labels';
 import { useVoiceLabel } from './useVoiceLabel';
 
 export interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  icon: IconName;
+  icon: AnyIconName;
   /** Required: used for aria-label, voice-over and the optional text label. */
   label: string;
   /** Desktop keyboard shortcut, shown in the hover label. */

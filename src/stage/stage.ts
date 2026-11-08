@@ -56,6 +56,8 @@ export class Stage {
   private host: HTMLElement | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private time = 0;
+  /** Clock for the airport's planes: stops when time is paused, quicker when fast. */
+  private planeTime = 0;
 
   async init(): Promise<void> {
     // Without a GPU the CPU draws every pixel: skip multisampling and extra
@@ -199,6 +201,8 @@ export class Stage {
     if (def && def.furniture !== this.room.def.furniture) this.showRoom(def.id, true);
     this.room.preview(useDecor.getState().preview);
     this.room.setDaylight(daylight(minuteOfDay(world.minute)));
+    this.planeTime += dt * Math.min(this.prefs.speed, 2);
+    this.room.animate(this.planeTime, this.prefs.calm);
     this.view.update(world, STILL ? 0 : sim.alpha, dt, this.time, this.prefs.calm);
     const carried = play.carrying?.source.from === 'object' ? play.carrying.source.objectId : null;
     this.objects.update(world, carried);

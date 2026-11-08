@@ -59,7 +59,8 @@ Every object and place **advertises** activities with the need gains they give:
 ```ts
 interface Advertisement {
   objectId: string;
-  activity: ActivityId;          // eat, nap, sleep, play, music, read, chat, visit, garden, tidy, wander
+  activity: ActivityId;          // eat, nap, sleep, play, music, read, chat, visit, garden, tidy, wander,
+                                 // checkup, tinker, shop, planes (the town's public places)
   gains: Partial<Record<NeedKey, number>>;
   duration: number;              // game minutes
   capacity: number;              // how many bots can use it at once

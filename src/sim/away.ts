@@ -21,7 +21,18 @@ export function awayGameMinutes(awayMs: number): number {
   return Math.min(AWAY_MAX_GAME_MINUTES, awayMs / 60_000 / realMinutesPerGameMinute);
 }
 
-const WORTH_A_PICTURE: ActivityId[] = ['visit', 'music', 'eat', 'sleep', 'play', 'chat'];
+const WORTH_A_PICTURE: ActivityId[] = [
+  'visit',
+  'music',
+  'eat',
+  'sleep',
+  'play',
+  'chat',
+  'planes',
+  'shop',
+  'tinker',
+  'checkup',
+];
 
 /**
  * Run the town forward. Steps are one game hour each (the simulation's own small
