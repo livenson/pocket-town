@@ -450,7 +450,7 @@ export function PegPortrait({
       className="peg-portrait"
     >
       {rig.parts.map((p, i) =>
-        'head' in p ? (
+        'only' in p && p.only ? null : 'head' in p ? (
           <g key={i}>{head}</g>
         ) : (
           <g key={i} transform={matrix(mats[p.bone])}>

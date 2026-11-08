@@ -15,7 +15,37 @@ import {
 } from '../motion';
 import { drawHead, drawPrims } from './drawPeg';
 import type { Appearance, Eyes } from './geometry';
-import { boneMatrices, buildRig, poseAngles, type BoneId, type Rig } from './rig';
+import {
+  boneMatrices,
+  buildRig,
+  headCentre,
+  LIE_ANGLE,
+  partMatrix,
+  poseAngles,
+  poseScales,
+  type BoneId,
+  type Gesture,
+  type Rig,
+  type Stance,
+} from './rig';
+
+/**
+ * How the character holds itself: standing, or sitting or lying on furniture at a
+ * room point (see activityPose.ts), and the arms' gesture.
+ */
+export interface PegLook {
+  stance: Stance;
+  gesture: Gesture;
+  /** Sitting: where the hips go. Lying: where the head rests. Room units. */
+  at?: { x: number; y: number };
+  /** Lying: which way the head points. */
+  facing?: 1 | -1;
+  /** Depth to draw at (in front of the piece sat or lain on). */
+  z?: number;
+}
+
+const STANDING: PegLook = { stance: 'stand', gesture: 'none' };
+const FRONT_ARM: ReadonlySet<BoneId> = new Set(['shoulderR', 'elbowR', 'wristR']);
 
 export type PegActivity = 'idle' | 'walk' | 'sleep' | 'dance';
 
@@ -33,7 +63,10 @@ export class PegView extends Container {
   readonly bubble = new IntentBubble();
   private readonly rig: Rig;
   /** One shape per part, back to front, each following its bone. */
-  private readonly parts: { bone: BoneId; g: Graphics }[] = [];
+  private readonly parts: { bone: BoneId; g: Graphics; only?: Gesture | 'lie' }[] = [];
+  private look: PegLook = STANDING;
+  /** Lying: the feet's offset from the head (rest pose). */
+  private readonly headFromFeet: { x: number; y: number };
   private head: Graphics;
   private eyes: Eyes = 'open';
   private activity: PegActivity = 'idle';
@@ -65,9 +98,10 @@ export class PegView extends Container {
         g = new Graphics();
         drawPrims(g, part.prims);
       }
-      this.parts.push({ bone: part.bone, g });
+      this.parts.push({ bone: part.bone, g, only: 'only' in part ? part.only : undefined });
       this.figure.addChild(g);
     }
+    this.headFromFeet = headCentre(this.rig, appearance);
     this.pose(0, 0, false);
     this.bubble.position.set(0, -size - 34);
     this.addChild(this.figure, this.bubble);
@@ -97,23 +131,41 @@ export class PegView extends Container {
 
   /** Put every part where its bone is, for what the character is doing now. */
   private pose(timeS: number, cheer: number, calm: boolean): void {
-    const mats = boneMatrices(
-      this.rig,
-      poseAngles({
-        activity: this.activity,
-        timeS,
-        phase: this.phase,
-        stepPhase: this.stepPhase,
-        walking: this.walkingNow || this.targetX !== null,
-        calm,
-        cheer,
-      }),
-    );
+    const walking = this.walkingNow || this.targetX !== null;
+    const { stance, gesture } = this.look;
+    const input = {
+      activity: this.activity,
+      timeS,
+      phase: this.phase,
+      stepPhase: this.stepPhase,
+      walking,
+      calm,
+      cheer,
+      stance,
+      gesture,
+      lieAngle: LIE_ANGLE,
+    };
+    const scales = poseScales(input);
+    const mats = boneMatrices(this.rig, poseAngles(input), scales);
     for (const p of this.parts) {
-      const m = mats[p.bone];
+      const m = partMatrix(mats, p.bone, scales);
       p.g.position.set(m.tx, m.ty);
-      p.g.rotation = Math.atan2(m.b, m.a);
+      const rot = Math.atan2(m.b, m.a);
+      p.g.rotation = rot;
+      // A shortened bone: only ever along its own length.
+      p.g.scale.set(1, Math.hypot(m.c, m.d));
+      const lying = stance === 'lie' && !walking;
+      // Lying, the front arm stays under the blanket.
+      const tucked = lying && FRONT_ARM.has(p.bone);
+      p.g.visible =
+        !tucked &&
+        (p.only === undefined || (p.only === 'lie' ? lying : !walking && p.only === gesture));
     }
+  }
+
+  /** Stand, sit or lie, and what the arms do (see activityPose.ts). */
+  setLook(look: PegLook | null): void {
+    this.look = look ?? STANDING;
   }
 
   setEyes(eyes: Eyes): void {
@@ -211,15 +263,37 @@ export class PegView extends Container {
     }
 
     this.pose(timeS, this.jumpT, calm);
-    this.figure.position.y = pose.dy;
-    this.figure.scale.set(pose.scaleX * this.facing, pose.scaleY);
-    this.figure.rotation = pose.rotation;
+    const { stance, at } = this.look;
+    const placed = at && stance !== 'stand' && !this.walkingNow && this.targetX === null;
+    if (placed && stance === 'sit') {
+      // The hips on the seat; only a gentle breath.
+      const pelvisY = this.rig.bones.pelvis.y;
+      this.figure.position.set(at.x - this.x, at.y - this.y - pelvisY);
+      this.figure.scale.set(this.facing, 1 + (pose.scaleY - 1) * 0.5);
+      this.figure.rotation = 0;
+    } else if (placed && stance === 'lie') {
+      // The head on the pillow: the feet go where the turned body puts them.
+      const dir = this.look.facing ?? 1;
+      const h = this.headFromFeet;
+      const c = Math.cos(LIE_ANGLE);
+      const sn = Math.sin(LIE_ANGLE);
+      const hx = (c * h.x - sn * h.y) * dir;
+      const hy = sn * h.x + c * h.y;
+      this.figure.position.set(at.x - hx - this.x, at.y - hy - this.y);
+      this.figure.scale.set(dir, 1);
+      this.figure.rotation = 0;
+    } else {
+      this.figure.position.set(0, pose.dy);
+      this.figure.scale.set(pose.scaleX * this.facing, pose.scaleY);
+      this.figure.rotation = pose.rotation;
+    }
     // Bubbles ride along with hops but never flip or squash. They may live in a
     // separate layer (above the night dimming), so position them in room units.
     if (this.bubble.parent === this) this.bubble.position.set(0, -this.size - 34 + pose.dy);
     else this.bubble.position.set(this.x, this.y - this.size - 34 + pose.dy);
-    // Depth sorting: things lower on the floor are drawn in front.
-    this.zIndex = this.y;
+    // Depth sorting: things lower on the floor are drawn in front; sitting or
+    // lying, in front of the piece.
+    this.zIndex = placed && this.look.z !== undefined ? this.look.z : this.y;
   }
 }
 
