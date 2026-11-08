@@ -676,7 +676,7 @@ export const et: Strings = {
     noFace: 'Nägu ei leitud. Proovi fotot, kus nägu vaatab kaamerasse ja valgust on piisavalt.',
     unavailable: 'Näotuvastaja selles seadmes ei tööta. Tegelase saab ikka käsitsi teha.',
     denied: 'Kaamera pole saadaval. Võid valida hoopis foto.',
-    mirror: 'Naerata, pilguta või ava suu: tegelane teeb järele.',
+    mirror: 'Naerata, pilguta, lehvita või tõsta käed: tegelane teeb järele.',
     keep: 'Jäta see välimus',
     newCharacter: 'Tee sellega uus tegelane',
     again: 'Proovi uuesti',
@@ -706,7 +706,7 @@ export const et: Strings = {
     removeNote:
       'Eemaldab mängija, tema tegelased ja tema linna sellest seadmest. Seda ei saa tagasi võtta.',
     credits:
-      'Asjade pildid: Microsoft Fluent Emoji (MIT-litsents). Näotuvastaja: Google MediaPipe (Apache 2.0 litsents), ainult selles seadmes.',
+      'Asjade pildid: Microsoft Fluent Emoji (MIT-litsents). Näo- ja kehatuvastaja: Google MediaPipe (Apache 2.0 litsents), ainult selles seadmes.',
     version: (v: string, date: string) =>
       date ? `Versioon ${v}, ehitatud ${date}` : `Versioon ${v}`,
     intro: 'Seaded täiskasvanutele. Pocket Townist ei lahku sellest seadmest midagi.',

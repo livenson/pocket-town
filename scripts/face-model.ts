@@ -1,8 +1,9 @@
-// Copies the on-device face finder for "make a character from a photo" into
-// public/face/, so the app serves it itself and never fetches from Google at run
-// time. Run with `npm run face-model` after changing the MediaPipe version; the
-// output is committed. MediaPipe Tasks (runtime and Face Landmarker model):
-// Apache License 2.0, Copyright Google LLC (docs/THIRD_PARTY.md).
+// Copies the on-device face and body finders for "make a character from a photo"
+// into public/face/, so the app serves them itself and never fetches from Google
+// at run time. Run with `npm run face-model` after changing the MediaPipe version;
+// the output is committed. MediaPipe Tasks (runtime, Face Landmarker and Pose
+// Landmarker lite models): Apache License 2.0, Copyright Google LLC
+// (docs/THIRD_PARTY.md).
 import { createHash } from 'node:crypto';
 import { copyFile, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -10,24 +11,30 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const out = `${root}public/face/`;
 const wasm = `${root}node_modules/@mediapipe/tasks-vision/wasm/`;
-const MODEL_URL =
-  'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task';
+const MODELS = {
+  'face_landmarker.task':
+    'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task',
+  // The lite body model: arms and shoulders for the camera mirror (smallest, fastest).
+  'pose_landmarker_lite.task':
+    'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task',
+};
 
 await mkdir(out, { recursive: true });
 for (const f of ['vision_wasm_internal.js', 'vision_wasm_internal.wasm']) {
   await copyFile(wasm + f, out + f);
   console.log(`copied ${f} (${(await stat(out + f)).size} bytes)`);
 }
-const res = await fetch(MODEL_URL);
-if (!res.ok) throw new Error(`model download failed: ${res.status}`);
-const model = Buffer.from(await res.arrayBuffer());
-await writeFile(`${out}face_landmarker.task`, model);
-const sha = createHash('sha256').update(model).digest('hex');
-console.log(`face_landmarker.task: ${model.length} bytes, sha256 ${sha}`);
 const version = JSON.parse(
   await readFile(`${root}node_modules/@mediapipe/tasks-vision/package.json`, 'utf8'),
 ).version;
-await writeFile(
-  `${out}VERSION.txt`,
-  `@mediapipe/tasks-vision ${version}\nface_landmarker.task sha256 ${sha}\n`,
-);
+let summary = `@mediapipe/tasks-vision ${version}\n`;
+for (const [name, url] of Object.entries(MODELS)) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${name} download failed: ${res.status}`);
+  const model = Buffer.from(await res.arrayBuffer());
+  await writeFile(out + name, model);
+  const sha = createHash('sha256').update(model).digest('hex');
+  console.log(`${name}: ${model.length} bytes, sha256 ${sha}`);
+  summary += `${name} sha256 ${sha}\n`;
+}
+await writeFile(`${out}VERSION.txt`, summary);

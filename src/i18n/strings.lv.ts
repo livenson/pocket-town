@@ -678,7 +678,7 @@ export const lv: Strings = {
     noFace: 'Seja netika atrasta. Pamēģini foto, kur seja skatās kamerā un ir labs apgaismojums.',
     unavailable: 'Sejas meklētājs šajā ierīcē nedarbojas. Tēlu joprojām var izveidot ar roku.',
     denied: 'Kamera nav pieejama. Vari izvēlēties foto.',
-    mirror: 'Pasmaidi, pamirkšķini vai atver muti: tēls tevi atdarina.',
+    mirror: 'Pasmaidi, pamirkšķini, pamāj vai pacel rokas: tēls tevi atdarina.',
     keep: 'Paturēt šo izskatu',
     newCharacter: 'Izveidot ar to jaunu tēlu',
     again: 'Mēģināt vēlreiz',
@@ -707,7 +707,7 @@ export const lv: Strings = {
     removePlayer: (name: string) => `Turi, lai noņemtu ${name} un viņa pilsētu`,
     removeNote: 'Noņem spēlētāju, viņa tēlus un pilsētu no šīs ierīces. To nevar atsaukt.',
     credits:
-      'Lietu attēli: Microsoft Fluent Emoji (MIT licence). Sejas meklētājs: Google MediaPipe (Apache 2.0 licence), tikai šajā ierīcē.',
+      'Lietu attēli: Microsoft Fluent Emoji (MIT licence). Sejas un ķermeņa meklētājs: Google MediaPipe (Apache 2.0 licence), tikai šajā ierīcē.',
     version: (v: string, date: string) => (date ? `Versija ${v}, būvēta ${date}` : `Versija ${v}`),
     intro: 'Iestatījumi pieaugušajiem. No Pocket Town nekas neatstāj šo ierīci.',
     kit: 'Komponenti (dizaina pārbaudei)',

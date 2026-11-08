@@ -30,9 +30,9 @@ Source: https://github.com/microsoft/fluentui-emoji
     SOFTWARE
 ```
 
-## Google MediaPipe Tasks (Face Landmarker)
+## Google MediaPipe Tasks (Face Landmarker, Pose Landmarker lite)
 
-"Make a character from a photo or the camera" (grown-up area, behind the parental gate) uses Google's MediaPipe Face Landmarker, entirely on the device. The JavaScript library comes from the `@mediapipe/tasks-vision` package; its WebAssembly runtime and the `face_landmarker.task` model are copied into `public/face/` by `npm run face-model` (`scripts/face-model.ts`, with the exact versions in `public/face/VERSION.txt`) and served from our own site. Pictures are never saved or sent. MediaPipe's built-in usage logger is blocked twice: by the Content Security Policy and by answering requests to other sites locally. The grown-up area credits it.
+"Make a character from a photo or the camera" (grown-up area, behind the parental gate) uses Google's MediaPipe Face Landmarker, and in the camera mirror also the Pose Landmarker (lite model) for arms and the upper body, entirely on the device. The JavaScript library comes from the `@mediapipe/tasks-vision` package; its WebAssembly runtime and the `face_landmarker.task` and `pose_landmarker_lite.task` models are copied into `public/face/` by `npm run face-model` (`scripts/face-model.ts`, with the exact versions in `public/face/VERSION.txt`) and served from our own site. Pictures are never saved or sent. MediaPipe's built-in usage logger is blocked twice: by the Content Security Policy and by answering requests to other sites locally. The grown-up area credits it.
 
 Source: https://github.com/google-ai-edge/mediapipe
 

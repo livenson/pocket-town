@@ -156,8 +156,11 @@ export interface PegPortraitProps {
   eyes?: Eyes;
   /** Rendered height in CSS px. */
   size: number;
-  /** Show only the head and shoulders (dock portraits). */
-  crop?: 'full' | 'head';
+  /**
+   * Show only the head and shoulders (dock portraits), or the full figure with
+   * room for arms held out to the sides (the camera mirror).
+   */
+  crop?: 'full' | 'head' | 'reach';
   /** The live mirror (camera screen): a continuous expression and head pose. */
   live?: LiveFace;
   /** Joint angles (rig.ts); standing at rest when missing. */
@@ -300,7 +303,9 @@ export function PegPortrait({
   const [vbX, vbY, vbW, vbH] =
     crop === 'head'
       ? [-0.27 * S, -0.97 * S, 0.54 * S, 0.54 * S]
-      : [-0.3 * S, -1.08 * S, 0.6 * S, 1.11 * S];
+      : crop === 'reach'
+        ? [-0.45 * S, -1.08 * S, 0.9 * S, 1.11 * S]
+        : [-0.3 * S, -1.08 * S, 0.6 * S, 1.11 * S];
   const viewBox = [vbX, vbY, vbW, vbH].map(n).join(' ');
   const hr = g.d / 2;
   const hcx = g.head.x + hr;

@@ -4,7 +4,9 @@ import { randomLook, randomName, randomTraits } from '../../content/looks';
 import { strings } from '../../i18n';
 import type { PhotoLook } from '../../photo/faceFromPhoto';
 import { LookAverager } from '../../photo/lookAverager';
+import { BodyReader } from '../../photo/liveBody';
 import { ExpressionReader, type LiveFace } from '../../photo/liveFace';
+import type { Angles } from '../../stage/peg/rig';
 import { useCreation } from '../../state/creation';
 import { useProfiles } from '../../state/profiles';
 import { useUi } from '../../state/ui';
@@ -29,7 +31,8 @@ function applyLook(base: Appearance, look: PhotoLook): Appearance {
 /**
  * Grown-ups only (behind the gate): make a character from a photo or the camera.
  * The face finder runs on this device; the picture is never saved or sent. The
- * camera view shows the suggested character beside it, copying smiles and blinks.
+ * camera view shows the suggested character beside it, copying smiles and blinks,
+ * waving and raised arms.
  */
 export function PhotoFaceScreen() {
   const P = strings.photoFace;
@@ -41,6 +44,9 @@ export function PhotoFaceScreen() {
   const [live, setLive] = useState<LiveFace | null>(null);
   // Made once: the camera loop reads expressions from it on every frame.
   const [reader] = useState(() => new ExpressionReader());
+  /** The mirror's arms and upper body (null until the body finder has seen a frame). */
+  const [pose, setPose] = useState<Angles | null>(null);
+  const [bodyReader] = useState(() => new BodyReader());
   /** The mirror learns the child's resting face first. */
   const [calibrated, setCalibrated] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
@@ -53,6 +59,8 @@ export function PhotoFaceScreen() {
   const session = useRef(0);
   /** Set once the face finder's code has loaded (only then is there anything to close). */
   const finderLoaded = useRef(false);
+  /** Set once the body finder's code has loaded. */
+  const bodyLoaded = useRef(false);
 
   const stopCamera = () => {
     session.current++;
@@ -68,6 +76,7 @@ export function PhotoFaceScreen() {
     const watch = stopWatch;
     const media = stream;
     const loaded = finderLoaded;
+    const bodyOn = bodyLoaded;
     const onScreen = alive;
     const run = session;
     onScreen.current = true;
@@ -80,6 +89,8 @@ export function PhotoFaceScreen() {
       media.current = null;
       if (loaded.current)
         void import('../../photo/faceFinder').then((m) => m.closeFinder()).catch(() => {});
+      if (bodyOn.current)
+        void import('../../photo/bodyFinder').then((m) => m.closeBody()).catch(() => {});
     };
   }, []);
 
@@ -89,6 +100,23 @@ export function PhotoFaceScreen() {
       const m = await import('../../photo/faceFinder');
       finderLoaded.current = true;
       return m;
+    } catch {
+      return null;
+    }
+  };
+
+  /** Load the body finder; null when it cannot load (the face mirror still works). */
+  const loadBody = async () => {
+    try {
+      const m = await import('../../photo/bodyFinder');
+      bodyLoaded.current = true;
+      const ok = await m.prepareBody();
+      // The screen was left while it loaded: free it at once.
+      if (!alive.current) {
+        await m.closeBody();
+        return null;
+      }
+      return ok ? m : null;
     } catch {
       return null;
     }
@@ -131,7 +159,16 @@ export function PhotoFaceScreen() {
     let last = 0;
     let lookAt = 0;
     reader.reset();
+    bodyReader.reset();
     setCalibrated(false);
+    setPose(null);
+    // The body finder loads beside the face mirror, which starts without waiting
+    // for it; until it is ready (or if it cannot load) the arms stay at rest.
+    let body: Awaited<ReturnType<typeof loadBody>> = null;
+    let angles: Angles | null = null;
+    void loadBody().then((m) => {
+      if (!gone()) body = m;
+    });
     try {
       const stop = await finder.watchVideo(v, ({ look: l, scores, points }) => {
         if (l) averager.current.add(l);
@@ -139,10 +176,14 @@ export function PhotoFaceScreen() {
         // them all) and drawn about 30 times a second; the slower-changing look
         // (shape, colours) about 5 times a second.
         const face = reader.read(scores, points);
+        // The body is read from the same video, every second frame or less often.
+        const b = body?.readBody(v);
+        if (b) angles = bodyReader.read(b.points, b.aspect);
         const now = performance.now();
         if (now - last < 33) return;
         last = now;
         setLive(face);
+        setPose(angles);
         setCalibrated(reader.calibrated);
         if (now - lookAt > 200) {
           lookAt = now;
@@ -240,7 +281,9 @@ export function PhotoFaceScreen() {
             <PegPortrait
               appearance={preview}
               live={phase === 'camera' && live ? live : undefined}
+              pose={phase === 'camera' && pose ? pose : undefined}
               size={260}
+              crop="reach"
             />
           </figure>
         </div>

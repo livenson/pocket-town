@@ -100,9 +100,9 @@ export default defineConfig(({ mode, command }) => ({
         // Only Latin and Latin Extended font files are precached; other scripts
         // still load on demand from our own origin if a name ever needs them.
         globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}', '**/*latin*.woff2'],
-        // The face finder (about 18 MB, grown-ups only) is never precached: it
-        // loads from our own origin the first time someone uses it.
-        globIgnores: ['face/**', '**/vision_bundle*.js', '**/faceFinder*.js'],
+        // The face and body finders (about 24 MB, grown-ups only) are never precached: they
+        // load from our own origin the first time someone uses them.
+        globIgnores: ['face/**', '**/vision_bundle*.js', '**/faceFinder*.js', '**/bodyFinder*.js'],
         navigateFallback: `${BASE}index.html`,
         cleanupOutdatedCaches: true,
       },

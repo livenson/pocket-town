@@ -688,7 +688,7 @@ export const en = {
     unavailable:
       'The face finder does not work on this device. You can still make a character by hand.',
     denied: 'The camera is not available. You can choose a photo instead.',
-    mirror: 'Smile, blink or open your mouth: the character copies you.',
+    mirror: 'Smile, blink, wave or raise your arms: the character copies you.',
     keep: 'Keep this look',
     newCharacter: 'Make a new character with it',
     again: 'Try again',
@@ -718,7 +718,7 @@ export const en = {
     removeNote:
       'Removes the player, their characters and their town from this device. This cannot be undone.',
     credits:
-      'Pictures of things: Microsoft Fluent Emoji (MIT licence). Face finder: Google MediaPipe (Apache 2.0 licence), on this device only.',
+      'Pictures of things: Microsoft Fluent Emoji (MIT licence). Face and body finder: Google MediaPipe (Apache 2.0 licence), on this device only.',
     version: (v: string, date: string) => (date ? `Version ${v}, built ${date}` : `Version ${v}`),
     intro: 'Settings for grown-ups. Nothing in Pocket Town leaves this device.',
     kit: 'Component kit (for checking the design)',
