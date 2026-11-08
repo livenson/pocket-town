@@ -1111,3 +1111,14 @@ export function boneMatrices(rig: Rig, angles: Angles): Record<BoneId, Mat> {
 export function apply(m: Mat, x: number, y: number): { x: number; y: number } {
   return { x: m.a * x + m.c * y + m.tx, y: m.b * x + m.d * y + m.ty };
 }
+
+/** Both arms up: a cheer (the hooray screen). */
+export const CHEER: Angles = poseAngles({
+  activity: 'idle',
+  timeS: 0,
+  phase: 0,
+  stepPhase: 0,
+  walking: false,
+  calm: false,
+  cheer: 0.5,
+});
