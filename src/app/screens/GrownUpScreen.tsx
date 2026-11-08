@@ -85,6 +85,13 @@ export function GrownUpScreen() {
         />
         <Button
           variant="secondary"
+          icon="camera"
+          label={strings.photoFace.open}
+          showWord
+          onClick={() => go('photoFace')}
+        />
+        <Button
+          variant="secondary"
           icon="grid4"
           label={strings.grownUp.kit}
           showWord

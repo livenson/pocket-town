@@ -7,6 +7,7 @@ import {
   usesSecondColour,
   type Accessory,
   type Clothes,
+  type FaceDetail,
   type Figure,
   type Kind,
   type Appearance,
@@ -43,6 +44,7 @@ import { Icon } from '../../ui/Icon';
 import { IconButton } from '../../ui/IconButton';
 import { PegPortrait } from '../../ui/PegPortrait';
 import { StepRail } from '../../ui/StepRail';
+import { Switch } from '../../ui/Switch';
 import { useShowTextLabels } from '../../ui/labels';
 import { useVoiceLabel } from '../../ui/useVoiceLabel';
 import { finishCreation, saveCharacter } from '../game';
@@ -179,6 +181,242 @@ function Swatches({
 }
 
 /** C1 avatar wizard: live preview on a turntable, steps in any order, dice/undo/redo/done. */
+/** A colour picker for any colour (advanced face): a real input, 44 px or more. */
+function AnyColour({
+  label,
+  value,
+  onPick,
+}: {
+  label: string;
+  value: string;
+  onPick: (c: string) => void;
+}) {
+  return (
+    <label className="any-colour">
+      <input
+        type="color"
+        value={value}
+        aria-label={label}
+        onChange={(e) => onPick(e.target.value.toUpperCase())}
+      />
+      <span className="any-colour__word">{label}</span>
+    </label>
+  );
+}
+
+const EYE_COLOURS = ['#6B4A2E', '#3B2A1E', '#3D7BD9', '#3E8E4A', '#8A9A5B', '#7A8590'];
+const TATTOO_COLOURS = ['#3D5AA8', '#2A1640', '#D9416A', '#0FA394', '#8E3CA8', '#EF4B2F'];
+const SIZES = [0.85, 1, 1.22] as const;
+const GAPS = [0.9, 1, 1.12] as const;
+const WIDTHS = [0.8, 1, 1.28] as const;
+
+/** The option closest to a size multiplier (photos give any value). */
+function nearest(v: number | undefined, opts: readonly number[]): number {
+  return opts.reduce((b, o) => (Math.abs(o - (v ?? 1)) < Math.abs(b - (v ?? 1)) ? o : b), 1);
+}
+
+/**
+ * "More face detail": photo-robot granularity, so a character can look like a
+ * particular child. Every row previews the character's own face.
+ */
+function AdvancedFace({
+  a,
+  setFace,
+  look,
+}: {
+  a: Appearance;
+  setFace: (patch: FaceDetail) => void;
+  look: (patch: Partial<Appearance>) => void;
+}) {
+  const F = strings.avatar.face;
+  const f = a.face ?? {};
+  const head = (patch: FaceDetail, extra: Partial<Appearance> = {}) => (
+    <PegPortrait
+      appearance={{ ...a, ...extra, face: { ...f, ...patch }, accessory: 'none' }}
+      size={96}
+      crop="head"
+    />
+  );
+  const row = <T extends string | number | boolean>(
+    title: string,
+    options: readonly T[],
+    current: T,
+    name: (o: T, i: number) => string,
+    patch: (o: T) => FaceDetail,
+    columns = 3,
+  ) => (
+    <Section icon="face" title={title} columns={columns}>
+      {options.map((o, i) => (
+        <Choice
+          key={String(o)}
+          label={name(o, i)}
+          selected={current === o}
+          tall
+          onPick={() => setFace(patch(o))}
+        >
+          {head(patch(o))}
+        </Choice>
+      ))}
+    </Section>
+  );
+  const sizeNames = [F.sizes.small, F.sizes.middle, F.sizes.big];
+  const gapNames = [F.gaps.close, F.gaps.middle, F.gaps.wide];
+  const widthNames = [F.widths.narrow, F.widths.middle, F.widths.wide];
+  const showEyeColour = (f.eyes ?? 'dots') !== 'dots';
+  return (
+    <>
+      {row(
+        F.shape,
+        ['round', 'oval', 'wide', 'heart', 'square', 'pear'] as const,
+        f.shape ?? 'round',
+        (o) => F.shapes[o],
+        (o) => ({ shape: o }),
+      )}
+      {row(
+        F.eyes,
+        ['dots', 'round', 'almond'] as const,
+        f.eyes ?? 'dots',
+        (o) => F.eyeStyles[o],
+        (o) => ({ eyes: o }),
+      )}
+      {showEyeColour && (
+        <Section icon="palette" title={F.eyeColour} columns={4}>
+          <Swatches
+            colors={EYE_COLOURS}
+            value={f.eyeColour ?? '#6B4A2E'}
+            label={strings.avatar.colour}
+            onPick={(c) => setFace({ eyeColour: c })}
+          />
+          <AnyColour
+            label={F.exactEyes}
+            value={f.eyeColour ?? '#6B4A2E'}
+            onPick={(c) => setFace({ eyeColour: c })}
+          />
+        </Section>
+      )}
+      {row(
+        F.eyeSize,
+        SIZES,
+        nearest(f.eyeSize, SIZES),
+        (_, i) => sizeNames[i] ?? '',
+        (o) => ({ eyeSize: o }),
+      )}
+      {row(
+        F.eyeGap,
+        GAPS,
+        nearest(f.eyeGap, GAPS),
+        (_, i) => gapNames[i] ?? '',
+        (o) => ({ eyeGap: o }),
+      )}
+      {row(
+        F.brows,
+        ['none', 'thin', 'thick', 'arched'] as const,
+        f.brows ?? 'none',
+        (o) => F.browKinds[o],
+        (o) => ({ brows: o }),
+        4,
+      )}
+      {row(
+        F.nose,
+        ['none', 'dot', 'button', 'long'] as const,
+        f.nose ?? 'none',
+        (o) => F.noses[o],
+        (o) => ({ nose: o }),
+        4,
+      )}
+      {row(
+        F.mouthWidth,
+        WIDTHS,
+        nearest(f.mouthWidth, WIDTHS),
+        (_, i) => widthNames[i] ?? '',
+        (o) => ({ mouthWidth: o }),
+      )}
+      {a.kind === undefined || a.kind === 'person'
+        ? row(
+            F.ears,
+            [false, true] as const,
+            f.ears ?? false,
+            (o) => (o ? F.earsOn : F.earsOff),
+            (o) => ({ ears: o }),
+            2,
+          )
+        : null}
+      {row(
+        F.fringe,
+        ['none', 'straight', 'side'] as const,
+        f.fringe ?? 'none',
+        (o) => F.fringes[o],
+        (o) => ({ fringe: o }),
+      )}
+      {row(
+        F.blushOn,
+        [true, false] as const,
+        f.blush ?? true,
+        (o) => (o ? F.blushOn : F.blushOff),
+        (o) => ({ blush: o }),
+        2,
+      )}
+      {row(
+        F.beard,
+        ['none', 'stubble', 'moustache', 'short', 'full'] as const,
+        f.beard ?? 'none',
+        (o) => F.beards[o],
+        (o) => ({ beard: o }),
+      )}
+      <Section icon="star" title={F.tattoo} columns={3}>
+        {(['none', 'heart', 'star', 'anchor', 'bolt', 'flower'] as const).map((t) => (
+          <Choice
+            key={t}
+            label={F.tattoos[t]}
+            selected={(f.tattoo ?? 'none') === t}
+            tall
+            onPick={() => setFace({ tattoo: t })}
+          >
+            <PegPortrait
+              appearance={{ ...a, face: { ...f, tattoo: t }, accessory: 'none' }}
+              size={96}
+              crop={(f.tattooPlace ?? 'arm') === 'cheek' ? 'head' : 'full'}
+            />
+          </Choice>
+        ))}
+      </Section>
+      {(f.tattoo ?? 'none') !== 'none' && (
+        <>
+          <Section icon="star" title={F.place} columns={2}>
+            {(['arm', 'cheek'] as const).map((p) => (
+              <Choice
+                key={p}
+                label={F.places[p]}
+                selected={(f.tattooPlace ?? 'arm') === p}
+                tall
+                onPick={() => setFace({ tattooPlace: p })}
+              >
+                <PegPortrait
+                  appearance={{ ...a, face: { ...f, tattooPlace: p }, accessory: 'none' }}
+                  size={96}
+                  crop={p === 'cheek' ? 'head' : 'full'}
+                />
+              </Choice>
+            ))}
+          </Section>
+          <Section icon="palette" title={F.tattooColour} columns={3}>
+            <Swatches
+              colors={TATTOO_COLOURS}
+              value={f.tattooColour ?? '#3D5AA8'}
+              label={strings.avatar.colour}
+              onPick={(c) => setFace({ tattooColour: c })}
+            />
+          </Section>
+        </>
+      )}
+      <Section icon="palette" title={F.exact} columns={2}>
+        <AnyColour label={F.exactSkin} value={a.skin} onPick={(c) => look({ skin: c })} />
+        <AnyColour label={F.exactHair} value={a.hair} onPick={(c) => look({ hair: c })} />
+      </Section>
+    </>
+  );
+}
+
 export function AvatarWizardScreen() {
   const draft = useCreation();
   const go = useUi((s) => s.go);
@@ -187,6 +425,8 @@ export function AvatarWizardScreen() {
   const age = useCreation((s) => s.age);
   const words = useShowTextLabels();
   const [step, setStep] = useState<StepId>('body');
+  // "More face detail" always starts closed: the simple face step stays simple.
+  const [moreFace, setMoreFace] = useState(false);
   const [visited, setVisited] = useState<Set<StepId>>(() => new Set(['body']));
   const [spin, setSpin] = useState(0);
   const history = useRef(new DraftHistory());
@@ -437,6 +677,17 @@ export function AvatarWizardScreen() {
                 </Choice>
               ))}
             </Section>
+            <div className="wizard-more">
+              <Switch label={A.face.toggle} checked={moreFace} onChange={setMoreFace} showLabel />
+              <p className="wizard-more__note">{A.face.note}</p>
+            </div>
+            {moreFace && (
+              <AdvancedFace
+                a={a}
+                look={look}
+                setFace={(patch) => look({ face: { ...a.face, ...patch } })}
+              />
+            )}
           </>
         );
       case 'hair':

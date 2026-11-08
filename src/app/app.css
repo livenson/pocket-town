@@ -3748,3 +3748,109 @@ html[data-calm='true'] .critter__picture {
   outline: 4px solid var(--pt-teal);
   outline-offset: -6px;
 }
+
+/* Avatar wizard: "more face detail" switch and any-colour pickers. */
+.wizard-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 8px 0 4px;
+}
+
+.wizard-more__note {
+  margin: 0;
+  color: var(--pt-muted-text);
+  font-weight: 700;
+}
+
+.any-colour {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 6px 10px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 4px 0 #efc39f;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.any-colour input {
+  width: 48px;
+  height: 44px;
+  padding: 0;
+  border: 3px solid var(--pt-ink);
+  border-radius: 12px;
+  background: none;
+  cursor: pointer;
+}
+
+/* ---------- A character from a face (grown-up area) ---------- */
+
+.photo-face {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(100%, 980px);
+  margin: 0 auto;
+}
+
+.photo-face__stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+@media (max-width: 699px) {
+  .photo-face__stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.photo-face__camera {
+  display: none;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: 28px;
+  background: var(--pt-ink);
+}
+
+.photo-face__camera[data-on='true'] {
+  display: block;
+}
+
+/* A mirror: the child sees themself the way round they expect. */
+.photo-face__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.photo-face__preview {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 16px;
+  border-radius: 28px;
+  background: var(--pt-sky);
+}
+
+.photo-face__status {
+  margin: 0;
+  font-weight: 800;
+}
+
+.photo-face__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.photo-face__file {
+  cursor: pointer;
+}

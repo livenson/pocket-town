@@ -20,6 +20,7 @@ import { HubScreen } from './screens/HubScreen';
 import { KitScreen } from './screens/KitScreen';
 import { MapScreen } from './screens/MapScreen';
 import { PhotoScreen } from './screens/PhotoScreen';
+import { PhotoFaceScreen } from './screens/PhotoFaceScreen';
 import { PianoScreen } from './screens/PianoScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { SceneScreen } from './screens/SceneScreen';
@@ -64,6 +65,8 @@ function renderScreen(screen: ScreenId): ReactElement {
       return <HouseWizardScreen />;
     case 'piano':
       return <PianoScreen />;
+    case 'photoFace':
+      return <PhotoFaceScreen />;
   }
 }
 

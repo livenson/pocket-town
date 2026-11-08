@@ -99,7 +99,14 @@ test('a thing placed on the floor stays, and can be put away with a long press',
   await press(page, button(page, 'Pause'));
   await openThings(page);
   await press(page, button(page, 'Cake'));
-  await press(page, button(page, 'Floor, middle'));
+  // A floor spot nobody is standing on (a character there would get the cake).
+  const free = await page.locator('.stage-target--spot').evaluateAll((spots) =>
+    spots.findIndex((el) => {
+      const r = el.getBoundingClientRect();
+      return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el;
+    }),
+  );
+  await press(page, page.locator('.stage-target--spot').nth(Math.max(0, free)));
   const placed = page.getByRole('button', { name: 'Cake, pick it up' });
   await expect(placed).toBeAttached();
   await press(page, button(page, 'Undo'));

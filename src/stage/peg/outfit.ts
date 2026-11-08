@@ -419,3 +419,75 @@ export function helmetPrims(g: PegGeometry, a: Appearance): Prim[] {
     },
   ];
 }
+
+/**
+ * Small finishing details that make a character less plain: a neckline, a pocket
+ * on tunics and dresses, button rows on shirts. Drawn after the clothes.
+ */
+export function detailPrims(g: PegGeometry, a: Appearance): Prim[] {
+  if (g.clothes === 'space' || g.kind !== 'person') return [];
+  const { W, body } = g;
+  const out: Prim[] = [
+    // The neck shows above the neckline.
+    {
+      t: 'ellipse',
+      cx: W / 2,
+      cy: body.y + body.h * 0.04,
+      rx: W * 0.13,
+      ry: body.h * 0.08,
+      fill: mix(a.skin, color.ink, 0.12),
+    },
+  ];
+  if (g.clothes === 'tunic' || g.clothes === 'dress') {
+    out.push({
+      t: 'rect',
+      x: W * 0.6,
+      y: body.y + body.h * 0.38,
+      w: W * 0.17,
+      h: body.h * 0.16,
+      r: 3,
+      fill: color.ink,
+      alpha: 0.12,
+    });
+    out.push({
+      t: 'rect',
+      x: W * 0.6,
+      y: body.y + body.h * 0.38,
+      w: W * 0.17,
+      h: body.h * 0.04,
+      r: 2,
+      fill: color.ink,
+      alpha: 0.18,
+    });
+  }
+  if (g.clothes === 'pants' || g.clothes === 'shorts') {
+    for (const f of [0.3, 0.46, 0.62])
+      out.push({
+        t: 'ellipse',
+        cx: W / 2,
+        cy: body.y + body.h * f,
+        rx: W * 0.025,
+        ry: W * 0.025,
+        fill: color.ink,
+        alpha: 0.3,
+      });
+  }
+  return out;
+}
+
+/** A soft shine across the top of the hair. */
+export function hairShinePrims(g: PegGeometry): Prim[] {
+  if (!g.cap || g.kind !== 'person') return [];
+  const c = g.cap;
+  return [
+    {
+      t: 'ellipse',
+      cx: c.x + c.w * 0.36,
+      cy: c.y + c.h * 0.3,
+      rx: c.w * 0.16,
+      ry: c.h * 0.12,
+      fill: '#FFFFFF',
+      alpha: 0.22,
+    },
+  ];
+}

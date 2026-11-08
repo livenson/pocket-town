@@ -250,6 +250,7 @@ export const en = {
 
   // Screens
   screens: {
+    photoFace: 'A character from a face',
     piano: 'Piano',
     splash: 'Pocket Town',
     diceAvatar: 'Your character',
@@ -314,6 +315,96 @@ export const en = {
     copy: (name: string) => `Copy ${name}`,
     shape: 'Shape',
     shapes: { tall: 'Tall', mid: 'Middle', short: 'Short' } as Record<string, string>,
+    face: {
+      toggle: 'More face detail',
+      note: 'Make it look like someone you know',
+      shape: 'Face shape',
+      shapes: {
+        round: 'Round',
+        oval: 'Long',
+        wide: 'Wide',
+        heart: 'Heart',
+        square: 'Square',
+        pear: 'Pear',
+      },
+      eyes: 'Eyes',
+      eyeStyles: {
+        dots: 'Dots',
+        round: 'Round',
+        almond: 'Almond',
+      },
+      eyeColour: 'Eye colour',
+      eyeSize: 'Eye size',
+      sizes: {
+        small: 'Small',
+        middle: 'Middle',
+        big: 'Big',
+      },
+      eyeGap: 'Eyes apart',
+      gaps: {
+        close: 'Close',
+        middle: 'Middle',
+        wide: 'Far apart',
+      },
+      brows: 'Eyebrows',
+      browKinds: {
+        none: 'No eyebrows',
+        thin: 'Thin',
+        thick: 'Thick',
+        arched: 'Arched',
+      },
+      nose: 'Nose',
+      noses: {
+        none: 'No nose',
+        dot: 'Dot',
+        button: 'Button',
+        long: 'Long',
+      },
+      mouthWidth: 'Mouth width',
+      widths: {
+        narrow: 'Narrow',
+        middle: 'Middle',
+        wide: 'Wide',
+      },
+      ears: 'Ears',
+      earsOn: 'Ears',
+      earsOff: 'No ears',
+      fringe: 'Fringe',
+      fringes: {
+        none: 'No fringe',
+        straight: 'Straight',
+        side: 'To the side',
+      },
+      blushOn: 'Rosy cheeks',
+      blushOff: 'No blush',
+      beard: 'Beard',
+      beards: {
+        none: 'No beard',
+        stubble: 'Stubble',
+        moustache: 'Moustache',
+        short: 'Short beard',
+        full: 'Big beard',
+      },
+      tattoo: 'Play tattoo',
+      tattoos: {
+        none: 'No tattoo',
+        heart: 'Heart',
+        star: 'Star',
+        anchor: 'Anchor',
+        bolt: 'Lightning',
+        flower: 'Flower',
+      },
+      place: 'Where',
+      places: {
+        arm: 'Arm',
+        cheek: 'Cheek',
+      },
+      tattooColour: 'Tattoo colour',
+      exact: 'Any colour',
+      exactSkin: 'Any skin colour',
+      exactHair: 'Any hair colour',
+      exactEyes: 'Any eye colour',
+    },
     figure: 'Boy or girl',
     figures: { boy: 'Boy', girl: 'Girl' },
     kind: 'Person or animal',
@@ -534,6 +625,28 @@ export const en = {
     leave: 'Back to play',
   },
 
+  photoFace: {
+    open: 'Make a character from a photo or the camera',
+    privacy:
+      'The picture stays on this device and is never saved. Only the suggested look is kept, and you can change everything afterwards.',
+    camera: 'Use the camera',
+    stop: 'Stop the camera',
+    photo: 'Choose a photo',
+    loading: 'Getting the face finder ready…',
+    looking: 'Looking for a face…',
+    noFace: 'No face found. Try a photo where the face looks at the camera, in good light.',
+    unavailable:
+      'The face finder does not work on this device. You can still make a character by hand.',
+    denied: 'The camera is not available. You can choose a photo instead.',
+    mirror: 'Smile, blink or open your mouth: the character copies you.',
+    keep: 'Keep this look',
+    newCharacter: 'Make a new character with it',
+    again: 'Try again',
+    preview: 'Suggested character',
+    video: 'Camera picture',
+    give: (name: string) => `Give it to ${name}`,
+  },
+
   piano: {
     open: 'Open the piano',
     instrument: 'Sound',
@@ -550,7 +663,8 @@ export const en = {
   },
 
   grownUp: {
-    credits: 'Pictures of things: Microsoft Fluent Emoji (MIT licence).',
+    credits:
+      'Pictures of things: Microsoft Fluent Emoji (MIT licence). Face finder: Google MediaPipe (Apache 2.0 licence), on this device only.',
     version: (v: string, date: string) => (date ? `Version ${v}, built ${date}` : `Version ${v}`),
     intro: 'Settings for grown-ups. Nothing in Pocket Town leaves this device.',
     kit: 'Component kit (for checking the design)',

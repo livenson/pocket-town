@@ -5,7 +5,26 @@ import { ellipseBox, ellipticalRect, hex } from '../draw';
 import type { Appearance, Box, Eyes, PegGeometry } from './geometry';
 import { pegGeometry } from './geometry';
 import { bodyExtras, headExtras, mouthPrims, type Prim } from './extras';
-import { armPrims, backPrims, bodyFill, clothesPrims, helmetPrims, lashPrims } from './outfit';
+import {
+  beardPrims,
+  browPrims,
+  detailedEyes,
+  earPrims,
+  eyePrims,
+  fringePrims,
+  nosePrims,
+  tattooPrims,
+} from './face';
+import {
+  armPrims,
+  backPrims,
+  bodyFill,
+  clothesPrims,
+  detailPrims,
+  hairShinePrims,
+  helmetPrims,
+  lashPrims,
+} from './outfit';
 
 const INK = hex(color.ink);
 
@@ -35,16 +54,19 @@ export function drawPeg(
     alpha: 0.22,
   });
   drawPrims(g, clothesPrims(geo, a));
+  drawPrims(g, detailPrims(geo, a));
   drawPrims(g, bodyExtras(geo, a));
   drawPrims(g, armPrims(geo, a));
+  drawPrims(g, tattooPrims(geo, a, 'arm'));
 
-  // Head with a soft shade at the bottom-right.
-  const hr = d / 2;
-  const hcx = geo.head.x + hr;
-  const hcy = geo.head.y + hr;
-  g.circle(hcx, hcy, hr).fill(hex(a.skin));
-  g.circle(hcx, hcy, hr).fill({ color: INK, alpha: 0.12 });
-  g.circle(hcx - d * 0.07, hcy - d * 0.06, hr).cut();
+  // Head (round unless the face shape says otherwise) with a soft shade at the
+  // bottom-right; ears behind it.
+  drawPrims(g, earPrims(geo, a));
+  const outline = geo.headPoly;
+  const shifted = outline.map((v, i) => v + (i % 2 === 0 ? -d * 0.07 : -d * 0.06));
+  g.poly(outline).fill(hex(a.skin));
+  g.poly(outline).fill({ color: INK, alpha: 0.12 });
+  g.poly(shifted).cut();
 
   // Hair.
   if (geo.cap) ellipticalRect(g, geo.cap, geo.capCorners).fill(hex(a.hair));
@@ -60,16 +82,27 @@ export function drawPeg(
     }).fill(hex(a.hair));
   }
 
+  drawPrims(g, hairShinePrims(geo));
+  drawPrims(g, fringePrims(geo, a));
+
   // Face.
-  for (const e of geo.eyes) {
-    if (geo.eyeShape === 'bar') g.roundRect(e.x, e.y, e.w, e.h, Math.min(3, e.h / 2)).fill(INK);
-    else ellipseBox(g, e).fill(INK);
-  }
+  if (detailedEyes(geo, a)) drawPrims(g, eyePrims(geo, a));
+  else
+    for (const e of geo.eyes) {
+      if (geo.eyeShape === 'bar') g.roundRect(e.x, e.y, e.w, e.h, Math.min(3, e.h / 2)).fill(INK);
+      else ellipseBox(g, e).fill(INK);
+    }
+  drawPrims(g, browPrims(geo, a));
   drawPrims(g, lashPrims(geo));
-  for (const c of geo.cheeks) ellipseBox(g, c).fill({ color: 0xff6978, alpha: 0.42 });
+  if (a.face?.blush !== false)
+    for (const c of geo.cheeks) ellipseBox(g, c).fill({ color: 0xff6978, alpha: 0.42 });
+  drawPrims(g, tattooPrims(geo, a, 'cheek'));
+  drawPrims(g, nosePrims(geo, a));
+  drawPrims(g, beardPrims(geo, a, 'under'));
   const mouth = mouthPrims(geo);
   if (mouth) drawPrims(g, mouth);
   else drawMouth(g, geo.mouth, geo.mouthShape, geo.lineWidth);
+  drawPrims(g, beardPrims(geo, a, 'over'));
 
   drawPrims(g, headExtras(geo, a));
   drawPrims(g, helmetPrims(geo, a));

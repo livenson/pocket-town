@@ -86,7 +86,13 @@ export function bodyExtras(g: PegGeometry, a: Appearance): Prim[] {
 }
 
 /** A heart or star on the chest. */
-function badge(kind: 'heart' | 'star', cx: number, cy: number, r: number, fill: string): Prim[] {
+export function badge(
+  kind: 'heart' | 'star',
+  cx: number,
+  cy: number,
+  r: number,
+  fill: string,
+): Prim[] {
   if (kind === 'star') {
     const pts: number[] = [];
     for (let i = 0; i < 10; i++) {

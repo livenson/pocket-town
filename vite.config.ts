@@ -16,7 +16,9 @@ const BASE = '/pocket-town/';
  */
 const CSP = [
   "default-src 'self'",
-  "script-src 'self'",
+  // 'wasm-unsafe-eval' lets WebAssembly compile (the on-device face finder for
+  // making a character from a photo); it does not allow JavaScript eval.
+  "script-src 'self' 'wasm-unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
@@ -98,6 +100,9 @@ export default defineConfig(({ mode, command }) => ({
         // Only Latin and Latin Extended font files are precached; other scripts
         // still load on demand from our own origin if a name ever needs them.
         globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}', '**/*latin*.woff2'],
+        // The face finder (about 18 MB, grown-ups only) is never precached: it
+        // loads from our own origin the first time someone uses it.
+        globIgnores: ['face/**', '**/vision_bundle*.js', '**/faceFinder*.js'],
         navigateFallback: `${BASE}index.html`,
         cleanupOutdatedCaches: true,
       },

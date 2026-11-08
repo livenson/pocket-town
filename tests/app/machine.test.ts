@@ -77,3 +77,11 @@ describe('hidden piano', () => {
     expect(navigate(gated, { type: 'gatePassed' }).screen).toBe('piano');
   });
 });
+
+describe('a character from a face', () => {
+  it('is for grown-ups: behind the parental gate', () => {
+    const gated = navigate({ ...initialNav, screen: 'hub' }, { type: 'go', to: 'photoFace' });
+    expect(gated.screen).toBe('gate');
+    expect(EDGES.photoFace).toContain('avatarWizard');
+  });
+});

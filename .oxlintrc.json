@@ -13,7 +13,14 @@
     "browser": true,
     "es2024": true
   },
-  "ignorePatterns": ["dist", "dev-dist", "design-reference", "playwright-report", "test-results"],
+  "ignorePatterns": [
+    "dist",
+    "dev-dist",
+    "design-reference",
+    "playwright-report",
+    "test-results",
+    "public/face"
+  ],
   "rules": {
     "react/rules-of-hooks": "error",
     "react/exhaustive-deps": "error",

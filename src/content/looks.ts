@@ -1,6 +1,6 @@
 // Random looks and names for "surprise me" (the dice). Pure data and functions.
 import { hairColors, outfitColors, skinTones } from '../design/tokens';
-import type { Appearance, Clothes, Figure, HairStyle, Kind } from './appearance';
+import type { Appearance, Clothes, FaceDetail, Figure, HairStyle, Kind } from './appearance';
 import type { TraitId } from './traits';
 
 export const hairStyles: HairStyle[] = [
@@ -120,9 +120,24 @@ export function withFigure(a: Appearance, figure: Figure): Appearance {
   return next;
 }
 
+const eyeColours = ['#6B4A2E', '#3B2A1E', '#3D7BD9', '#3E8E4A', '#8A9A5B'];
+
+/** A detailed face for new characters (no beards or tattoos: those are chosen). */
+export function randomFace(random: () => number = Math.random): FaceDetail {
+  return {
+    eyes: pickOne(['round', 'round', 'almond'] as const, random),
+    eyeColour: pickOne(eyeColours, random),
+    brows: pickOne(['thin', 'thin', 'thick', 'arched'] as const, random),
+    nose: pickOne(['button', 'button', 'dot'] as const, random),
+    ears: true,
+    shape: pickOne(['round', 'oval', 'wide', 'heart', 'square', 'pear'] as const, random),
+  };
+}
+
 export function randomLook(random: () => number = Math.random): Appearance {
   const figure = pickOne(figures, random);
   return {
+    face: randomFace(random),
     figure,
     hairStyle: pickOne(typicalHair[figure], random),
     outfit: pickOne(outfitColors, random),

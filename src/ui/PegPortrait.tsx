@@ -1,14 +1,27 @@
 // A peg-folk character as SVG, from the same geometry the stage uses. For docks,
 // cards, the gallery and the avatar wizard.
+import { useId } from 'react';
 import type { Appearance, Eyes } from '../content/appearance';
 import { color } from '../design/tokens';
 import { bodyExtras, headExtras, mouthPrims, type Prim } from '../stage/peg/extras';
 import { pegGeometry, type Box, type Corners } from '../stage/peg/geometry';
 import {
+  beardPrims,
+  browPrims,
+  detailedEyes,
+  earPrims,
+  eyePrims,
+  fringePrims,
+  nosePrims,
+  tattooPrims,
+} from '../stage/peg/face';
+import {
   armPrims,
   backPrims,
   bodyFill,
   clothesPrims,
+  detailPrims,
+  hairShinePrims,
   helmetPrims,
   lashPrims,
 } from '../stage/peg/outfit';
@@ -43,6 +56,14 @@ function ellipticalRectPath(b: Box, c: Corners, dx = 0): string {
     `L${n(x)} ${n(y + tly)}`,
     `C${n(x)} ${n(y + tly - tly * K)} ${n(x + tlx - tlx * K)} ${n(y)} ${n(x + tlx)} ${n(y)}Z`,
   ].join('');
+}
+
+/** An SVG path through x, y pairs. */
+function polyPath(pts: number[]): string {
+  let d = '';
+  for (let i = 0; i < pts.length; i += 2)
+    d += `${i === 0 ? 'M' : 'L'}${n(pts[i] ?? 0)} ${n(pts[i + 1] ?? 0)}`;
+  return `${d}Z`;
 }
 
 const pct = (b: Box, px: number, py = px): Corners => ({
@@ -131,6 +152,8 @@ export function PegPortrait({
 }: PegPortraitProps) {
   const H = 150;
   const g = pegGeometry(H, a, eyes);
+  // Unique per portrait: several portraits of different shapes share a page.
+  const uid = useId().replace(/:/g, '');
   const ink = color.ink;
   const viewBox =
     crop === 'head'
@@ -140,6 +163,11 @@ export function PegPortrait({
   const hr = g.d / 2;
   const hcx = g.head.x + hr;
   const hcy = g.head.y + hr;
+  const { headRx: rx, headRy: ry } = g;
+  // The lit part of the face: the outline moved up and left; the rest is shade.
+  const shadePath = polyPath(
+    g.headPoly.map((v, i) => v + (i % 2 === 0 ? -g.d * 0.07 : -g.d * 0.06)),
+  );
   const m = g.mouth;
   const my = m.y + m.h * 0.35;
   return (
@@ -154,10 +182,10 @@ export function PegPortrait({
       {g.top && <Ellipse b={g.top} fill={a.hair} />}
       <Prims prims={backPrims(g, a)} />
       <path d={ellipticalRectPath(g.body, g.bodyCorners)} fill={bodyFill(g, a)} />
-      <clipPath id={`body-${a.outfit}-${a.kind ?? 'person'}`}>
+      <clipPath id={`body-${uid}`}>
         <path d={ellipticalRectPath(g.body, g.bodyCorners)} />
       </clipPath>
-      <g clipPath={`url(#body-${a.outfit}-${a.kind ?? 'person'})`}>
+      <g clipPath={`url(#body-${uid})`}>
         <rect x={0} y={g.body.y} width={g.W * 0.09} height={g.body.h} fill="#fff" opacity={0.2} />
         <rect
           x={g.W * 0.92}
@@ -178,15 +206,18 @@ export function PegPortrait({
         opacity={0.22}
       />
       <Prims prims={clothesPrims(g, a)} />
+      <Prims prims={detailPrims(g, a)} />
       <Prims prims={bodyExtras(g, a)} />
       <Prims prims={armPrims(g, a)} />
-      <circle cx={hcx} cy={hcy} r={hr} fill={a.skin} />
-      <clipPath id={`head-${a.skin}`}>
-        <circle cx={hcx} cy={hcy} r={hr} />
+      <Prims prims={tattooPrims(g, a, 'arm')} />
+      <Prims prims={earPrims(g, a)} />
+      <polygon points={g.headPoly.join(' ')} fill={a.skin} />
+      <clipPath id={`head-${uid}`}>
+        <polygon points={g.headPoly.join(' ')} />
       </clipPath>
-      <g clipPath={`url(#head-${a.skin})`}>
+      <g clipPath={`url(#head-${uid})`}>
         <path
-          d={`M${hcx - hr - 2} ${hcy - hr - 2}h${g.d + 4}v${g.d + 4}h${-(g.d + 4)}Z M${hcx - g.d * 0.07 + hr} ${hcy - g.d * 0.06}a${hr} ${hr} 0 1 0 ${-2 * hr} 0a${hr} ${hr} 0 1 0 ${2 * hr} 0Z`}
+          d={`M${hcx - rx - 4} ${hcy - ry - 4}h${2 * rx + 8}v${2 * ry + 8}h${-(2 * rx + 8)}Z ${shadePath}`}
           fill={ink}
           opacity={0.12}
           fillRule="evenodd"
@@ -196,25 +227,34 @@ export function PegPortrait({
       {g.locks?.map((l, i) => (
         <path key={i} d={ellipticalRectPath(l, pct(l, 0.4, 0.45))} fill={a.hair} />
       ))}
-      {g.eyes.map((e, i) =>
-        g.eyeShape === 'bar' ? (
-          <rect
-            key={i}
-            x={e.x}
-            y={e.y}
-            width={e.w}
-            height={e.h}
-            rx={Math.min(3, e.h / 2)}
-            fill={ink}
-          />
-        ) : (
-          <Ellipse key={i} b={e} fill={ink} />
-        ),
+      <Prims prims={hairShinePrims(g)} />
+      <Prims prims={fringePrims(g, a)} />
+      {detailedEyes(g, a) ? (
+        <Prims prims={eyePrims(g, a)} />
+      ) : (
+        g.eyes.map((e, i) =>
+          g.eyeShape === 'bar' ? (
+            <rect
+              key={i}
+              x={e.x}
+              y={e.y}
+              width={e.w}
+              height={e.h}
+              rx={Math.min(3, e.h / 2)}
+              fill={ink}
+            />
+          ) : (
+            <Ellipse key={i} b={e} fill={ink} />
+          ),
+        )
       )}
+      <Prims prims={browPrims(g, a)} />
       <Prims prims={lashPrims(g)} />
-      {g.cheeks.map((c, i) => (
-        <Ellipse key={i} b={c} fill="#FF6978" opacity={0.42} />
-      ))}
+      {a.face?.blush !== false &&
+        g.cheeks.map((c, i) => <Ellipse key={i} b={c} fill="#FF6978" opacity={0.42} />)}
+      <Prims prims={tattooPrims(g, a, 'cheek')} />
+      <Prims prims={nosePrims(g, a)} />
+      <Prims prims={beardPrims(g, a, 'under')} />
       {mouthPrims(g) ? (
         <Prims prims={mouthPrims(g) ?? []} />
       ) : g.mouthShape === 'o' ? (
@@ -236,6 +276,7 @@ export function PegPortrait({
           strokeLinecap="round"
         />
       )}
+      <Prims prims={beardPrims(g, a, 'over')} />
       <Prims prims={headExtras(g, a)} />
       <Prims prims={helmetPrims(g, a)} />
     </svg>

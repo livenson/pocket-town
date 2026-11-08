@@ -16,6 +16,14 @@ export const starterCast: CharacterDef[] = [
     id: 'moku',
     name: 'Moku',
     appearance: {
+      face: {
+        eyes: 'round',
+        eyeColour: '#6B4A2E',
+        brows: 'thin',
+        nose: 'button',
+        ears: true,
+        fringe: 'straight',
+      },
       figure: 'girl',
       clothes: 'dress',
       skin: '#E9B48A',
@@ -30,6 +38,14 @@ export const starterCast: CharacterDef[] = [
     id: 'pim',
     name: 'Pim',
     appearance: {
+      face: {
+        eyes: 'round',
+        eyeColour: '#3B2A1E',
+        brows: 'thick',
+        nose: 'button',
+        ears: true,
+        shape: 'wide',
+      },
       figure: 'boy',
       clothes: 'overalls',
       skin: '#8D5A3B',
@@ -44,6 +60,14 @@ export const starterCast: CharacterDef[] = [
     id: 'lumo',
     name: 'Lumo',
     appearance: {
+      face: {
+        eyes: 'almond',
+        eyeColour: '#3E8E4A',
+        brows: 'arched',
+        nose: 'dot',
+        ears: true,
+        shape: 'oval',
+      },
       figure: 'girl',
       clothes: 'pants',
       second: color.teal,
@@ -59,6 +83,7 @@ export const starterCast: CharacterDef[] = [
     id: 'nella',
     name: 'Nella',
     appearance: {
+      face: { eyes: 'round', eyeColour: '#3D7BD9', brows: 'thin', nose: 'dot', ears: true },
       figure: 'girl',
       clothes: 'cape',
       skin: '#5A3725',
@@ -73,6 +98,14 @@ export const starterCast: CharacterDef[] = [
     id: 'oki',
     name: 'Oki',
     appearance: {
+      face: {
+        eyes: 'round',
+        eyeColour: '#6B4A2E',
+        brows: 'thin',
+        nose: 'button',
+        ears: true,
+        shape: 'oval',
+      },
       figure: 'boy',
       clothes: 'shorts',
       skin: '#F6D2B4',
@@ -87,6 +120,7 @@ export const starterCast: CharacterDef[] = [
     id: 'tavi',
     name: 'Tavi',
     appearance: {
+      face: { eyes: 'almond', eyeColour: '#3B2A1E', brows: 'thick', nose: 'button', ears: true },
       figure: 'boy',
       clothes: 'space',
       skin: '#F6D2B4',
