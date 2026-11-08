@@ -125,7 +125,8 @@ export const en = {
   dropIt: 'Put it back',
   putAway: 'Hold to put it away',
   thingHere: (thing: string) => `${thing}, pick it up`,
-  bringPerson: (name: string) => `Bring ${name} here: drag onto the floor, or tap, then tap the floor`,
+  bringPerson: (name: string) =>
+    `Bring ${name} here: drag onto the floor, or tap, then tap the floor`,
   bringHere: (name: string) => `${name}: tap the floor where they should stand`,
   othersInTown: 'Everyone else in town',
   newCharacterShort: 'New character',

@@ -123,7 +123,8 @@ export const et: Strings = {
   dropIt: 'Pane tagasi',
   putAway: 'Hoia all, et ära panna',
   thingHere: (thing: string) => `${thing}, võta üles`,
-  bringPerson: (name: string) => `Too ${name} siia: lohista põrandale või puuduta ja siis puuduta põrandat`,
+  bringPerson: (name: string) =>
+    `Too ${name} siia: lohista põrandale või puuduta ja siis puuduta põrandat`,
   bringHere: (name: string) => `${name}: puuduta põrandat, kuhu ta seisma jääb`,
   othersInTown: 'Kõik teised linnas',
   newCharacterShort: 'Uus tegelane',

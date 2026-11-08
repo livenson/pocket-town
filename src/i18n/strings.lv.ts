@@ -125,7 +125,8 @@ export const lv: Strings = {
   dropIt: 'Nolikt atpakaļ',
   putAway: 'Turi, lai noliktu prom',
   thingHere: (thing: string) => `${thing}, paņemt`,
-  bringPerson: (name: string) => `Atved ${name} šurp: velc uz grīdas vai pieskaries un tad pieskaries grīdai`,
+  bringPerson: (name: string) =>
+    `Atved ${name} šurp: velc uz grīdas vai pieskaries un tad pieskaries grīdai`,
   bringHere: (name: string) => `${name}: pieskaries grīdai, kur stāvēt`,
   othersInTown: 'Visi pārējie pilsētā',
   newCharacterShort: 'Jauns tēls',
