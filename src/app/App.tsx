@@ -1,3 +1,4 @@
+import { HoverTips } from '../ui/HoverTips';
 import { useEffect, type ReactElement } from 'react';
 import { applyLanguageSetting, currentLanguage, strings } from '../i18n';
 import { useKeyboardShortcuts } from '../input/shortcuts';
@@ -107,6 +108,7 @@ export function App() {
       <ShortcutsOverlay />
       <Postcard />
       <Toasts />
+      <HoverTips />
     </>
   );
 }
