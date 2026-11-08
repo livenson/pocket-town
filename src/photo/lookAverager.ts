@@ -93,20 +93,3 @@ export class LookAverager {
     this.colours = {};
   }
 }
-
-/** A live expression from MediaPipe blendshape scores (0–1), for the mirror. */
-export interface Expression {
-  eyes: 'open' | 'sleep' | 'wow';
-  mouth: 'smile' | 'grin' | 'calm';
-}
-
-export function expressionOf(scores: ReadonlyMap<string, number>): Expression {
-  const s = (name: string) => scores.get(name) ?? 0;
-  const blink = (s('eyeBlinkLeft') + s('eyeBlinkRight')) / 2;
-  const smile = (s('mouthSmileLeft') + s('mouthSmileRight')) / 2;
-  const open = s('jawOpen');
-  return {
-    eyes: open > 0.35 ? 'wow' : blink > 0.5 ? 'sleep' : 'open',
-    mouth: smile > 0.45 ? 'grin' : smile > 0.15 ? 'smile' : 'calm',
-  };
-}

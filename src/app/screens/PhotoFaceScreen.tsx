@@ -3,7 +3,8 @@ import type { Appearance } from '../../content/appearance';
 import { randomLook, randomName, randomTraits } from '../../content/looks';
 import { strings } from '../../i18n';
 import type { PhotoLook } from '../../photo/faceFromPhoto';
-import { expressionOf, LookAverager, type Expression } from '../../photo/lookAverager';
+import { LookAverager } from '../../photo/lookAverager';
+import { ExpressionReader, type LiveFace } from '../../photo/liveFace';
 import { useCreation } from '../../state/creation';
 import { useProfiles } from '../../state/profiles';
 import { useUi } from '../../state/ui';
@@ -37,7 +38,10 @@ export function PhotoFaceScreen() {
   const [base] = useState<Appearance>(() => me?.appearance ?? randomLook());
   const [phase, setPhase] = useState<Phase>('idle');
   const [look, setLook] = useState<PhotoLook | null>(null);
-  const [expression, setExpression] = useState<Expression>({ eyes: 'open', mouth: 'smile' });
+  const [live, setLive] = useState<LiveFace | null>(null);
+  const reader = useRef(new ExpressionReader());
+  /** The mirror learns the child's resting face first. */
+  const [calibrated, setCalibrated] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
   const stream = useRef<MediaStream | null>(null);
   const stopWatch = useRef<(() => void) | null>(null);
@@ -63,11 +67,11 @@ export function PhotoFaceScreen() {
     const watch = stopWatch;
     const media = stream;
     const loaded = finderLoaded;
-    const live = alive;
+    const onScreen = alive;
     const run = session;
-    live.current = true;
+    onScreen.current = true;
     return () => {
-      live.current = false;
+      onScreen.current = false;
       run.current++;
       watch.current?.();
       watch.current = null;
@@ -124,15 +128,25 @@ export function PhotoFaceScreen() {
       return;
     }
     let last = 0;
+    let lookAt = 0;
+    reader.current.reset();
+    setCalibrated(false);
     try {
-      const stop = await finder.watchVideo(v, ({ look: l, scores }) => {
+      const stop = await finder.watchVideo(v, ({ look: l, scores, points }) => {
         if (l) averager.current.add(l);
-        // Redraw the character about ten times a second: plenty for a mirror.
+        // The expression is read on every frame (so smoothing and calibration see
+        // them all) and drawn about 30 times a second; the slower-changing look
+        // (shape, colours) about 5 times a second.
+        const face = reader.current.read(scores, points);
         const now = performance.now();
-        if (now - last < 100) return;
+        if (now - last < 33) return;
         last = now;
-        setExpression(expressionOf(scores));
-        setLook(averager.current.current());
+        setLive(face);
+        setCalibrated(reader.current.calibrated);
+        if (now - lookAt > 200) {
+          lookAt = now;
+          setLook(averager.current.current());
+        }
       });
       if (gone()) {
         stop();
@@ -148,7 +162,7 @@ export function PhotoFaceScreen() {
 
   const keep = () => {
     stopCamera();
-    setExpression({ eyes: 'open', mouth: 'smile' });
+    setLive(null);
     setPhase(look ? 'result' : 'noFace');
   };
 
@@ -166,7 +180,7 @@ export function PhotoFaceScreen() {
   };
 
   const preview = look ? applyLook(base, look) : base;
-  const shown: Appearance = phase === 'camera' ? { ...preview, mouth: expression.mouth } : preview;
+  const shown: Appearance = preview;
 
   const applyTo = (target: 'new' | 'me') => {
     if (!look) return;
@@ -201,7 +215,9 @@ export function PhotoFaceScreen() {
             : phase === 'denied'
               ? P.denied
               : phase === 'camera'
-                ? P.mirror
+                ? calibrated
+                  ? P.mirror
+                  : P.calibrating
                 : null;
 
   return (
@@ -221,7 +237,7 @@ export function PhotoFaceScreen() {
           <figure className="photo-face__preview" aria-label={P.preview}>
             <PegPortrait
               appearance={shown}
-              eyes={phase === 'camera' ? expression.eyes : 'open'}
+              live={phase === 'camera' && live ? live : undefined}
               size={260}
             />
           </figure>

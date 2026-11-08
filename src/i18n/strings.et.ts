@@ -615,6 +615,7 @@ export const et: Strings = {
   },
 
   photoFace: {
+    calibrating: 'Vaata hetk rahuliku näoga kaamerasse…',
     open: 'Tee tegelane foto või kaamera järgi',
     privacy:
       'Pilt jääb sellesse seadmesse ja seda ei salvestata. Alles jääb ainult soovitatud välimus, ja kõike saab hiljem muuta.',
@@ -651,6 +652,10 @@ export const et: Strings = {
   },
 
   grownUp: {
+    players: 'Mängijad selles seadmes',
+    removePlayer: (name: string) => `Hoia all, et eemaldada ${name} ja tema linn`,
+    removeNote:
+      'Eemaldab mängija, tema tegelased ja tema linna sellest seadmest. Seda ei saa tagasi võtta.',
     credits:
       'Asjade pildid: Microsoft Fluent Emoji (MIT-litsents). Näotuvastaja: Google MediaPipe (Apache 2.0 litsents), ainult selles seadmes.',
     version: (v: string, date: string) =>

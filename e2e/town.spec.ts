@@ -44,6 +44,22 @@ async function ageSaves(page: Page, minutes: number): Promise<number> {
   );
 }
 
+/**
+ * A floor spot nobody is standing on. Characters move about (Pim plays the music
+ * box right behind the middle spot), and a tap on a character gives them the
+ * thing instead of putting it on the floor.
+ */
+async function freeFloorSpot(page: Page): Promise<Locator> {
+  const spots = page.locator('.stage-target--spot');
+  const free = await spots.evaluateAll((els) =>
+    els.findIndex((el) => {
+      const r = el.getBoundingClientRect();
+      return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el;
+    }),
+  );
+  return spots.nth(Math.max(0, free));
+}
+
 test('coming back after a while shows the postcard, which a tap skips; the town is consistent', async ({
   page,
 }) => {
@@ -53,7 +69,7 @@ test('coming back after a while shows the postcard, which a tap skips; the town 
   const plus = page.getByRole('button', { name: 'Add', exact: true });
   if (await plus.isVisible()) await tap(page, plus);
   await tap(page, b(page, 'Cake'));
-  await tap(page, b(page, 'Floor, middle'));
+  await tap(page, await freeFloorSpot(page));
   await expect(page.getByRole('button', { name: 'Cake, pick it up' })).toBeAttached();
   await expect.poll(() => ageSaves(page, 0)).toBeGreaterThan(0);
 
@@ -76,7 +92,7 @@ test('a short break does not show the postcard', async ({ page }) => {
   const plus = page.getByRole('button', { name: 'Add', exact: true });
   if (await plus.isVisible()) await tap(page, plus);
   await tap(page, b(page, 'Cake'));
-  await tap(page, b(page, 'Floor, middle'));
+  await tap(page, await freeFloorSpot(page));
   await expect.poll(() => ageSaves(page, 0)).toBeGreaterThan(0);
   await ageSaves(page, 3);
   await page.reload();

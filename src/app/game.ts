@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { create } from 'zustand';
 import { playSfx } from '../audio/audio';
-import { loadSave, writeSave } from '../persist/save';
+import { del } from 'idb-keyval';
+import { loadSave, slotsFor, writeSave } from '../persist/save';
 import type { Command } from '../sim/commands';
 import { AWAY_MIN_MS, awayGameMinutes, catchUp } from '../sim/away';
 import { History } from '../sim/history';
@@ -38,6 +39,8 @@ let saveTimer: ReturnType<typeof setTimeout> | null = null;
 let profileId: string | null = null;
 /** Tests and screenshots (?seed, ?still) never write saves. */
 let saving = true;
+/** No town is open (its player was removed): nothing to save until one is. */
+let noTown = false;
 
 function changed(): void {
   useGame.setState((s) => ({
@@ -56,7 +59,7 @@ export function scheduleSave(): void {
 export async function saveNow(): Promise<void> {
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = null;
-  if (!saving) return;
+  if (!saving || noTown) return;
   try {
     await writeSave(sim.world, { roomId: useUi.getState().roomId }, profileId);
   } catch {
@@ -143,6 +146,7 @@ export async function enterProfile(id: string): Promise<void> {
   ensurePlayerBot(world, profile);
   if (save) comeBack(world, Date.now() - save.savedAt);
   profileId = id;
+  noTown = false;
   history.clear();
   sim.load(world);
   useUi.getState().setRoom(save?.ui.roomId ?? 'home-living');
@@ -234,4 +238,26 @@ export async function finishCreation(): Promise<void> {
     createdAt: Date.now(),
   });
   await enterProfile(id);
+}
+
+/**
+ * Remove a player for good (grown-up area, press and hold): their profile and
+ * their saved town. If their town is open, saving stops first, so it is not
+ * written back. With no players left, the town from before profiles goes too,
+ * so the next player starts fresh.
+ */
+export async function removePlayer(id: string): Promise<{ wasOpen: boolean }> {
+  const wasOpen = profileId === id;
+  if (wasOpen) {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = null;
+    profileId = null;
+    noTown = true;
+  }
+  const { profiles, remove } = useProfiles.getState();
+  const last = profiles.every((p) => p.id === id);
+  remove(id);
+  const slots = [...slotsFor(id), ...(last ? slotsFor(null) : [])];
+  await Promise.all(slots.map((k) => del(k).catch(() => {})));
+  return { wasOpen };
 }

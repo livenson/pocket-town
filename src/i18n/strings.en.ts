@@ -626,6 +626,7 @@ export const en = {
   },
 
   photoFace: {
+    calibrating: 'Look at the camera with a calm face for a moment…',
     open: 'Make a character from a photo or the camera',
     privacy:
       'The picture stays on this device and is never saved. Only the suggested look is kept, and you can change everything afterwards.',
@@ -663,6 +664,10 @@ export const en = {
   },
 
   grownUp: {
+    players: 'Players on this device',
+    removePlayer: (name: string) => `Hold to remove ${name} and their town`,
+    removeNote:
+      'Removes the player, their characters and their town from this device. This cannot be undone.',
     credits:
       'Pictures of things: Microsoft Fluent Emoji (MIT licence). Face finder: Google MediaPipe (Apache 2.0 licence), on this device only.',
     version: (v: string, date: string) => (date ? `Version ${v}, built ${date}` : `Version ${v}`),

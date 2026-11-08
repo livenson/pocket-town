@@ -167,6 +167,8 @@ export interface LiveFrame {
   look: PhotoLook | null;
   /** Blendshape scores by name (smile, blink, jaw open…), for the mirror. */
   scores: Map<string, number>;
+  /** The face's points (0–1 across and down the picture), or null with no face. */
+  points: { x: number; y: number }[] | null;
 }
 
 /**
@@ -210,7 +212,7 @@ export async function watchVideo(
       (result.faceBlendshapes[0]?.categories ?? []).map((c) => [c.categoryName, c.score]),
     );
     const look = pixels ? lookFrom(result, canvas.width, canvas.height, pixels) : null;
-    onFrame({ look, scores });
+    onFrame({ look, scores, points: result.faceLandmarks[0] ?? null });
   };
   raf = requestAnimationFrame(loop);
   return () => {

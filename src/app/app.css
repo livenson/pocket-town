@@ -3857,3 +3857,30 @@ html[data-calm='true'] .critter__picture {
 .photo-face__file {
   cursor: pointer;
 }
+
+/* Grown-up area: players on this device. */
+.players {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.players__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.players__name {
+  flex: 1;
+  font-family: var(--pt-font-display);
+  font-weight: 800;
+  font-size: 20px;
+}

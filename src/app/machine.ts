@@ -37,7 +37,7 @@ export const EDGES: Readonly<Record<ScreenId, readonly ScreenId[]>> = {
   map: ['scene', 'hub'],
   scene: ['map', 'photo', 'houseWizard', 'hub'],
   gate: ['grownUp', 'kit'],
-  grownUp: ['kit', 'settings', 'piano', 'photoFace'],
+  grownUp: ['kit', 'settings', 'piano', 'photoFace', 'profile'],
   settings: [],
   characters: ['avatarWizard', 'scene', 'hub'],
   photo: [],

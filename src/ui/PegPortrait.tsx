@@ -4,7 +4,8 @@ import { useId } from 'react';
 import type { Appearance, Eyes } from '../content/appearance';
 import { color } from '../design/tokens';
 import { bodyExtras, headExtras, mouthPrims, type Prim } from '../stage/peg/extras';
-import { pegGeometry, type Box, type Corners } from '../stage/peg/geometry';
+import { pegGeometry, type Box, type Corners, type PegGeometry } from '../stage/peg/geometry';
+import type { LiveFace } from '../photo/liveFace';
 import {
   beardPrims,
   browPrims,
@@ -141,6 +142,98 @@ export interface PegPortraitProps {
   size: number;
   /** Show only the head and shoulders (dock portraits). */
   crop?: 'full' | 'head';
+  /** The live mirror (camera screen): a continuous expression and head pose. */
+  live?: LiveFace;
+}
+
+/** Brows that lift and knit with the live expression (thin ones if none were chosen). */
+function LiveBrows({ g, a, live }: { g: PegGeometry; a: Appearance; live: LiveFace }) {
+  const thick = a.face?.brows === 'thick';
+  const fill = a.hairStyle === 'none' ? color.ink : a.hair;
+  const sw = g.lineWidth * (thick ? 1.7 : 1);
+  return (
+    <>
+      {g.eyes.map((e, i) => {
+        const v = i === 0 ? live.browL : live.browR;
+        const cx = e.x + e.w / 2;
+        const y = g.head.y + g.d * 0.36 - v * g.d * 0.06;
+        const half = g.d * 0.08;
+        // Inner end (towards the nose) dips when knitted, lifts when worried.
+        const inner = i === 0 ? 1 : -1;
+        const tilt = -v * g.d * 0.025;
+        return (
+          <line
+            key={i}
+            x1={cx - inner * half}
+            y1={y}
+            x2={cx + inner * half}
+            y2={y + tilt}
+            stroke={fill}
+            strokeWidth={sw}
+            strokeLinecap="round"
+          />
+        );
+      })}
+    </>
+  );
+}
+
+/** A mouth drawn from a live expression: smile, frown, open jaw, pucker. */
+function LiveMouth({ m, live, lw, d }: { m: Box; live: LiveFace; lw: number; d: number }) {
+  const cx = m.x + m.w / 2;
+  const y0 = m.y + m.h * 0.35;
+  const smile = Math.max(0, live.smile);
+  const frown = Math.max(0, -live.smile);
+  const half = (m.w / 2) * (1 + 0.45 * smile - 0.5 * live.pucker);
+  const cornerY = y0 - smile * m.h * 0.35 + frown * m.h * 0.9;
+  const openH = live.open * d * 0.2;
+  const lowMid = y0 + m.h * (0.15 + 0.9 * smile) - frown * m.h * 0.5 + openH;
+  const upMid = y0 + m.h * 0.05 * smile - openH * 0.15;
+  if (live.pucker > 0.55 && live.open < 0.3)
+    return (
+      <ellipse
+        cx={cx}
+        cy={y0 + m.h * 0.3}
+        rx={Math.max(lw, half * 0.45)}
+        ry={Math.max(lw, half * 0.5)}
+        fill="none"
+        stroke={color.ink}
+        strokeWidth={lw}
+      />
+    );
+  if (openH > d * 0.025 || smile > 0.65) {
+    const lowCtrl = 2 * lowMid - cornerY;
+    const upCtrl = 2 * upMid - cornerY;
+    return (
+      <g>
+        <path
+          d={`M${cx - half} ${cornerY}Q${cx} ${upCtrl} ${cx + half} ${cornerY}Q${cx} ${lowCtrl} ${cx - half} ${cornerY}Z`}
+          fill={color.ink}
+          stroke={color.ink}
+          strokeWidth={lw * 0.6}
+          strokeLinejoin="round"
+        />
+        {openH > d * 0.06 && (
+          <ellipse
+            cx={cx}
+            cy={lowMid - openH * 0.28}
+            rx={half * 0.5}
+            ry={openH * 0.28}
+            fill="#FF8FA8"
+          />
+        )}
+      </g>
+    );
+  }
+  return (
+    <path
+      d={`M${cx - half} ${cornerY}Q${cx} ${2 * lowMid - cornerY} ${cx + half} ${cornerY}`}
+      fill="none"
+      stroke={color.ink}
+      strokeWidth={lw}
+      strokeLinecap="round"
+    />
+  );
 }
 
 /** Decorative: the control around it carries the name. */
@@ -149,6 +242,7 @@ export function PegPortrait({
   eyes = 'open',
   size,
   crop = 'full',
+  live,
 }: PegPortraitProps) {
   const H = 150;
   const g = pegGeometry(H, a, eyes);
@@ -170,6 +264,24 @@ export function PegPortrait({
   );
   const m = g.mouth;
   const my = m.y + m.h * 0.35;
+  // Live mirror: the head tilts at the neck and the face shifts as it turns.
+  const headTurn = live
+    ? `rotate(${((live.roll * 180) / Math.PI).toFixed(2)} ${hcx} ${g.body.y})`
+    : undefined;
+  const faceShift = live ? `translate(${(live.yaw * g.d * 0.1).toFixed(2)} 0)` : undefined;
+  /** Squash an eye vertically by its blink (and open it wider when surprised). */
+  const eyeScale = (i: number, e: Box) => {
+    if (!live) return undefined;
+    const blink = i === 0 ? live.blinkL : live.blinkR;
+    const wide = 1 + 0.25 * Math.max(0, (live.browL + live.browR) / 2) + 0.15 * live.open;
+    const sy = Math.max(0.08, (1 - blink) * wide);
+    const cx = e.x + e.w / 2;
+    const cy = e.y + e.h / 2;
+    return `translate(${cx} ${cy}) scale(${wide.toFixed(3)} ${sy.toFixed(3)}) translate(${-cx} ${-cy})`;
+  };
+  const detailed = detailedEyes(g, a);
+  const eyeParts = detailed ? eyePrims(g, a) : [];
+  const perEye = eyeParts.length / 2;
   return (
     <svg
       width={(size * vbW) / vbH}
@@ -210,75 +322,92 @@ export function PegPortrait({
       <Prims prims={bodyExtras(g, a)} />
       <Prims prims={armPrims(g, a)} />
       <Prims prims={tattooPrims(g, a, 'arm')} />
-      <Prims prims={earPrims(g, a)} />
-      <polygon points={g.headPoly.join(' ')} fill={a.skin} />
-      <clipPath id={`head-${uid}`}>
-        <polygon points={g.headPoly.join(' ')} />
-      </clipPath>
-      <g clipPath={`url(#head-${uid})`}>
-        <path
-          d={`M${hcx - rx - 4} ${hcy - ry - 4}h${2 * rx + 8}v${2 * ry + 8}h${-(2 * rx + 8)}Z ${shadePath}`}
-          fill={ink}
-          opacity={0.12}
-          fillRule="evenodd"
-        />
-      </g>
-      {g.cap && <path d={ellipticalRectPath(g.cap, g.capCorners)} fill={a.hair} />}
-      {g.locks?.map((l, i) => (
-        <path key={i} d={ellipticalRectPath(l, pct(l, 0.4, 0.45))} fill={a.hair} />
-      ))}
-      <Prims prims={hairShinePrims(g)} />
-      <Prims prims={fringePrims(g, a)} />
-      {detailedEyes(g, a) ? (
-        <Prims prims={eyePrims(g, a)} />
-      ) : (
-        g.eyes.map((e, i) =>
-          g.eyeShape === 'bar' ? (
-            <rect
-              key={i}
-              x={e.x}
-              y={e.y}
-              width={e.w}
-              height={e.h}
-              rx={Math.min(3, e.h / 2)}
-              fill={ink}
+      <g transform={headTurn}>
+        <Prims prims={earPrims(g, a)} />
+        <polygon points={g.headPoly.join(' ')} fill={a.skin} />
+        <clipPath id={`head-${uid}`}>
+          <polygon points={g.headPoly.join(' ')} />
+        </clipPath>
+        <g clipPath={`url(#head-${uid})`}>
+          <path
+            d={`M${hcx - rx - 4} ${hcy - ry - 4}h${2 * rx + 8}v${2 * ry + 8}h${-(2 * rx + 8)}Z ${shadePath}`}
+            fill={ink}
+            opacity={0.12}
+            fillRule="evenodd"
+          />
+        </g>
+        {g.cap && <path d={ellipticalRectPath(g.cap, g.capCorners)} fill={a.hair} />}
+        {g.locks?.map((l, i) => (
+          <path key={i} d={ellipticalRectPath(l, pct(l, 0.4, 0.45))} fill={a.hair} />
+        ))}
+        <Prims prims={hairShinePrims(g)} />
+        <Prims prims={fringePrims(g, a)} />
+        <g transform={faceShift}>
+          {g.eyes.map((e, i) => (
+            <g key={i} transform={eyeScale(i, e)}>
+              {detailed ? (
+                <Prims prims={eyeParts.slice(i * perEye, (i + 1) * perEye)} />
+              ) : g.eyeShape === 'bar' ? (
+                <rect
+                  x={e.x}
+                  y={e.y}
+                  width={e.w}
+                  height={e.h}
+                  rx={Math.min(3, e.h / 2)}
+                  fill={ink}
+                />
+              ) : (
+                <Ellipse b={e} fill={ink} />
+              )}
+            </g>
+          ))}
+          {live ? <LiveBrows g={g} a={a} live={live} /> : <Prims prims={browPrims(g, a)} />}
+          <Prims prims={lashPrims(g)} />
+          {a.face?.blush !== false &&
+            g.cheeks.map((c, i) => {
+              const puff = live?.puff ?? 0;
+              const b =
+                puff > 0
+                  ? {
+                      x: c.x - c.w * puff * 0.4,
+                      y: c.y - c.h * puff * 0.4,
+                      w: c.w * (1 + puff * 0.8),
+                      h: c.h * (1 + puff * 0.8),
+                    }
+                  : c;
+              return <Ellipse key={i} b={b} fill="#FF6978" opacity={0.42 + 0.3 * puff} />;
+            })}
+          <Prims prims={tattooPrims(g, a, 'cheek')} />
+          <Prims prims={nosePrims(g, a)} />
+          <Prims prims={beardPrims(g, a, 'under')} />
+          {live ? (
+            <LiveMouth m={m} live={live} lw={g.lineWidth} d={g.d} />
+          ) : mouthPrims(g) ? (
+            <Prims prims={mouthPrims(g) ?? []} />
+          ) : g.mouthShape === 'o' ? (
+            <ellipse
+              cx={m.x + m.w / 2}
+              cy={m.y + m.h / 2}
+              rx={m.w / 2 - g.lineWidth / 2}
+              ry={m.h / 2 - g.lineWidth / 2}
+              fill="none"
+              stroke={ink}
+              strokeWidth={g.lineWidth * 0.9}
             />
           ) : (
-            <Ellipse key={i} b={e} fill={ink} />
-          ),
-        )
-      )}
-      <Prims prims={browPrims(g, a)} />
-      <Prims prims={lashPrims(g)} />
-      {a.face?.blush !== false &&
-        g.cheeks.map((c, i) => <Ellipse key={i} b={c} fill="#FF6978" opacity={0.42} />)}
-      <Prims prims={tattooPrims(g, a, 'cheek')} />
-      <Prims prims={nosePrims(g, a)} />
-      <Prims prims={beardPrims(g, a, 'under')} />
-      {mouthPrims(g) ? (
-        <Prims prims={mouthPrims(g) ?? []} />
-      ) : g.mouthShape === 'o' ? (
-        <ellipse
-          cx={m.x + m.w / 2}
-          cy={m.y + m.h / 2}
-          rx={m.w / 2 - g.lineWidth / 2}
-          ry={m.h / 2 - g.lineWidth / 2}
-          fill="none"
-          stroke={ink}
-          strokeWidth={g.lineWidth * 0.9}
-        />
-      ) : (
-        <path
-          d={`M${m.x} ${my}C${m.x} ${my + m.h * 1.1} ${m.x + m.w} ${my + m.h * 1.1} ${m.x + m.w} ${my}`}
-          fill="none"
-          stroke={ink}
-          strokeWidth={g.lineWidth}
-          strokeLinecap="round"
-        />
-      )}
-      <Prims prims={beardPrims(g, a, 'over')} />
-      <Prims prims={headExtras(g, a)} />
-      <Prims prims={helmetPrims(g, a)} />
+            <path
+              d={`M${m.x} ${my}C${m.x} ${my + m.h * 1.1} ${m.x + m.w} ${my + m.h * 1.1} ${m.x + m.w} ${my}`}
+              fill="none"
+              stroke={ink}
+              strokeWidth={g.lineWidth}
+              strokeLinecap="round"
+            />
+          )}
+          <Prims prims={beardPrims(g, a, 'over')} />
+        </g>
+        <Prims prims={headExtras(g, a)} />
+        <Prims prims={helmetPrims(g, a)} />
+      </g>
     </svg>
   );
 }
