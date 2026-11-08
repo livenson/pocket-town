@@ -67,14 +67,11 @@ describe('advanced face detail', () => {
     expect(beardPrims(geo(m), m, 'under')).toEqual([]);
   });
 
-  it('a play tattoo goes where it was put, and not on a space suit arm', () => {
+  it('a play tattoo on the cheek is drawn with the face (one on the arm by the rig)', () => {
     const arm: Appearance = { ...base, face: { tattoo: 'star' } };
-    expect(tattooPrims(geo(arm), arm, 'arm').length).toBeGreaterThan(0);
     expect(tattooPrims(geo(arm), arm, 'cheek')).toEqual([]);
     const cheek: Appearance = { ...base, face: { tattoo: 'heart', tattooPlace: 'cheek' } };
     expect(tattooPrims(geo(cheek), cheek, 'cheek').length).toBeGreaterThan(0);
-    const space: Appearance = { ...arm, clothes: 'space' };
-    expect(tattooPrims(geo(space), space, 'arm')).toEqual([]);
   });
 
   it('ears only for people', () => {
