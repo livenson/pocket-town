@@ -130,7 +130,7 @@ export class SimView {
     if (f) {
       // Everyone using the same piece takes their own seat or pillow.
       const users = world.bots
-        .filter((b) => b.now?.targetId === target && b.now.phase === 'doing' && !b.travel)
+        .filter((b) => b.now?.targetId === target && b.now?.phase === 'doing' && !b.travel)
         .map((b) => b.id)
         .toSorted();
       const p = placementOn(f, now.activity, Math.max(0, users.indexOf(bot.id)), x, PEG_SIZE);
