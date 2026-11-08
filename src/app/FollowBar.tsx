@@ -1,19 +1,10 @@
-import { findBuilding, type BuildingKind } from '../content/rooms';
-import type { IconName } from '../design/icons';
+import { findBuilding, buildingIcon } from '../content/rooms';
 import { buildingName, strings } from '../i18n';
 import { usePlay } from '../state/play';
 import { Icon } from '../ui/Icon';
 import { IconButton } from '../ui/IconButton';
 import { PegPortrait } from '../ui/PegPortrait';
 import { useWorldTick } from './game';
-
-const ICON: Record<BuildingKind, IconName> = {
-  house: 'house',
-  cafe: 'shop',
-  park: 'tree',
-  library: 'book',
-  musicHall: 'note',
-};
 
 /** D5 follow-cam: who is followed, the places they have been, and a stop button. */
 export function FollowBar() {
@@ -39,7 +30,7 @@ export function FollowBar() {
               data-here={here || undefined}
               aria-label={buildingName(b)}
             >
-              <Icon name={building ? ICON[building.kind] : 'house'} size={24} />
+              <Icon name={building ? buildingIcon[building.kind] : 'house'} size={24} />
             </li>
           );
         })}

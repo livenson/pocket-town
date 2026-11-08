@@ -9,6 +9,8 @@ import {
   type Shape,
 } from '../content/furniture';
 import type { RoomDef } from '../content/rooms';
+import { flyingPlane } from '../content/townFurniture';
+import { runwayPlaneAt, windowPlaneAt } from './planes';
 import type { Daylight } from './daylight';
 import { color, stage } from '../design/tokens';
 import { ellipticalRect, hex } from './draw';
@@ -17,6 +19,9 @@ const W = stage.roomWidth;
 const H = stage.roomHeight;
 const FLOOR_Y = stage.floorY;
 const FLOOR_BLEED = 900;
+/** The runway plane is drawn at this size (it is far off, at the back of the apron). */
+const RUNWAY_PLANE_SCALE = 0.36;
+const RUNWAY_WHEELS_Y = 392;
 
 type Radii = [number, number, number, number];
 
@@ -87,6 +92,11 @@ export class RoomView extends Container {
   private sky: Graphics | null = null;
   /** Each piece's drawing, so decorating can move one without redrawing the room. */
   private readonly pieces = new Map<string, { g: Container; f: FurnitureInstance }>();
+  /** The airport: a plane taking off and landing on the runway (between rugs and actors). */
+  private runwayPlane: Container | null = null;
+  private runwayShadow: Graphics | null = null;
+  /** Small planes passing behind big windows, and how wide each window is. */
+  private readonly windowPlanes: { plane: Container; w: number; h: number }[] = [];
   /** What is shown while dragging: a piece moved (or a new one) under the finger. */
   private previewing: { f: FurnitureInstance; ghost: Container | null } | null = null;
 
@@ -101,6 +111,7 @@ export class RoomView extends Container {
       this.drawShell(def),
       this.wallLayer,
       this.floorLayer,
+      ...(def.runway ? [this.makeTraffic()] : []),
       this.actors,
       this.dim,
       this.bubbles,
@@ -140,6 +151,39 @@ export class RoomView extends Container {
     return shell;
   }
 
+  private makeTraffic(): Container {
+    const c = new Container();
+    c.eventMode = 'none';
+    this.runwayShadow = new Graphics().ellipse(0, 0, 90, 9).fill({ color: hex(color.ink) });
+    this.runwayShadow.alpha = 0.18;
+    const plane = drawFurniture(flyingPlane);
+    // Turn round its wheels; nose to the left (it takes off towards the door).
+    plane.pivot.set(flyingPlane.w / 2, flyingPlane.footY ?? flyingPlane.h);
+    plane.scale.set(-RUNWAY_PLANE_SCALE, RUNWAY_PLANE_SCALE);
+    this.runwayPlane = plane;
+    c.addChild(this.runwayShadow, plane);
+    return c;
+  }
+
+  /** Planes coming and going. Calm motion: the plane waits on the runway. */
+  animate(seconds: number, calm: boolean): void {
+    if (this.runwayPlane && this.runwayShadow) {
+      const p = runwayPlaneAt(calm ? 0 : seconds);
+      this.runwayPlane.visible = !p.away;
+      this.runwayPlane.position.set(p.x, p.y);
+      this.runwayPlane.rotation = p.tilt;
+      const lift = Math.max(0, RUNWAY_WHEELS_Y - p.y);
+      this.runwayShadow.visible = !p.away && lift < 200;
+      this.runwayShadow.position.set(p.x, RUNWAY_WHEELS_Y + 4);
+      this.runwayShadow.scale.set(Math.max(0.3, 1 - lift / 250));
+    }
+    for (const w of this.windowPlanes) {
+      const u = calm ? null : windowPlaneAt(seconds);
+      w.plane.visible = u !== null;
+      if (u !== null) w.plane.position.set(u * w.w, w.h * (0.42 - 0.12 * u));
+    }
+  }
+
   private drawWindow(kind: FurnitureKind): Container {
     const c = new Container();
     const pane = new Graphics().roundRect(8, 8, kind.w - 16, kind.h - 16, 18).fill(0xffffff);
@@ -148,12 +192,30 @@ export class RoomView extends Container {
     moon.circle(kind.w * 0.72 + 8, kind.h * 0.3 - 6, 14).cut();
     moon.visible = false;
     const cloud = new Graphics().roundRect(28, 102, 60, 22, 11).fill(0xffffff);
+    // A big window at the airport: now and then a plane passes, seen through the glass.
+    let passing: Container | null = null;
+    if (kind.id === 'bigWindow') {
+      const plane = new Container();
+      const drawing = drawFurniture(flyingPlane);
+      drawing.pivot.set(flyingPlane.w / 2, flyingPlane.h / 2);
+      drawing.scale.set(0.16);
+      drawing.rotation = -0.08;
+      plane.addChild(drawing);
+      plane.visible = false;
+      const glass = new Graphics().roundRect(8, 8, kind.w - 16, kind.h - 16, 18).fill(0xffffff);
+      passing = new Container();
+      passing.addChild(glass, plane);
+      passing.mask = glass;
+      this.windowPlanes.push({ plane, w: kind.w, h: kind.h });
+    }
     const frame = new Graphics()
       .roundRect(4, 4, kind.w - 8, kind.h - 8, 22)
       .stroke({ width: 8, color: hex(color.ink) })
       .rect(kind.w / 2 - 4, 0, 8, kind.h)
       .fill(hex(color.ink));
-    c.addChild(pane, moon, cloud, frame);
+    c.addChild(pane, moon, cloud);
+    if (passing) c.addChild(passing);
+    c.addChild(frame);
     this.panes.push(pane);
     this.moons.push(moon);
     this.clouds.push(cloud);
@@ -199,7 +261,7 @@ export class RoomView extends Container {
   addFurniture(f: FurnitureInstance): Container {
     const kind: FurnitureKind = furnitureKinds[f.kind];
     const g: Container =
-      kind.id === 'window'
+      kind.id === 'window' || kind.id === 'bigWindow'
         ? this.drawWindow(kind)
         : this.isFrontDoor(f, kind)
           ? this.drawFrontDoor(kind, f.paint)

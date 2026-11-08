@@ -5,6 +5,7 @@ import { strings } from '../../i18n';
 import { useProfiles } from '../../state/profiles';
 import { useUi } from '../../state/ui';
 import { Icon } from '../../ui/Icon';
+import { CHEER } from '../../stage/peg/rig';
 import { PegPortrait } from '../../ui/PegPortrait';
 import { useShowTextLabels } from '../../ui/labels';
 
@@ -51,7 +52,7 @@ export function HoorayScreen() {
         />
       ))}
       <span className="hooray-peg" aria-hidden="true">
-        <PegPortrait appearance={me.appearance} size={250} eyes="wow" />
+        <PegPortrait appearance={me.appearance} size={250} eyes="wow" pose={CHEER} />
       </span>
       <span className="hooray-shadow" aria-hidden="true" />
       <h1 className="hooray-title">{title}</h1>

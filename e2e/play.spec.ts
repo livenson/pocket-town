@@ -176,3 +176,25 @@ test('a photo goes into the album on this device', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Photos' })).toBeVisible();
   await expect(page.locator('.photo-thumb')).toHaveCount(1);
 });
+
+test('bring someone from elsewhere into the room: tap them, tap the floor, undo', async ({
+  page,
+}) => {
+  await page.goto('./#scene');
+  await press(page, button(page, 'Pause'));
+  // On phones the characters live in the "+" sheet, on the characters tab.
+  const plus = page.getByRole('button', { name: 'Add', exact: true });
+  if (await plus.isVisible()) {
+    await press(page, plus);
+    await press(page, page.getByRole('button', { name: 'Characters', exact: true }).first());
+  }
+  const elsewhere = page.getByRole('button', { name: /^Bring \w+ here/ }).first();
+  const name = ((await elsewhere.getAttribute('aria-label')) ?? '').split(' ')[1] ?? '';
+  const inRoom = page.locator(`.stage-target--bot[aria-label^="${name},"]`);
+  await expect(inRoom).toHaveCount(0);
+  await press(page, elsewhere);
+  await press(page, page.getByRole('button', { name: 'Floor, left' }));
+  await expect(inRoom).toHaveCount(1);
+  await press(page, button(page, 'Undo'));
+  await expect(inRoom).toHaveCount(0);
+});

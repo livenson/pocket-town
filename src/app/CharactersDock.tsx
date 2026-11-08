@@ -2,7 +2,8 @@ import { playSfx } from '../audio/audio';
 import { activityLook } from '../content/activities';
 import { strings } from '../i18n';
 import type { Bot } from '../sim/types';
-import { usePlay } from '../state/play';
+import { useCarrySource } from '../input/carry';
+import { PERSON, usePlay } from '../state/play';
 import { useUi } from '../state/ui';
 import { Icon } from '../ui/Icon';
 import { IconButton } from '../ui/IconButton';
@@ -52,18 +53,73 @@ function Portrait({ bot, index }: { bot: Bot; index: number }) {
   );
 }
 
-/** Characters dock: portraits of everyone in this room. Tap one to open its card. */
+/**
+ * Someone elsewhere in town: drag them onto the floor, or tap them (they ride on
+ * the halo) and tap the floor. They appear where they are put.
+ */
+function Elsewhere({ bot, index }: { bot: Bot; index: number }) {
+  const label = strings.bringPerson(bot.name);
+  const voice = useVoiceLabel(label);
+  const source = useCarrySource(PERSON, { from: 'person', botId: bot.id });
+  const inHand = usePlay(
+    (s) => s.carrying?.source.from === 'person' && s.carrying.source.botId === bot.id,
+  );
+  return (
+    <button
+      type="button"
+      className="portrait portrait--elsewhere"
+      style={{ background: PORTRAIT_BG[index % PORTRAIT_BG.length] }}
+      aria-label={label}
+      aria-pressed={inHand}
+      data-in-hand={inHand || undefined}
+      {...voice}
+      {...source}
+    >
+      <span className="portrait__face">
+        <PegPortrait appearance={bot.appearance} size={90} crop="head" />
+      </span>
+      <span className="portrait__bring" aria-hidden="true">
+        <Icon name="plus" size={18} strokeWidth={3.4} />
+      </span>
+    </button>
+  );
+}
+
+/**
+ * Characters dock: everyone in this room (tap to open their card), then everyone
+ * else in town, ready to be brought in (drag or tap). The last button opens My
+ * characters, to make someone new.
+ */
 export function CharactersDock() {
   const world = useWorldTick(2);
   const roomId = useUi((s) => s.roomId);
   const go = useUi((s) => s.go);
   const here = world.bots.filter((b) => !b.travel && b.place.roomId === roomId);
+  const others = world.bots.filter((b) => b.travel || b.place.roomId !== roomId);
   return (
     <div className="characters-dock__list">
-      {here.map((b) => (
-        <Portrait key={b.id} bot={b} index={world.bots.indexOf(b)} />
-      ))}
-      <IconButton icon="plus" label={strings.more} onClick={() => go('characters')} />
+      <div className="characters-dock__people">
+        {here.map((b) => (
+          <Portrait key={b.id} bot={b} index={world.bots.indexOf(b)} />
+        ))}
+        {others.length > 0 && (
+          <>
+            <span
+              className="characters-dock__divider"
+              role="separator"
+              aria-label={strings.othersInTown}
+            />
+            {others.map((b) => (
+              <Elsewhere key={b.id} bot={b} index={world.bots.indexOf(b)} />
+            ))}
+          </>
+        )}
+      </div>
+      <IconButton
+        icon="people"
+        label={strings.screens.characters}
+        onClick={() => go('characters')}
+      />
     </div>
   );
 }

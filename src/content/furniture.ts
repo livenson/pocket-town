@@ -2,6 +2,7 @@
 // Coordinates are local to the piece (origin = top-left of its box), in room units.
 import type { IconName } from '../design/icons';
 import { color } from '../design/tokens';
+import { townFurniture } from './townFurniture';
 
 export type Corner4 = [number, number, number, number];
 
@@ -1535,6 +1536,8 @@ export const furnitureKinds = {
       { kind: 'rect', x: 8, y: 44, w: 204, h: 8, r: 4, fill: '#FFFFFF', alpha: 0.7 },
     ],
   },
+  // The hospital, the workshop, the shop and the airport (townFurniture.ts).
+  ...townFurniture,
 } as const satisfies Record<string, FurnitureKind>;
 
 export type FurnitureKindId = keyof typeof furnitureKinds;
@@ -1571,6 +1574,11 @@ export const surfaceTop: Partial<Record<FurnitureKindId, number>> = {
   drawers: 2,
   fridge: 4,
   fireplace: 4,
+  receptionDesk: 44,
+  till: 58,
+  checkInDesk: 58,
+  workbench: 42,
+  examBed: 26,
 };
 
 export interface Surface {
@@ -1624,7 +1632,17 @@ export function clampFurniture(f: FurnitureInstance): { x: number; y: number } {
 }
 
 export type CatalogueId =
-  'sit' | 'eat' | 'sleep' | 'home' | 'play' | 'music' | 'books' | 'plants' | 'walls' | 'floor';
+  | 'sit'
+  | 'eat'
+  | 'sleep'
+  | 'home'
+  | 'play'
+  | 'music'
+  | 'books'
+  | 'plants'
+  | 'walls'
+  | 'floor'
+  | 'town';
 
 /** The furniture catalogue for decorating, by category (the icon names are from icons.ts). */
 export const catalogue: { id: CatalogueId; icon: IconName; kinds: FurnitureKindId[] }[] = [
@@ -1650,6 +1668,36 @@ export const catalogue: { id: CatalogueId; icon: IconName; kinds: FurnitureKindI
     kinds: ['window', 'picture', 'clock', 'mirror', 'bunting', 'shelf', 'curtain', 'starLight'],
   },
   { id: 'floor', icon: 'lamp', kinds: ['rug', 'roundRug', 'stripeRug', 'lamp'] },
+  {
+    // Pieces from the hospital, the workshop, the shop and the airport.
+    id: 'town',
+    icon: 'shop',
+    kinds: [
+      'examBed',
+      'hospitalBed',
+      'waitingChairs',
+      'receptionDesk',
+      'medCabinet',
+      'eyeChart',
+      'workbench',
+      'toolWall',
+      'woodPile',
+      'carLift',
+      'shopShelf',
+      'till',
+      'fruitStand',
+      'basketStack',
+      'gateSeats',
+      'checkInDesk',
+      'departureBoard',
+      'bigWindow',
+      'luggageCart',
+      'windsock',
+      'controlTower',
+      'plane',
+      'runwayLines',
+    ],
+  },
 ];
 
 /** Top-left for a piece so it sits where the finger is: feet there, or centred on it. */

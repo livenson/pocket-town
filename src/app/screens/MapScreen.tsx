@@ -1,7 +1,6 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { playSfx } from '../../audio/audio';
-import { allBuildings, type BuildingDef, type BuildingKind } from '../../content/rooms';
-import type { IconName } from '../../design/icons';
+import { allBuildings, type BuildingDef, buildingIcon } from '../../content/rooms';
 import { buildingName, strings } from '../../i18n';
 import { minuteOfDay } from '../../sim/clock';
 import type { Bot, World } from '../../sim/types';
@@ -15,15 +14,9 @@ import { useVoiceLabel } from '../../ui/useVoiceLabel';
 import { game, useWorldTick } from '../game';
 import { BuildingArt } from '../BuildingArt';
 import { MapCritters } from '../MapCritters';
+import { MapPlane } from '../MapPlane';
+import { useCalmMotion } from '../media';
 import { TimePill } from '../TimePill';
-
-const ICON: Record<BuildingKind, IconName> = {
-  house: 'house',
-  cafe: 'shop',
-  park: 'tree',
-  library: 'book',
-  musicHall: 'note',
-};
 
 /** Where a bot's pin sits: by its building, or part-way along the path when travelling. */
 function pinAt(bot: Bot): { x: number; y: number } | null {
@@ -53,6 +46,7 @@ function Building({ b, world }: { b: BuildingDef; world: World }) {
     <button
       type="button"
       className={`map-building map-building--${b.kind}`}
+      data-id={b.id}
       style={{ left: `${b.map.x * 100}%`, top: `${b.map.y * 100}%` }}
       aria-label={guest ? `${label}. ${strings.town.visitor}` : label}
       {...voice}
@@ -65,7 +59,7 @@ function Building({ b, world }: { b: BuildingDef; world: World }) {
     >
       <BuildingArt b={b} />
       <span className="map-building__sign" aria-hidden="true">
-        <Icon name={ICON[b.kind]} size={22} />
+        <Icon name={buildingIcon[b.kind]} size={22} />
       </span>
       {guest && (
         <span className="map-building__flag" aria-hidden="true">
@@ -110,11 +104,11 @@ function TimeDial({ minute }: { minute: number }) {
 }
 
 const TREES: [number, number][] = [
-  [0.66, 0.66],
-  [0.72, 0.7],
-  [0.92, 0.64],
-  [0.06, 0.52],
-  [0.94, 0.36],
+  [0.18, 0.74],
+  [0.64, 0.74],
+  [0.82, 0.74],
+  [0.18, 0.03],
+  [0.64, 0.03],
 ];
 const TREE_KINDS = 5;
 const POND_KINDS = 4;
@@ -179,6 +173,45 @@ function DecorButton({
   );
 }
 
+/**
+ * The town is wider than a phone held upright: on a small screen the map scrolls
+ * (swipe, or the arrows), starting with the child's house in view.
+ */
+function useMapScroll() {
+  const ref = useRef<HTMLDivElement>(null);
+  const calm = useCalmMotion();
+  const [can, setCan] = useState({ left: false, right: false });
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () =>
+      setCan({
+        left: el.scrollLeft > 4,
+        right: el.scrollLeft < el.scrollWidth - el.clientWidth - 4,
+      });
+    const home = el.querySelector<HTMLElement>('.map-building[data-id="home"]');
+    if (home && el.scrollWidth > el.clientWidth) {
+      const r = home.getBoundingClientRect();
+      const box = el.getBoundingClientRect();
+      el.scrollLeft += r.left + r.width / 2 - (box.left + box.width / 2);
+    }
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      el.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+  const look = (dir: -1 | 1) => {
+    const el = ref.current;
+    if (!el) return;
+    playSfx('tap');
+    el.scrollBy({ left: dir * el.clientWidth * 0.7, behavior: calm ? 'auto' : 'smooth' });
+  };
+  return { ref, can, look };
+}
+
 /** D1 world map: the town, who is where, and the time of day. Tap a building to go in. */
 export function MapScreen() {
   const world = useWorldTick(4);
@@ -187,57 +220,74 @@ export function MapScreen() {
   const setRoom = useUi((s) => s.setRoom);
   const follow = usePlay((s) => s.follow);
   const buildings = allBuildings();
+  const { ref: scrollRef, can, look } = useMapScroll();
   return (
     <div className="world-map">
       <h1 className="visually-hidden">{strings.screens.map}</h1>
-      <div className="world-map__land" aria-hidden="true">
-        <span className="world-map__road world-map__road--h" />
-        <span className="world-map__road world-map__road--v" />
+      <div className="world-map__scroll" ref={scrollRef}>
+        <div className="world-map__area">
+          <div className="world-map__land" aria-hidden="true">
+            <span className="world-map__road world-map__road--h" />
+            <span className="world-map__road world-map__road--v" />
+            <span className="world-map__runway" />
+          </div>
+          <Decor world={world} />
+          <MapCritters />
+          <div className="world-map__places">
+            {buildings.map((b) => (
+              <Building key={b.id} b={b} world={world} />
+            ))}
+            <MapPlane />
+            {world.bots.map((bot, i) => {
+              const at = pinAt(bot);
+              if (!at) return null;
+              const place = buildingName(bot.travel ? bot.travel.to : bot.place.buildingId);
+              const label = bot.travel
+                ? strings.town.walking(bot.name, place)
+                : strings.town.at(bot.name, place);
+              // Several pins at one building fan out around it.
+              const here = world.bots.filter(
+                (x) => !x.travel && x.place.buildingId === bot.place.buildingId,
+              );
+              const k = bot.travel ? 0 : here.indexOf(bot);
+              const dx = bot.travel ? 0 : (k - (here.length - 1) / 2) * 44;
+              return (
+                <button
+                  type="button"
+                  key={bot.id}
+                  className="map-pin"
+                  data-travelling={bot.travel ? true : undefined}
+                  aria-label={label}
+                  onClick={() => {
+                    // Go and watch them: the follow camera keeps up, even on the road.
+                    playSfx('tap');
+                    if (!bot.travel) setRoom(bot.place.roomId);
+                    follow(bot.id);
+                    go('scene');
+                  }}
+                  style={{
+                    left: `calc(${at.x * 100}% + ${dx}px)`,
+                    top: `calc(${at.y * 100}% - ${bot.travel ? 30 : 104}px)`,
+                    zIndex: 20 + i,
+                  }}
+                >
+                  <PegPortrait appearance={bot.appearance} size={50} crop="head" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
-      <Decor world={world} />
-      <MapCritters />
-      <div className="world-map__places">
-        {buildings.map((b) => (
-          <Building key={b.id} b={b} world={world} />
-        ))}
-        {world.bots.map((bot, i) => {
-          const at = pinAt(bot);
-          if (!at) return null;
-          const place = buildingName(bot.travel ? bot.travel.to : bot.place.buildingId);
-          const label = bot.travel
-            ? strings.town.walking(bot.name, place)
-            : strings.town.at(bot.name, place);
-          // Several pins at one building fan out around it.
-          const here = world.bots.filter(
-            (x) => !x.travel && x.place.buildingId === bot.place.buildingId,
-          );
-          const k = bot.travel ? 0 : here.indexOf(bot);
-          const dx = bot.travel ? 0 : (k - (here.length - 1) / 2) * 44;
-          return (
-            <button
-              type="button"
-              key={bot.id}
-              className="map-pin"
-              data-travelling={bot.travel ? true : undefined}
-              aria-label={label}
-              onClick={() => {
-                // Go and watch them: the follow camera keeps up, even on the road.
-                playSfx('tap');
-                if (!bot.travel) setRoom(bot.place.roomId);
-                follow(bot.id);
-                go('scene');
-              }}
-              style={{
-                left: `calc(${at.x * 100}% + ${dx}px)`,
-                top: `calc(${at.y * 100}% - ${bot.travel ? 30 : 104}px)`,
-                zIndex: 20 + i,
-              }}
-            >
-              <PegPortrait appearance={bot.appearance} size={50} crop="head" />
-            </button>
-          );
-        })}
-      </div>
+      {can.left && (
+        <div className="world-map__look world-map__look--left">
+          <IconButton icon="back" label={strings.lookLeft} onClick={() => look(-1)} />
+        </div>
+      )}
+      {can.right && (
+        <div className="world-map__look world-map__look--right">
+          <IconButton icon="next" label={strings.lookRight} onClick={() => look(1)} />
+        </div>
+      )}
       <div className="world-map__top">
         <IconButton icon="home" label={strings.home} shortcut="H" onClick={home} />
         <TimeDial minute={world.minute} />

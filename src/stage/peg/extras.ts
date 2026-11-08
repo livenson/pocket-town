@@ -14,6 +14,9 @@ export type Prim =
       r: number;
       fill: string;
       alpha?: number;
+      /** An outline (the detailed figure's parts have one). */
+      stroke?: string;
+      sw?: number;
     }
   | {
       t: 'ellipse';
@@ -26,7 +29,7 @@ export type Prim =
       sw?: number;
       alpha?: number;
     }
-  | { t: 'poly'; pts: number[]; fill: string; alpha?: number }
+  | { t: 'poly'; pts: number[]; fill: string; alpha?: number; stroke?: string; sw?: number }
   | { t: 'line'; x1: number; y1: number; x2: number; y2: number; stroke: string; sw: number };
 
 /** Shapes drawn over the body (patterns), before the head. */

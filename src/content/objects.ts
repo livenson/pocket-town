@@ -1,12 +1,12 @@
 // Things in the object drawer, by category. Pure data. Milestone M4 adds what each
 // one does (eat, play, read...) and the needs it satisfies.
 import type { AnyIconName } from '../design/foodIcons';
-import type { IconName } from '../design/icons';
 import type { ActivityId } from './activities';
 import type { NeedKey } from './tuning';
 import { color, roomColor } from '../design/tokens';
 
-export type ObjectCategory = 'food' | 'toys' | 'music' | 'books' | 'plants' | 'party';
+export type ObjectCategory =
+  'food' | 'toys' | 'music' | 'books' | 'plants' | 'party' | 'care' | 'tools' | 'trips';
 
 export interface ObjectKind {
   id: string;
@@ -36,6 +36,10 @@ const MUSIC: GiveEffect = { activity: 'music', gains: { fun: 45 } };
 const BOOK: GiveEffect = { activity: 'read', gains: { fun: 40 } };
 const PLANT: GiveEffect = { activity: 'garden', gains: { fun: 30 } };
 const PARTY: GiveEffect = { activity: 'play', gains: { fun: 30, social: 25 } };
+const CARE: GiveEffect = { activity: 'checkup', gains: { energy: 20, social: 20 } };
+const TOOL: GiveEffect = { activity: 'tinker', gains: { fun: 40 } };
+const TRIP: GiveEffect = { activity: 'planes', gains: { fun: 40 } };
+const SHOPPING: GiveEffect = { activity: 'shop', gains: { fun: 25, social: 15 } };
 
 /** What each kind does when given to a bot. */
 export const giveEffects: Record<string, GiveEffect> = {
@@ -120,6 +124,26 @@ export const giveEffects: Record<string, GiveEffect> = {
   star: PARTY,
   ribbon: PARTY,
   trophy: PARTY,
+  plaster: CARE,
+  stethoscope: CARE,
+  thermometer: CARE,
+  toothbrush: CARE,
+  hammer: TOOL,
+  wrench: TOOL,
+  screwdriver: TOOL,
+  toolbox: TOOL,
+  nutAndBolt: TOOL,
+  gear: TOOL,
+  magnet: TOOL,
+  ruler: TOOL,
+  toyPlane: TRIP,
+  helicopter: TRIP,
+  luggage: TRIP,
+  ticket: TRIP,
+  sunglasses: TRIP,
+  basket: SHOPPING,
+  shoppingBags: SHOPPING,
+  shoppingCart: SHOPPING,
 };
 
 /**
@@ -208,15 +232,38 @@ export const placedOffers: Record<string, string> = {
   star: 'toyBox',
   ribbon: 'toyBox',
   trophy: 'toyBox',
+  plaster: 'doctorKit',
+  stethoscope: 'doctorKit',
+  thermometer: 'doctorKit',
+  toothbrush: 'doctorKit',
+  hammer: 'toolKit',
+  wrench: 'toolKit',
+  screwdriver: 'toolKit',
+  toolbox: 'toolKit',
+  nutAndBolt: 'toolKit',
+  gear: 'toolKit',
+  magnet: 'toolKit',
+  ruler: 'toolKit',
+  toyPlane: 'trip',
+  helicopter: 'trip',
+  luggage: 'trip',
+  ticket: 'trip',
+  sunglasses: 'trip',
+  basket: 'shopping',
+  shoppingBags: 'shopping',
+  shoppingCart: 'shopping',
 };
 
-export const categories: { id: ObjectCategory; icon: IconName }[] = [
+export const categories: { id: ObjectCategory; icon: AnyIconName }[] = [
   { id: 'food', icon: 'fork' },
   { id: 'toys', icon: 'ball' },
   { id: 'music', icon: 'note' },
   { id: 'books', icon: 'book' },
   { id: 'plants', icon: 'plant' },
   { id: 'party', icon: 'star' },
+  { id: 'care', icon: 'plaster' },
+  { id: 'tools', icon: 'wrench' },
+  { id: 'trips', icon: 'plane' },
 ];
 
 export const objectKinds: ObjectKind[] = [
@@ -343,4 +390,78 @@ export const objectKinds: ObjectKind[] = [
   { id: 'star', category: 'party', art: 'glowing-star', icon: 'star', tint: roomColor.kitchen },
   { id: 'ribbon', category: 'party', art: 'ribbon', icon: 'heart', tint: roomColor.bedroom },
   { id: 'trophy', category: 'party', art: 'trophy', icon: 'star', tint: roomColor.kitchen },
+  { id: 'plaster', category: 'care', art: 'adhesive-bandage', icon: 'plaster', tint: color.peach },
+  {
+    id: 'stethoscope',
+    category: 'care',
+    art: 'stethoscope',
+    icon: 'plaster',
+    tint: roomColor.living,
+  },
+  {
+    id: 'thermometer',
+    category: 'care',
+    art: 'thermometer',
+    icon: 'plaster',
+    tint: roomColor.bath,
+  },
+  { id: 'toothbrush', category: 'care', art: 'toothbrush', icon: 'sparkle', tint: roomColor.play },
+  { id: 'hammer', category: 'tools', art: 'hammer', icon: 'wrench', tint: color.peach },
+  { id: 'wrench', category: 'tools', art: 'wrench', icon: 'wrench', tint: roomColor.bath },
+  {
+    id: 'screwdriver',
+    category: 'tools',
+    art: 'screwdriver',
+    icon: 'wrench',
+    tint: roomColor.kitchen,
+  },
+  { id: 'toolbox', category: 'tools', art: 'toolbox', icon: 'wrench', tint: roomColor.bedroom },
+  {
+    id: 'nutAndBolt',
+    category: 'tools',
+    art: 'nut-and-bolt',
+    icon: 'wrench',
+    tint: roomColor.living,
+  },
+  { id: 'gear', category: 'tools', art: 'gear', icon: 'wrench', tint: roomColor.music },
+  { id: 'magnet', category: 'tools', art: 'magnet', icon: 'wrench', tint: roomColor.bedroom },
+  {
+    id: 'ruler',
+    category: 'tools',
+    art: 'straight-ruler',
+    icon: 'wrench',
+    tint: roomColor.kitchen,
+  },
+  { id: 'toyPlane', category: 'trips', art: 'airplane', icon: 'plane', tint: roomColor.bath },
+  {
+    id: 'helicopter',
+    category: 'trips',
+    art: 'helicopter',
+    icon: 'plane',
+    tint: roomColor.living,
+  },
+  { id: 'luggage', category: 'trips', art: 'luggage', icon: 'plane', tint: color.peach },
+  { id: 'ticket', category: 'trips', art: 'ticket', icon: 'plane', tint: roomColor.bedroom },
+  {
+    id: 'sunglasses',
+    category: 'trips',
+    art: 'sunglasses',
+    icon: 'sun',
+    tint: roomColor.kitchen,
+  },
+  { id: 'basket', category: 'trips', art: 'basket', icon: 'basket', tint: roomColor.play },
+  {
+    id: 'shoppingBags',
+    category: 'trips',
+    art: 'shopping-bags',
+    icon: 'basket',
+    tint: roomColor.music,
+  },
+  {
+    id: 'shoppingCart',
+    category: 'trips',
+    art: 'shopping-cart',
+    icon: 'basket',
+    tint: roomColor.bath,
+  },
 ];

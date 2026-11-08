@@ -264,7 +264,7 @@ export function beardPrims(g: PegGeometry, a: Appearance, layer: 'under' | 'over
   return out;
 }
 
-function tattooShape(kind: Tattoo, cx: number, cy: number, r: number, fill: string): Prim[] {
+export function tattooShape(kind: Tattoo, cx: number, cy: number, r: number, fill: string): Prim[] {
   const sw = Math.max(1.4, r * 0.32);
   switch (kind) {
     case 'heart':
@@ -343,10 +343,7 @@ function tattooShape(kind: Tattoo, cx: number, cy: number, r: number, fill: stri
   }
 }
 
-/**
- * A play tattoo. On the arm it shows a bare forearm (short sleeves) with the
- * picture on it; on the cheek it sits on the right cheek.
- */
+/** A play tattoo on the right cheek (one on the arm is drawn by the rig). */
 export function tattooPrims(g: PegGeometry, a: Appearance, place: 'arm' | 'cheek'): Prim[] {
   const f = face(a);
   const kind = f.tattoo ?? 'none';
@@ -356,23 +353,6 @@ export function tattooPrims(g: PegGeometry, a: Appearance, place: 'arm' | 'cheek
     const c = g.cheeks[1];
     return tattooShape(kind, c.x + c.w * 0.55, c.y + c.h * 0.2, g.d * 0.06, fill);
   }
-  if (g.clothes === 'space') return [];
-  const { W, body } = g;
-  const sw = W * 0.15;
-  const sy = body.y + body.h * 0.2;
-  const hy = body.y + body.h * 0.66;
-  const out: Prim[] = [];
-  // Forearms in skin from halfway down (short sleeves), for both arms.
-  for (const [sx, hx] of [
-    [W * 0.13, -W * 0.03],
-    [W * 0.87, W * 1.03],
-  ] as const) {
-    const mx = (sx + hx) / 2;
-    const my = (sy + hy) / 2;
-    out.push({ t: 'line', x1: mx, y1: my, x2: hx, y2: hy, stroke: a.skin, sw: sw * 0.92 });
-  }
-  const tx = W * 0.03;
-  const ty = body.y + body.h * 0.52;
-  out.push(...tattooShape(kind, tx, ty, W * 0.055, fill));
-  return out;
+  // On the arm, the rig draws it on the forearm (rig.ts).
+  return [];
 }

@@ -3,8 +3,18 @@
 import { useId } from 'react';
 import type { Appearance, Eyes } from '../content/appearance';
 import { color } from '../design/tokens';
-import { bodyExtras, headExtras, mouthPrims, type Prim } from '../stage/peg/extras';
-import { pegGeometry, type Box, type Corners, type PegGeometry } from '../stage/peg/geometry';
+import { headExtras, mouthPrims, type Prim } from '../stage/peg/extras';
+import type { Box, Corners, PegGeometry } from '../stage/peg/geometry';
+import {
+  boneMatrices,
+  buildRig,
+  headGeometry,
+  lineWidthFor,
+  outlineOf,
+  REST,
+  type Angles,
+  type Mat,
+} from '../stage/peg/rig';
 import type { LiveFace } from '../photo/liveFace';
 import {
   beardPrims,
@@ -19,16 +29,7 @@ import {
   nosePrims,
   tattooPrims,
 } from '../stage/peg/face';
-import {
-  armPrims,
-  backPrims,
-  bodyFill,
-  clothesPrims,
-  detailPrims,
-  hairShinePrims,
-  helmetPrims,
-  lashPrims,
-} from '../stage/peg/outfit';
+import { hairShinePrims, helmetPrims, lashPrims } from '../stage/peg/outfit';
 
 const K = 0.5523;
 const n = (v: number) => v.toFixed(2);
@@ -101,11 +102,23 @@ function Prims({ prims }: { prims: Prim[] }) {
               rx={p.r}
               fill={p.fill}
               opacity={p.alpha}
+              stroke={p.stroke}
+              strokeWidth={p.sw}
             />
           );
         }
         if (p.t === 'poly')
-          return <polygon key={i} points={p.pts.join(' ')} fill={p.fill} opacity={p.alpha} />;
+          return (
+            <polygon
+              key={i}
+              points={p.pts.join(' ')}
+              fill={p.fill}
+              opacity={p.alpha}
+              stroke={p.stroke}
+              strokeWidth={p.sw}
+              strokeLinejoin="round"
+            />
+          );
         if (p.t === 'line') {
           return (
             <line
@@ -147,6 +160,8 @@ export interface PegPortraitProps {
   crop?: 'full' | 'head';
   /** The live mirror (camera screen): a continuous expression and head pose. */
   live?: LiveFace;
+  /** Joint angles (rig.ts); standing at rest when missing. */
+  pose?: Angles;
 }
 
 /** Brows that lift and knit with the live expression (thin ones if none were chosen). */
@@ -272,21 +287,26 @@ export function PegPortrait({
   size,
   crop = 'full',
   live,
+  pose = REST,
 }: PegPortraitProps) {
-  const H = 150;
-  const g = pegGeometry(H, a, eyes);
+  const S = 150;
+  const g = headGeometry(S, a, eyes);
+  const rig = buildRig(S, a);
+  const mats = boneMatrices(rig, pose);
   // Unique per portrait: several portraits of different shapes share a page.
   const uid = useId().replace(/:/g, '');
   const ink = color.ink;
-  const viewBox =
+  // Full figure: wide enough for a cape and hands; tall enough for a puff or a crown.
+  const [vbX, vbY, vbW, vbH] =
     crop === 'head'
-      ? `${-8} ${-6} ${g.W + 16} ${g.W + 16}`
-      : `${g.left - 4} ${-24} ${g.RW + 8} ${H + 28}`;
-  const [vbW, vbH] = crop === 'head' ? [g.W + 16, g.W + 16] : [g.RW + 8, H + 28];
+      ? [-0.27 * S, -0.97 * S, 0.54 * S, 0.54 * S]
+      : [-0.3 * S, -1.08 * S, 0.6 * S, 1.11 * S];
+  const viewBox = [vbX, vbY, vbW, vbH].map(n).join(' ');
   const hr = g.d / 2;
   const hcx = g.head.x + hr;
   const hcy = g.head.y + hr;
   const { headRx: rx, headRy: ry } = g;
+  const chin = g.head.y + ry * 2;
   // The lit part of the face: the outline moved up and left; the rest is shade.
   const shadePath = polyPath(
     g.headPoly.map((v, i) => v + (i % 2 === 0 ? -g.d * 0.07 : -g.d * 0.06)),
@@ -295,13 +315,13 @@ export function PegPortrait({
   const my = m.y + m.h * 0.35;
   // Live mirror: the head tilts at the neck and the face shifts as it turns.
   const headTurn = live
-    ? `rotate(${((live.roll * 180) / Math.PI).toFixed(2)} ${hcx} ${g.body.y})`
+    ? `rotate(${((live.roll * 180) / Math.PI).toFixed(2)} ${hcx} ${chin})`
     : undefined;
   const faceShift = live ? `translate(${(live.yaw * g.d * 0.1).toFixed(2)} 0)` : undefined;
-  /** Squash an eye vertically by its blink (and open it wider when surprised). */
   /** Eyes open wider when surprised (raised brows, open mouth). */
   const wide = live ? 1 + 0.25 * Math.max(0, (live.browL + live.browR) / 2) + 0.15 * live.open : 1;
   const lashes = lashPrims(g);
+  /** Squash an eye vertically by its blink (and open it wider when surprised). */
   const eyeScale = (i: number, e: Box) => {
     if (!live) return undefined;
     const blink = i === 0 ? live.blinkL : live.blinkR;
@@ -313,47 +333,10 @@ export function PegPortrait({
   const detailed = detailedEyes(g, a);
   const eyeParts = detailed ? eyePrims(g, a) : [];
   const perEye = eyeParts.length / 2;
-  return (
-    <svg
-      width={(size * vbW) / vbH}
-      height={size}
-      viewBox={viewBox}
-      aria-hidden="true"
-      focusable="false"
-      className="peg-portrait"
-    >
-      {g.top && <Ellipse b={g.top} fill={a.hair} />}
-      <Prims prims={backPrims(g, a)} />
-      <path d={ellipticalRectPath(g.body, g.bodyCorners)} fill={bodyFill(g, a)} />
-      <clipPath id={`body-${uid}`}>
-        <path d={ellipticalRectPath(g.body, g.bodyCorners)} />
-      </clipPath>
-      <g clipPath={`url(#body-${uid})`}>
-        <rect x={0} y={g.body.y} width={g.W * 0.09} height={g.body.h} fill="#fff" opacity={0.2} />
-        <rect
-          x={g.W * 0.92}
-          y={g.body.y}
-          width={g.W * 0.08}
-          height={g.body.h}
-          fill={ink}
-          opacity={0.12}
-        />
-      </g>
-      <rect
-        x={g.band.x}
-        y={g.band.y}
-        width={g.band.w}
-        height={g.band.h}
-        rx={g.band.h / 2}
-        fill={ink}
-        opacity={0.22}
-      />
-      <Prims prims={clothesPrims(g, a)} />
-      <Prims prims={detailPrims(g, a)} />
-      <Prims prims={bodyExtras(g, a)} />
-      <Prims prims={armPrims(g, a)} />
-      <Prims prims={tattooPrims(g, a, 'arm')} />
+  const head = (
+    <g transform={`${matrix(mats.head)} translate(${n(-rig.headPivot.x)} ${n(-rig.headPivot.y)})`}>
       <g transform={headTurn}>
+        {g.top && <Ellipse b={g.top} fill={a.hair} />}
         <Prims prims={earPrims(g, a)} />
         <polygon points={g.headPoly.join(' ')} fill={a.skin} />
         <clipPath id={`head-${uid}`}>
@@ -367,6 +350,12 @@ export function PegPortrait({
             fillRule="evenodd"
           />
         </g>
+        <polygon
+          points={g.headPoly.join(' ')}
+          fill="none"
+          stroke={outlineOf(a.skin)}
+          strokeWidth={lineWidthFor(S)}
+        />
         {g.cap && <path d={ellipticalRectPath(g.cap, g.capCorners)} fill={a.hair} />}
         {g.locks?.map((l, i) => (
           <path key={i} d={ellipticalRectPath(l, pct(l, 0.4, 0.45))} fill={a.hair} />
@@ -444,6 +433,28 @@ export function PegPortrait({
         <Prims prims={headExtras(g, a)} />
         <Prims prims={helmetPrims(g, a)} />
       </g>
+    </g>
+  );
+  return (
+    <svg
+      width={(size * vbW) / vbH}
+      height={size}
+      viewBox={viewBox}
+      aria-hidden="true"
+      focusable="false"
+      className="peg-portrait"
+    >
+      {rig.parts.map((p, i) =>
+        'head' in p ? (
+          <g key={i}>{head}</g>
+        ) : (
+          <g key={i} transform={matrix(mats[p.bone])}>
+            <Prims prims={p.prims} />
+          </g>
+        ),
+      )}
     </svg>
   );
 }
+
+const matrix = (m: Mat) => `matrix(${[m.a, m.b, m.c, m.d, m.tx, m.ty].map(n).join(' ')})`;

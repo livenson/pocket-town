@@ -24,6 +24,8 @@ export type Command =
   | { type: 'call'; botId: string; place: Place }
   | { type: 'control'; botId: string; on: boolean }
   | { type: 'puppetMove'; botId: string; place: Place }
+  /** The child put this character here (dragged or tapped in from the dock). */
+  | { type: 'bring'; botId: string; place: Place }
   | { type: 'freeze'; botId: string; on: boolean }
   | { type: 'sendHome'; botId: string }
   | { type: 'placeObject'; kind: string; place: Place; id?: string; raise?: number }
@@ -134,6 +136,29 @@ export function apply(world: World, cmd: Command): boolean {
       bot.now = null;
       bot.route = [];
       bot.nudge = null;
+      return true;
+    }
+    case 'bring': {
+      // Like a dollhouse: they appear right where they were put (no walk across
+      // town), stay a little while, then carry on with their day.
+      const bot = getBot(world, cmd.botId);
+      if (!bot) return false;
+      const spot = clampToFloor(cmd.place.x, cmd.place.y);
+      bot.place = { ...cmd.place, ...spot };
+      bot.prev = { ...spot };
+      bot.travel = null;
+      bot.route = [];
+      bot.moving = false;
+      if (bot.mode !== 'frozen' && bot.mode !== 'puppet')
+        bot.now = {
+          activity: 'wait',
+          targetId: 'spot',
+          phase: 'doing',
+          progress: 0,
+          duration: tuning.callWaitMinutes,
+          gains: {},
+          byChild: true,
+        };
       return true;
     }
     case 'puppetMove': {

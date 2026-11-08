@@ -22,7 +22,9 @@ function BotTarget({ bot }: { bot: Bot }) {
   const carrying = usePlay((s) => s.carrying);
   const selected = usePlay((s) => s.selectedBotId === bot.id);
   const openCard = usePlay((s) => s.openCard);
-  const label = carrying
+  // Carrying a person: characters are not somewhere to put them.
+  const carryingThing = carrying !== null && carrying.source.from !== 'person';
+  const label = carryingThing
     ? strings.giveTo(thingName(carrying.kind), bot.name)
     : strings.botHere(bot.name, doingLabel(bot));
   const voice = useVoiceLabel(label);
@@ -32,16 +34,17 @@ function BotTarget({ bot }: { bot: Bot }) {
       type="button"
       className="stage-target stage-target--bot"
       data-target={`bot:${bot.id}`}
-      data-valid={carrying ? true : undefined}
+      data-valid={carryingThing || undefined}
       data-selected={selected || undefined}
       data-activity={bot.now?.activity ?? 'idle'}
       aria-label={label}
       {...voice}
       onClick={() => {
-        if (carrying) {
+        if (carryingThing) {
           placeOn(`bot:${bot.id}`);
           return;
         }
+        if (carrying) return;
         playSfx('tap');
         // Picking someone else lets go of the character the child was steering.
         const before = game.world.bots.find((b) => b.id === usePlay.getState().selectedBotId);
@@ -141,7 +144,8 @@ function FurnitureTarget({
 function SurfaceTargets({ roomId }: { roomId: string }) {
   const carrying = usePlay((s) => s.carrying);
   const room = findRoom(roomId);
-  if (!carrying || !room) return null;
+  // Things go on tables and shelves; people do not.
+  if (!carrying || carrying.source.from === 'person' || !room) return null;
   return (
     <>
       {room.furniture

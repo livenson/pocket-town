@@ -2,9 +2,9 @@
 import { Graphics } from 'pixi.js';
 import { color } from '../../design/tokens';
 import { ellipseBox, ellipticalRect, hex } from '../draw';
-import type { Appearance, Box, Eyes, PegGeometry } from './geometry';
-import { pegGeometry } from './geometry';
-import { bodyExtras, headExtras, mouthPrims, type Prim } from './extras';
+import type { Appearance, Box, Eyes } from './geometry';
+import { headGeometry, lineWidthFor, outlineOf } from './rig';
+import { headExtras, mouthPrims, type Prim } from './extras';
 import {
   beardPrims,
   browPrims,
@@ -15,58 +15,31 @@ import {
   nosePrims,
   tattooPrims,
 } from './face';
-import {
-  armPrims,
-  backPrims,
-  bodyFill,
-  clothesPrims,
-  detailPrims,
-  hairShinePrims,
-  helmetPrims,
-  lashPrims,
-} from './outfit';
+import { hairShinePrims, helmetPrims, lashPrims } from './outfit';
 
 const INK = hex(color.ink);
 
-export function drawPeg(
-  size: number,
-  a: Appearance,
-  eyes: Eyes = 'open',
-): { g: Graphics; geo: PegGeometry } {
-  const geo = pegGeometry(size, a, eyes);
+/**
+ * The head of a figure (face, hair, hats, the space helmet), in the coordinates of
+ * its peg geometry; the rig places it on the neck (rig.ts → headPivot).
+ */
+export function drawHead(size: number, a: Appearance, eyes: Eyes = 'open'): Graphics {
+  const geo = headGeometry(size, a, eyes);
   const g = new Graphics();
-  const { W, d, body, bodyCorners } = geo;
+  const { d } = geo;
 
-  // Behind the body: hair puff or bun.
+  // Behind the head: hair puff or bun, then ears.
   if (geo.top) ellipseBox(g, geo.top).fill(hex(a.hair));
-
-  // Behind the body: cape or backpack, legs and shoes.
-  drawPrims(g, backPrims(geo, a));
-
-  // Body (felt outfit) with a light inset on the left and a darker one on the right.
-  ellipticalRect(g, body, bodyCorners).fill(hex(bodyFill(geo, a)));
-  ellipticalRect(g, body, bodyCorners).fill({ color: 0xffffff, alpha: 0.2 });
-  ellipticalRect(g, body, bodyCorners, W * 0.09, 0).cut();
-  ellipticalRect(g, body, bodyCorners).fill({ color: INK, alpha: 0.12 });
-  ellipticalRect(g, body, bodyCorners, -W * 0.08, 0).cut();
-  g.roundRect(geo.band.x, geo.band.y, geo.band.w, geo.band.h, geo.band.h / 2).fill({
-    color: INK,
-    alpha: 0.22,
-  });
-  drawPrims(g, clothesPrims(geo, a));
-  drawPrims(g, detailPrims(geo, a));
-  drawPrims(g, bodyExtras(geo, a));
-  drawPrims(g, armPrims(geo, a));
-  drawPrims(g, tattooPrims(geo, a, 'arm'));
+  drawPrims(g, earPrims(geo, a));
 
   // Head (round unless the face shape says otherwise) with a soft shade at the
-  // bottom-right; ears behind it.
-  drawPrims(g, earPrims(geo, a));
+  // bottom-right and a soft outline.
   const outline = geo.headPoly;
   const shifted = outline.map((v, i) => v + (i % 2 === 0 ? -d * 0.07 : -d * 0.06));
   g.poly(outline).fill(hex(a.skin));
   g.poly(outline).fill({ color: INK, alpha: 0.12 });
   g.poly(shifted).cut();
+  g.poly(outline).stroke({ width: lineWidthFor(size), color: hex(outlineOf(a.skin)) });
 
   // Hair.
   if (geo.cap) ellipticalRect(g, geo.cap, geo.capCorners).fill(hex(a.hair));
@@ -106,15 +79,18 @@ export function drawPeg(
 
   drawPrims(g, headExtras(geo, a));
   drawPrims(g, helmetPrims(geo, a));
-  return { g, geo };
+  return g;
 }
 
-function drawPrims(g: Graphics, prims: Prim[]): void {
+export function drawPrims(g: Graphics, prims: Prim[]): void {
   for (const p of prims) {
-    if (p.t === 'rect')
+    if (p.t === 'rect') {
       g.roundRect(p.x, p.y, p.w, p.h, p.r).fill({ color: hex(p.fill), alpha: p.alpha ?? 1 });
-    else if (p.t === 'poly') g.poly(p.pts).fill({ color: hex(p.fill), alpha: p.alpha ?? 1 });
-    else if (p.t === 'line')
+      if (p.stroke) g.stroke({ width: p.sw ?? 2, color: hex(p.stroke) });
+    } else if (p.t === 'poly') {
+      g.poly(p.pts).fill({ color: hex(p.fill), alpha: p.alpha ?? 1 });
+      if (p.stroke) g.stroke({ width: p.sw ?? 2, color: hex(p.stroke), join: 'round' });
+    } else if (p.t === 'line')
       g.moveTo(p.x1, p.y1)
         .lineTo(p.x2, p.y2)
         .stroke({ width: p.sw, color: hex(p.stroke), cap: 'round' });

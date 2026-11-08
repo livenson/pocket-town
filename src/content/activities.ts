@@ -1,5 +1,5 @@
 // What each activity looks like (icon, colour) and what things offer it.
-import type { IconName } from '../design/icons';
+import type { AnyIconName } from '../design/foodIcons';
 import { color } from '../design/tokens';
 import type { NeedKey } from './tuning';
 
@@ -16,10 +16,15 @@ export type ActivityId =
   | 'tidy'
   | 'wander'
   | 'wait'
-  | 'goHome';
+  | 'goHome'
+  // Town places (owner's request): the hospital, the workshop, the shop, the airport.
+  | 'checkup'
+  | 'tinker'
+  | 'shop'
+  | 'planes';
 
 export interface ActivityLook {
-  icon: IconName | null;
+  icon: AnyIconName | null;
   /** Icon colour on the white bubble (text-safe on light grounds). */
   color: string;
   /** How the character moves while doing it. */
@@ -40,6 +45,10 @@ export const activityLook: Record<ActivityId, ActivityLook> = {
   wander: { icon: null, color: color.ink, pose: 'idle' },
   wait: { icon: 'target', color: color.ink, pose: 'idle' },
   goHome: { icon: 'home', color: color.ink, pose: 'idle' },
+  checkup: { icon: 'plaster', color: color.heart, pose: 'idle' },
+  tinker: { icon: 'wrench', color: color.tealDark, pose: 'idle' },
+  shop: { icon: 'basket', color: color.tomatoText, pose: 'idle' },
+  planes: { icon: 'plane', color: color.cornflowerShadow, pose: 'dance' },
 };
 
 /** The six nudge ideas the child can pick (SIM.md → influence ladder). */
@@ -89,6 +98,42 @@ export const offers: Record<string, AdTemplate[]> = {
   cactus: [{ activity: 'garden', gains: { fun: 20 }, duration: 15, capacity: 1 }],
   bush: [{ activity: 'garden', gains: { fun: 25 }, duration: 20, capacity: 1 }],
   bookPile: [{ activity: 'read', gains: { fun: 35 }, duration: 35, capacity: 1 }],
+
+  // The hospital: a check-up perks you up; a ward bed is a quiet rest (never a night's
+  // sleep: bots only sleep at home).
+  receptionDesk: [{ activity: 'chat', gains: { social: 30 }, duration: 15, capacity: 2 }],
+  examBed: [{ activity: 'checkup', gains: { energy: 30, social: 30 }, duration: 25, capacity: 1 }],
+  hospitalBed: [{ activity: 'nap', gains: { energy: 30 }, duration: 45, capacity: 1 }],
+  waitingChairs: [
+    { activity: 'nap', gains: { energy: 15, social: 10 }, duration: 20, capacity: 3 },
+  ],
+  /** A doctor's kit the child put down: anyone can have a check-up there. */
+  doctorKit: [
+    { activity: 'checkup', gains: { energy: 20, social: 15 }, duration: 20, capacity: 1 },
+  ],
+  // The workshop: building and fixing things.
+  workbench: [{ activity: 'tinker', gains: { fun: 60, social: 10 }, duration: 40, capacity: 2 }],
+  carLift: [{ activity: 'tinker', gains: { fun: 60, social: 15 }, duration: 40, capacity: 2 }],
+  woodPile: [{ activity: 'tinker', gains: { fun: 30 }, duration: 25, capacity: 1 }],
+  /** Tools the child put down. */
+  toolKit: [{ activity: 'tinker', gains: { fun: 40 }, duration: 30, capacity: 1 }],
+  // The shop: browsing the shelves, filling a basket, a chat at the till.
+  shopShelf: [{ activity: 'shop', gains: { fun: 40, social: 35 }, duration: 25, capacity: 2 }],
+  fruitStand: [
+    { activity: 'shop', gains: { hunger: 35, fun: 15, social: 10 }, duration: 25, capacity: 2 },
+  ],
+  till: [{ activity: 'shop', gains: { social: 35, fun: 10 }, duration: 15, capacity: 2 }],
+  /** Shopping the child put down. */
+  shopping: [{ activity: 'shop', gains: { fun: 25, social: 10 }, duration: 20, capacity: 1 }],
+  // The airport: watching the planes, playing pilot, waiting at the gate.
+  bigWindow: [{ activity: 'planes', gains: { fun: 50 }, duration: 30, capacity: 3 }],
+  gateSeats: [
+    { activity: 'planes', gains: { fun: 30, energy: 15, social: 10 }, duration: 30, capacity: 3 },
+  ],
+  plane: [{ activity: 'planes', gains: { fun: 60, social: 15 }, duration: 35, capacity: 3 }],
+  checkInDesk: [{ activity: 'chat', gains: { social: 30 }, duration: 15, capacity: 2 }],
+  /** A toy plane or a suitcase the child put down. */
+  trip: [{ activity: 'planes', gains: { fun: 35 }, duration: 25, capacity: 1 }],
 };
 
 /** What a visit offers (any house that is not the bot's home). */

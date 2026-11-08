@@ -2,7 +2,7 @@
 
 ## Microsoft Fluent Emoji (flat style)
 
-The pictures of things (food, toys, music, books, plants, party) come from Microsoft's Fluent Emoji, flat style, via the `@iconify-json/fluent-emoji-flat` package. Only the pictures the game uses are copied into `src/design/thingArt.ts` by `npm run art` (`scripts/make-thing-art.ts`); nothing is fetched at run time. The grown-up area credits them.
+The pictures of things (food, toys, music, books, plants, party, doctor things, tools, trips and shopping), the animals on the map and the plane that flies over it come from Microsoft's Fluent Emoji, flat style, via the `@iconify-json/fluent-emoji-flat` package. Only the pictures the game uses are copied into `src/design/thingArt.ts` by `npm run art` (`scripts/make-thing-art.ts`); nothing is fetched at run time. The grown-up area credits them.
 
 Source: https://github.com/microsoft/fluentui-emoji
 

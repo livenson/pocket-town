@@ -1,5 +1,5 @@
 // A peg-folk character on the stage: the drawn figure, its motion, and its intent bubble.
-import { Container, type Graphics } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 import type { IconName } from '../../design/icons';
 import { IntentBubble } from '../IntentBubble';
 import {
@@ -13,8 +13,9 @@ import {
   walkPose,
   type Pose,
 } from '../motion';
-import { drawPeg } from './drawPeg';
+import { drawHead, drawPrims } from './drawPeg';
 import type { Appearance, Eyes } from './geometry';
+import { boneMatrices, buildRig, poseAngles, type BoneId, type Rig } from './rig';
 
 export type PegActivity = 'idle' | 'walk' | 'sleep' | 'dance';
 
@@ -22,13 +23,18 @@ export type PegActivity = 'idle' | 'walk' | 'sleep' | 'dance';
 const WALK_SPEED = 90;
 /** Hops per stage unit walked. */
 const HOPS_PER_UNIT = 1 / 42;
-/** Texture resolution for cached characters (room scale up to ~1.6 × device pixel ratio 2). */
+/** Texture resolution for cached heads (room scale up to ~1.6 × device pixel ratio 2). */
 const CACHE_RESOLUTION = 3;
+/** Walking hops are lower now that the legs stride. */
+const HOP_SCALE = 0.5;
 
 export class PegView extends Container {
   readonly figure = new Container();
   readonly bubble = new IntentBubble();
-  private art: Graphics;
+  private readonly rig: Rig;
+  /** One shape per part, back to front, each following its bone. */
+  private readonly parts: { bone: BoneId; g: Graphics }[] = [];
+  private head: Graphics;
   private eyes: Eyes = 'open';
   private activity: PegActivity = 'idle';
   private targetX: number | null = null;
@@ -50,17 +56,27 @@ export class PegView extends Container {
     this.appearance = appearance;
     this.size = size;
     this.phase = phase;
-    this.art = this.drawArt();
-    this.figure.addChild(this.art);
+    this.rig = buildRig(size, appearance);
+    this.head = this.drawHeadArt();
+    for (const part of this.rig.parts) {
+      let g: Graphics;
+      if ('head' in part) g = this.head;
+      else {
+        g = new Graphics();
+        drawPrims(g, part.prims);
+      }
+      this.parts.push({ bone: part.bone, g });
+      this.figure.addChild(g);
+    }
+    this.pose(0, 0, false);
     this.bubble.position.set(0, -size - 34);
     this.addChild(this.figure, this.bubble);
     this.label = `peg:${id}`;
   }
 
-  private drawArt(): Graphics {
-    const { g, geo } = drawPeg(this.size, this.appearance, this.eyes);
-    // Feet at the origin, centred on the body.
-    g.pivot.set(geo.W / 2, geo.H);
+  private drawHeadArt(): Graphics {
+    const g = drawHead(this.size, this.appearance, this.eyes);
+    g.pivot.set(this.rig.headPivot.x, this.rig.headPivot.y);
     // One texture per appearance and eye state: cheap to draw many characters.
     // High resolution so it stays crisp when the room is scaled up on big screens.
     g.cacheAsTexture({ resolution: CACHE_RESOLUTION, antialias: true });
@@ -68,11 +84,36 @@ export class PegView extends Container {
   }
 
   private redraw(): void {
-    const next = this.drawArt();
-    this.figure.removeChild(this.art);
-    this.art.destroy();
-    this.art = next;
-    this.figure.addChild(this.art);
+    const next = this.drawHeadArt();
+    const at = this.figure.getChildIndex(this.head);
+    next.position.copyFrom(this.head.position);
+    next.rotation = this.head.rotation;
+    this.figure.removeChild(this.head);
+    this.head.destroy();
+    this.head = next;
+    this.figure.addChildAt(next, at);
+    for (const p of this.parts) if (p.bone === 'head') p.g = next;
+  }
+
+  /** Put every part where its bone is, for what the character is doing now. */
+  private pose(timeS: number, cheer: number, calm: boolean): void {
+    const mats = boneMatrices(
+      this.rig,
+      poseAngles({
+        activity: this.activity,
+        timeS,
+        phase: this.phase,
+        stepPhase: this.stepPhase,
+        walking: this.walkingNow || this.targetX !== null,
+        calm,
+        cheer,
+      }),
+    );
+    for (const p of this.parts) {
+      const m = mats[p.bone];
+      p.g.position.set(m.tx, m.ty);
+      p.g.rotation = Math.atan2(m.b, m.a);
+    }
   }
 
   setEyes(eyes: Eyes): void {
@@ -152,11 +193,11 @@ export class PegView extends Container {
         this.facing = dir;
         this.x += dir * step;
         this.stepPhase += step * HOPS_PER_UNIT;
-        pose = walkPose(this.stepPhase, calm);
+        pose = lowHop(walkPose(this.stepPhase, calm));
       }
     }
     if (this.targetX === null && this.walkingNow) {
-      pose = walkPose(this.stepPhase, calm);
+      pose = lowHop(walkPose(this.stepPhase, calm));
     } else if (this.targetX === null) {
       if (this.activity === 'sleep') pose = sleepPose(timeS, this.phase, calm);
       else if (this.activity === 'dance') pose = dancePose(timeS, this.phase, calm);
@@ -169,6 +210,7 @@ export class PegView extends Container {
       pose = combine(pose, jumpPose(this.jumpT, calm));
     }
 
+    this.pose(timeS, this.jumpT, calm);
     this.figure.position.y = pose.dy;
     this.figure.scale.set(pose.scaleX * this.facing, pose.scaleY);
     this.figure.rotation = pose.rotation;
@@ -179,4 +221,9 @@ export class PegView extends Container {
     // Depth sorting: things lower on the floor are drawn in front.
     this.zIndex = this.y;
   }
+}
+
+/** The legs stride now, so a walk needs only a small hop. */
+function lowHop(p: Pose): Pose {
+  return { ...p, dy: p.dy * HOP_SCALE, rotation: p.rotation * HOP_SCALE };
 }

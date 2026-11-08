@@ -156,6 +156,114 @@ function Park({ roof }: { roof: string }) {
   );
 }
 
+/** A white cross on a round badge: first aid (not the Red Cross emblem). */
+function FirstAid({ cx, cy, r }: { cx: number; cy: number; r: number }) {
+  const a = r * 0.55;
+  const b = r * 0.2;
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={r} fill={color.leaf} {...LINE} strokeWidth={3} />
+      <path
+        d={`M${cx - b} ${cy - a}h${2 * b}v${a - b}h${a - b}v${2 * b}h${b - a}v${a - b}h${-2 * b}v${b - a}h${b - a}v${-2 * b}h${a - b}Z`}
+        fill="#FFFFFF"
+      />
+    </g>
+  );
+}
+
+function Hospital({ roof }: { roof: string }) {
+  return (
+    <g>
+      <rect x={14} y={38} width={100} height={64} rx={6} fill={color.paper} {...LINE} />
+      <rect x={8} y={30} width={112} height={12} rx={5} fill={roof} {...LINE} />
+      <FirstAid cx={64} cy={17} r={14} />
+      <Window x={22} y={50} />
+      <Window x={88} y={50} />
+      <Window x={22} y={76} />
+      <Window x={88} y={76} />
+      <rect x={44} y={62} width={40} height={8} rx={3} fill={roof} {...LINE} strokeWidth={3} />
+      <rect x={50} y={70} width={28} height={32} rx={3} fill={color.sky} {...LINE} />
+      <path d="M64 70v32" stroke={INK} strokeWidth={3} />
+    </g>
+  );
+}
+
+function Workshop({ roof }: { roof: string }) {
+  return (
+    <g>
+      <rect x={16} y={48} width={96} height={54} rx={4} fill={color.woodLight} {...LINE} />
+      <path d="M8 52L40 22H88L120 52Z" fill={roof} {...LINE} />
+      <circle cx={64} cy={38} r={9} fill={color.paper} {...LINE} strokeWidth={3} />
+      <circle cx={64} cy={38} r={3} fill={INK} />
+      <Window x={24} y={62} />
+      <rect x={52} y={60} width={50} height={42} rx={3} fill={color.woodDark} {...LINE} />
+      {[70, 78, 86, 94].map((y) => (
+        <path key={y} d={`M56 ${y}h42`} stroke={INK} strokeWidth={2} opacity={0.5} />
+      ))}
+    </g>
+  );
+}
+
+function Shop({ roof }: { roof: string }) {
+  const stripes = [0, 1, 2, 3, 4, 5, 6];
+  return (
+    <g>
+      <rect x={16} y={40} width={96} height={62} rx={6} fill={color.paper} {...LINE} />
+      <rect x={30} y={18} width={68} height={22} rx={8} fill={roof} {...LINE} />
+      <circle cx={52} cy={29} r={5} fill={color.leaf} />
+      <circle cx={64} cy={29} r={5} fill={color.marigold} />
+      <circle cx={76} cy={29} r={5} fill="#FFFFFF" />
+      <rect x={10} y={44} width={108} height={14} rx={4} fill="#FFFFFF" {...LINE} />
+      {stripes.map((i) =>
+        i % 2 ? null : (
+          <rect key={i} x={14 + i * 14.3} y={46} width={14.3} height={10} fill={roof} />
+        ),
+      )}
+      <rect x={10} y={44} width={108} height={14} rx={4} fill="none" {...LINE} />
+      <rect x={22} y={64} width={50} height={32} rx={4} fill={color.sky} {...LINE} />
+      <circle cx={34} cy={88} r={5} fill={color.tomato} />
+      <circle cx={46} cy={88} r={5} fill={color.marigold} />
+      <circle cx={58} cy={88} r={5} fill={color.leaf} />
+      <Door x={82} y={68} h={34} fill={color.teal} />
+    </g>
+  );
+}
+
+function Airport({ roof }: { roof: string }) {
+  return (
+    <g>
+      <rect x={86} y={34} width={14} height={68} fill={color.paper} {...LINE} />
+      <path d="M93 8v10" stroke={INK} strokeWidth={3} strokeLinecap="round" />
+      <circle cx={93} cy={7} r={4} fill={color.tomato} {...LINE} strokeWidth={2} />
+      <rect x={77} y={18} width={32} height={20} rx={6} fill={roof} {...LINE} />
+      <rect x={82} y={23} width={22} height={8} rx={3} fill={color.sky} />
+      <rect x={6} y={58} width={76} height={44} rx={6} fill={color.paper} {...LINE} />
+      <path d="M0 62Q42 36 86 62Z" fill={roof} {...LINE} />
+      <rect
+        x={14}
+        y={68}
+        width={60}
+        height={14}
+        rx={4}
+        fill={color.sky}
+        {...LINE}
+        strokeWidth={3}
+      />
+      <path d="M29 68v14M44 68v14M59 68v14" stroke={INK} strokeWidth={2} />
+      <rect
+        x={34}
+        y={86}
+        width={20}
+        height={16}
+        rx={3}
+        fill={color.sky}
+        {...LINE}
+        strokeWidth={3}
+      />
+    </g>
+  );
+}
+
 /** A building as seen from the street, 128 × 112. */
 export function BuildingArt({ b }: { b: BuildingDef }) {
   const art =
@@ -167,6 +275,14 @@ export function BuildingArt({ b }: { b: BuildingDef }) {
       <MusicHall roof={b.roofColor} />
     ) : b.kind === 'park' ? (
       <Park roof={b.roofColor} />
+    ) : b.kind === 'hospital' ? (
+      <Hospital roof={b.roofColor} />
+    ) : b.kind === 'workshop' ? (
+      <Workshop roof={b.roofColor} />
+    ) : b.kind === 'shop' ? (
+      <Shop roof={b.roofColor} />
+    ) : b.kind === 'airport' ? (
+      <Airport roof={b.roofColor} />
     ) : (
       <House shape={b.shape ?? 'cottage'} roof={b.roofColor} />
     );
