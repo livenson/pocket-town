@@ -29,8 +29,16 @@ function keepRequestsAtHome(): void {
   guarded = true;
   const original = window.fetch.bind(window);
   window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
-    const href = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
-    if (new URL(href, location.href).origin !== location.origin)
+    let url: URL | null = null;
+    try {
+      const href =
+        typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+      url = new URL(href, location.href);
+    } catch {
+      // Not a URL we understand: let the browser decide (and the CSP still applies).
+    }
+    // Only other web sites are answered here; our own files, data: and blob: pass.
+    if (url && /^https?:$/.test(url.protocol) && url.origin !== location.origin)
       return Promise.resolve(new Response(null, { status: 204 }));
     return original(input, init);
   };
@@ -182,7 +190,12 @@ export async function watchVideo(
     raf = requestAnimationFrame(loop);
     if (video.readyState < 2 || video.currentTime === lastTime) return;
     lastTime = video.currentTime;
-    const result = f.detectForVideo(video, performance.now());
+    let result: FaceLandmarkerResult;
+    try {
+      result = f.detectForVideo(video, performance.now());
+    } catch {
+      return; // a frame the finder could not read: skip it
+    }
     // Colours change slowly: copy the picture every few frames only.
     const w = video.videoWidth;
     const h = video.videoHeight;

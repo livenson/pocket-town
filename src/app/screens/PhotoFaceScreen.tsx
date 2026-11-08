@@ -42,8 +42,15 @@ export function PhotoFaceScreen() {
   const stream = useRef<MediaStream | null>(null);
   const stopWatch = useRef<(() => void) | null>(null);
   const averager = useRef(new LookAverager());
+  /** False once the screen is left: async steps that finish later then undo themselves. */
+  const alive = useRef(true);
+  /** Bumps on every start or stop, so a slow start that was cancelled gives up. */
+  const session = useRef(0);
+  /** Set once the face finder's code has loaded (only then is there anything to close). */
+  const finderLoaded = useRef(false);
 
   const stopCamera = () => {
+    session.current++;
     stopWatch.current?.();
     stopWatch.current = null;
     for (const t of stream.current?.getTracks() ?? []) t.stop();
@@ -51,51 +58,92 @@ export function PhotoFaceScreen() {
     if (video.current) video.current.srcObject = null;
   };
 
-  // Leaving the screen: camera off, face finder's memory freed.
+  // Leaving the screen: camera off, face finder's memory freed (if it was loaded).
   useEffect(() => {
     const watch = stopWatch;
     const media = stream;
+    const loaded = finderLoaded;
+    const live = alive;
+    const run = session;
+    live.current = true;
     return () => {
+      live.current = false;
+      run.current++;
       watch.current?.();
+      watch.current = null;
       for (const t of media.current?.getTracks() ?? []) t.stop();
-      void import('../../photo/faceFinder').then((m) => m.closeFinder());
+      media.current = null;
+      if (loaded.current)
+        void import('../../photo/faceFinder').then((m) => m.closeFinder()).catch(() => {});
     };
   }, []);
 
+  /** Load the face finder's code; null when it cannot load (offline, old device). */
+  const loadFinder = async () => {
+    try {
+      const m = await import('../../photo/faceFinder');
+      finderLoaded.current = true;
+      return m;
+    } catch {
+      return null;
+    }
+  };
+
   const startCamera = async () => {
+    stopCamera();
+    const run = session.current;
+    /** The screen was left or the camera stopped while we were waiting. */
+    const gone = () => !alive.current || session.current !== run;
     setPhase('loading');
     averager.current.reset();
     setLook(null);
+    let media: MediaStream;
     try {
-      stream.current = await navigator.mediaDevices.getUserMedia({
+      media = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
         audio: false,
       });
     } catch {
-      setPhase('denied');
+      if (!gone()) setPhase('denied');
       return;
     }
     const v = video.current;
-    if (!v) return;
-    v.srcObject = stream.current;
+    if (gone() || !v) {
+      for (const t of media.getTracks()) t.stop();
+      return;
+    }
+    stream.current = media;
+    v.srcObject = media;
     await v.play().catch(() => {});
-    const finder = await import('../../photo/faceFinder');
-    if (!(await finder.prepareFinder())) {
+    const finder = await loadFinder();
+    const ready = finder ? await finder.prepareFinder() : false;
+    if (gone()) return;
+    if (!finder || !ready) {
       stopCamera();
       setPhase('unavailable');
       return;
     }
-    setPhase('camera');
     let last = 0;
-    stopWatch.current = await finder.watchVideo(v, ({ look: l, scores }) => {
-      if (l) averager.current.add(l);
-      // Redraw the character about ten times a second: plenty for a mirror.
-      const now = performance.now();
-      if (now - last < 100) return;
-      last = now;
-      setExpression(expressionOf(scores));
-      setLook(averager.current.current());
-    });
+    try {
+      const stop = await finder.watchVideo(v, ({ look: l, scores }) => {
+        if (l) averager.current.add(l);
+        // Redraw the character about ten times a second: plenty for a mirror.
+        const now = performance.now();
+        if (now - last < 100) return;
+        last = now;
+        setExpression(expressionOf(scores));
+        setLook(averager.current.current());
+      });
+      if (gone()) {
+        stop();
+        return;
+      }
+      stopWatch.current = stop;
+      setPhase('camera');
+    } catch {
+      stopCamera();
+      if (alive.current) setPhase('unavailable');
+    }
   };
 
   const keep = () => {
@@ -108,8 +156,9 @@ export function PhotoFaceScreen() {
     if (!file) return;
     stopCamera();
     setPhase('looking');
-    const finder = await import('../../photo/faceFinder');
-    const r = await finder.lookFromPhoto(file);
+    const finder = await loadFinder();
+    const r = finder ? await finder.lookFromPhoto(file) : { kind: 'unavailable' as const };
+    if (!alive.current) return;
     if (r.kind === 'look') {
       setLook(r.look);
       setPhase('result');
@@ -236,10 +285,14 @@ export function PhotoFaceScreen() {
                 disabled={phase === 'loading' || phase === 'looking'}
                 onClick={() => void startCamera()}
               />
-              <label className="photo-face__file btn btn--secondary btn--word">
+              <label
+                className="photo-face__file btn btn--secondary btn--word"
+                aria-disabled={phase === 'loading' || phase === 'looking' || undefined}
+              >
                 <input
                   type="file"
                   accept="image/*"
+                  disabled={phase === 'loading' || phase === 'looking'}
                   className="visually-hidden"
                   onChange={(e) => {
                     void fromPhoto(e.target.files?.[0]);

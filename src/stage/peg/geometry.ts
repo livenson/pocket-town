@@ -125,9 +125,14 @@ function corners(
   };
 }
 
+/** A peg's body width (tap targets need only this, not the whole geometry). */
+export function pegWidth(size: number): number {
+  return Math.round(size * 0.62);
+}
+
 export function pegGeometry(size: number, a: Appearance, eyes: Eyes = 'open'): PegGeometry {
   const H = size;
-  const W = Math.round(H * 0.62);
+  const W = pegWidth(H);
   const d = Math.round(W * 0.86);
   const hx = (W - d) / 2;
   const hy = H * 0.1;
@@ -183,8 +188,9 @@ export function pegGeometry(size: number, a: Appearance, eyes: Eyes = 'open'): P
   return {
     H,
     W,
-    RW: W * 1.24,
-    left: -W * 0.12,
+    // Hands reach past the body; a cape flares further still.
+    RW: W * (a.clothes === 'cape' ? 1.68 : 1.24),
+    left: -W * (a.clothes === 'cape' ? 0.34 : 0.12),
     legs: [leg(W * 0.5 - legW - W * 0.04), leg(W * 0.5 + W * 0.04)],
     shoeH,
     d,

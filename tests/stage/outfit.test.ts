@@ -84,3 +84,26 @@ describe('boy or girl in the wizard', () => {
     }
   });
 });
+
+describe('portrait width', () => {
+  it('fits everything a character wears, capes included', () => {
+    for (const clothes of clothesKinds) {
+      const a: Appearance = { ...base, clothes };
+      const g = pegGeometry(150, a);
+      const xs = [...backPrims(g, a), ...clothesPrims(g, a), ...armPrims(g, a)].flatMap((p) =>
+        p.t === 'poly'
+          ? p.pts.filter((_, i) => i % 2 === 0)
+          : p.t === 'rect'
+            ? [p.x, p.x + p.w]
+            : p.t === 'line'
+              ? [p.x1 - p.sw / 2, p.x2 + p.sw / 2, p.x1 + p.sw / 2, p.x2 - p.sw / 2]
+              : [p.cx - p.rx, p.cx + p.rx],
+      );
+      expect({ clothes, min: Math.min(...xs) >= g.left - 0.5 }).toEqual({ clothes, min: true });
+      expect({ clothes, max: Math.max(...xs) <= g.left + g.RW + 0.5 }).toEqual({
+        clothes,
+        max: true,
+      });
+    }
+  });
+});

@@ -109,8 +109,9 @@ class Player {
 /** The hidden piano: tap, slide or press keys; choose how it sounds. */
 export function PianoScreen() {
   const width = useViewportWidth();
-  // One octave on narrow phones keeps every white key at least 44 px wide.
-  const whiteCount = width < 600 ? 8 : 15;
+  // Every white key stays at least 44 px wide: one octave (seven keys, or eight
+  // from C to C when there is room) on phones, two octaves on wider screens.
+  const whiteCount = width < 420 ? 7 : width < 600 ? 8 : 15;
   const keys = layout(whiteCount);
   const [instrument, setInstrument] = useState<Instrument>(savedInstrument);
   const [held, setHeld] = useState<ReadonlySet<number>>(new Set());

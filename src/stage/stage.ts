@@ -45,8 +45,6 @@ export class Stage {
   private fit = { w: 1, h: 1, scale: 1, cropped: false };
   private readonly prefs = new StagePrefs();
   private host: HTMLElement | null = null;
-  /** The selected character last frame: a new pick takes the camera back. */
-  private lastSelected: string | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private time = 0;
 
@@ -77,6 +75,13 @@ export class Stage {
     // Follow room changes made elsewhere (the map, the hub).
     useUi.subscribe((s, prev) => {
       if (s.roomId !== prev.roomId) this.showRoom(s.roomId);
+    });
+    // Tapping a character (even the one already picked), or starting or stopping
+    // following someone, hands the camera back from the look arrows.
+    usePlay.subscribe((s, prev) => {
+      const tapped = s.cardOpen && !prev.cardOpen;
+      if (tapped || s.selectedBotId !== prev.selectedBotId || s.followBotId !== prev.followBotId)
+        if (useUi.getState().lookX !== null) useUi.getState().setLookX(null);
     });
   }
 
@@ -159,10 +164,6 @@ export class Stage {
   private followCamera(): void {
     const play = usePlay.getState();
     const ui = useUi.getState();
-    if (play.selectedBotId !== this.lastSelected) {
-      this.lastSelected = play.selectedBotId;
-      if (play.selectedBotId && ui.lookX !== null) ui.setLookX(null);
-    }
     // Looking left or right with the arrows, unless someone is being followed.
     if (!play.followBotId && ui.lookX !== null) {
       this.focusX = ui.lookX;
