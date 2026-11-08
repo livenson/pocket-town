@@ -8,6 +8,7 @@ import { Icon } from '../ui/Icon';
 import { IconButton } from '../ui/IconButton';
 import { PegPortrait } from '../ui/PegPortrait';
 import { sim } from './simRunner';
+import { CraftBurst } from './workshop/CraftBurst';
 
 /** What is being carried: the drag ghost, the "in hand" pill, and the red-cross mark. */
 export function CarryLayer() {
@@ -92,6 +93,7 @@ export function CarryLayer() {
           <Icon name="close" size={30} strokeWidth={3.4} />
         </div>
       )}
+      <CraftBurst />
     </>
   );
 }

@@ -8,6 +8,7 @@ import { IconButton } from '../../ui/IconButton';
 import { Sheet } from '../../ui/Sheet';
 import { BotCard } from '../BotCard';
 import { CameraOverlay } from '../CameraOverlay';
+import { CarFixOverlay } from '../workshop/CarFixOverlay';
 import { CarryLayer } from '../CarryLayer';
 import { CharactersDock } from '../CharactersDock';
 import { FollowBar } from '../FollowBar';
@@ -210,6 +211,7 @@ export function SceneScreen() {
       <CarryLayer />
       <BotCard />
       <CameraOverlay />
+      <CarFixOverlay />
     </div>
   );
 }

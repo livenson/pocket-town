@@ -1,0 +1,459 @@
+/* The workshop: making things at the workbench, and fixing the car in the garage. */
+
+/* ---------- Making burst over the bench ---------- */
+.craft-burst {
+  position: fixed;
+  z-index: 81;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.craft-burst__puff {
+  position: absolute;
+  left: -46px;
+  top: -40px;
+  width: 92px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 45%, rgba(255, 255, 255, 0) 70%);
+  opacity: 0;
+  animation: craft-puff 900ms var(--pt-ease) forwards;
+}
+
+.craft-burst__spark {
+  position: absolute;
+  left: -11px;
+  top: -11px;
+  color: var(--pt-marigold-shadow);
+  opacity: 0;
+  --angle: calc(var(--i) * 72deg - 90deg);
+  animation: craft-spark 1000ms var(--pt-ease) forwards;
+  animation-delay: 120ms;
+}
+
+.craft-burst--knock .craft-burst__puff {
+  display: none;
+}
+
+.craft-burst--knock .craft-burst__spark {
+  color: var(--pt-wood-dark);
+  animation-duration: 600ms;
+  animation-delay: 0ms;
+}
+
+.craft-burst__made {
+  position: absolute;
+  left: -32px;
+  top: -32px;
+  opacity: 0;
+  filter: drop-shadow(0 4px 0 rgba(42, 22, 64, 0.2));
+  animation: craft-made 1300ms var(--pt-ease) forwards;
+  animation-delay: 250ms;
+}
+
+@keyframes craft-puff {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  30% {
+    opacity: 0.95;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.3);
+  }
+}
+
+@keyframes craft-spark {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(8px) rotate(calc(-1 * var(--angle)));
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(58px) rotate(calc(-1 * var(--angle))) scale(0.6);
+  }
+}
+
+@keyframes craft-made {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.4);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(-18px) scale(1.15);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-24px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-34px) scale(0.9);
+  }
+}
+
+/* ---------- Faded hint over the bench: what is still missing ---------- */
+.bench-hint {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.bench-hint__bubble {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px dashed var(--pt-ink);
+}
+
+.bench-hint__bubble img {
+  width: 34px;
+  height: 34px;
+  opacity: 0.45;
+  filter: grayscale(0.4);
+}
+
+.bench-hint__plus {
+  color: var(--pt-ink);
+  opacity: 0.6;
+}
+
+/* ---------- Car fixing ---------- */
+.car-fix {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: #e6e9f0;
+  padding: calc(var(--safe-top, 0px) + 12px) calc(var(--safe-right, 0px) + 12px)
+    calc(var(--safe-bottom, 0px) + 12px) calc(var(--safe-left, 0px) + 12px);
+  overflow: hidden;
+}
+
+.car-fix__top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+}
+
+.car-fix__title {
+  font-family: var(--pt-font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--pt-ink);
+  margin: 0;
+}
+
+.car-fix__ticks {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.car-fix__tick {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid var(--pt-ink);
+  background: #fff;
+  color: transparent;
+}
+
+.car-fix__tick[data-done] {
+  background: var(--pt-teal);
+  color: #fff;
+}
+
+.car-fix__garage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+
+.car-fix__car {
+  position: relative;
+  width: min(100%, 720px, calc((100dvh - 300px) * 1.9));
+  min-width: 280px;
+  aspect-ratio: 760 / 400;
+}
+
+.car-fix__car svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.car-fix[data-done] .car-fix__car {
+  animation: car-drive 2600ms var(--pt-ease) 300ms both;
+}
+
+@keyframes car-drive {
+  0% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-4%) rotate(-1deg);
+  }
+  45% {
+    transform: translateX(70%) rotate(0.5deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(80%);
+    opacity: 0;
+  }
+  55% {
+    transform: translateX(-80%);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(-70%);
+    opacity: 1;
+  }
+  90% {
+    transform: translateX(2%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.car-fix__spot {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border-radius: 50%;
+  border: 4px dashed var(--pt-ink);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.75);
+  color: var(--pt-ink);
+  cursor: pointer;
+  animation: spot-wobble 1800ms ease-in-out infinite;
+}
+
+.car-fix__spot svg {
+  width: 38px;
+  height: 38px;
+}
+
+.car-fix[data-holding] .car-fix__spot:not([data-fixed]) {
+  border-style: solid;
+  border-color: var(--pt-teal-dark);
+  box-shadow:
+    0 0 0 5px var(--pt-teal),
+    0 0 0 12px rgba(20, 184, 166, 0.3);
+}
+
+.car-fix__spot[data-fixed] {
+  border-style: solid;
+  border-color: var(--pt-teal-dark);
+  background: var(--pt-teal);
+  color: #fff;
+  animation: spot-fixed 600ms var(--pt-ease) both;
+}
+
+.car-fix__spot[data-wrong='a'] {
+  animation: spot-boing 500ms var(--pt-ease);
+}
+
+.car-fix__spot[data-wrong='b'] {
+  animation: spot-boing-again 500ms var(--pt-ease);
+}
+
+@keyframes spot-wobble {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes spot-fixed {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes spot-boing {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px) scale(1.05, 0.95);
+  }
+  60% {
+    transform: translateY(0) scale(0.95, 1.05);
+  }
+}
+
+.car-fix__sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.car-fix__sparkles span {
+  position: absolute;
+  color: var(--pt-marigold-shadow);
+  animation: sparkle-twinkle 1600ms ease-in-out infinite;
+  animation-delay: calc(var(--i) * 200ms);
+}
+
+@keyframes spot-boing-again {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px) scale(1.05, 0.95);
+  }
+  60% {
+    transform: translateY(0) scale(0.95, 1.05);
+  }
+}
+
+@keyframes sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+.car-fix__tray {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 24px;
+  background: var(--pt-wood-light);
+  box-shadow: inset 0 0 0 4px var(--pt-ink);
+}
+
+.car-fix__tool {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: #fff;
+  border: 3px solid var(--pt-ink);
+  cursor: grab;
+  touch-action: none;
+  transition: transform var(--pt-press-ms, 120ms) var(--pt-ease);
+}
+
+.car-fix__tool img {
+  width: 44px;
+  height: 44px;
+  pointer-events: none;
+}
+
+.car-fix__tool[aria-pressed='true'] {
+  transform: translateY(-6px);
+  box-shadow:
+    0 0 0 4px var(--pt-marigold),
+    0 0 0 12px rgba(255, 182, 39, 0.35);
+}
+
+@media (min-width: 700px) {
+  .car-fix__tool {
+    width: var(--pt-primary-tablet, 76px);
+    height: var(--pt-primary-tablet, 76px);
+  }
+
+  .car-fix__tool img {
+    width: 54px;
+    height: 54px;
+  }
+
+  .car-fix__spot {
+    width: 76px;
+    height: 76px;
+    margin: -38px 0 0 -38px;
+  }
+}
+
+@media (max-width: 480px) {
+  .car-fix__tray {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .car-fix__tool {
+    width: 56px;
+    height: 56px;
+  }
+
+  .car-fix__tool img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .car-fix__spot {
+    width: 52px;
+    height: 52px;
+    margin: -26px 0 0 -26px;
+  }
+
+  .car-fix__spot svg {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.car-fix__ghost {
+  position: fixed;
+  z-index: 90;
+  left: -32px;
+  top: -32px;
+  width: 64px;
+  height: 64px;
+  pointer-events: none;
+}
+
+.car-fix__done {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+}
