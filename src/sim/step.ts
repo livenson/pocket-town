@@ -10,6 +10,7 @@ import { syncHouses } from './houses';
 import { decayMultiplier, effectiveGains, plan } from './planner';
 import { nextRandom, pick } from './rng';
 import type { Bot, Doing, Place, SimEvent, World } from './types';
+import { botTinkered } from './workbench';
 import { clampToFloor, entryRoom, frontDoorX, getBot, routeTo, DOOR_Y } from './world';
 
 const MAX_EVENTS = 80;
@@ -258,6 +259,8 @@ function finish(world: World, bot: Bot): void {
       placedBy: 'bot',
     });
   }
+  // Tinkering at a workbench sometimes leaves a little thing the bot made.
+  if (done.activity === 'tinker') botTinkered(world, bot, done.targetId);
   // Tidying puts away a thing a bot left out (never the child's things).
   if (done.activity === 'tidy' && done.targetId?.startsWith('tidy:')) {
     const id = done.targetId.slice(5);

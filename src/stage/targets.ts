@@ -38,6 +38,16 @@ export function clientToRoom(clientX: number, clientY: number): { x: number; y: 
   };
 }
 
+/** Room units → client (pointer) coordinates, or null when the stage is not shown. */
+export function roomToClient(x: number, y: number): { x: number; y: number } | null {
+  const box = view.host?.getBoundingClientRect();
+  if (!box) return null;
+  return {
+    x: box.left + view.offsetX + x * view.scale,
+    y: box.top + view.offsetY + y * view.scale,
+  };
+}
+
 const elements = new Map<string, HTMLElement>();
 /** Rectangles in room units, refreshed by the stage every frame. */
 const rects = new Map<string, Rect>();

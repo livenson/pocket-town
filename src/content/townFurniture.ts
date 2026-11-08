@@ -96,6 +96,39 @@ function planeBody(dx: number, dy = 0): Shape[] {
   ];
 }
 
+/**
+ * The little car on the lift in the garage. Broken: one wheel off and lying on the
+ * floor. Fixed (the car-fixing game): all four wheels on and a fresh shine.
+ */
+export function liftedCar(fixed: boolean): Shape[] {
+  return [
+    rect(8, 20, 18, 148, color.marigold, { r: 4, stroke: LINE4 }),
+    rect(274, 20, 18, 148, color.marigold, { r: 4, stroke: LINE4 }),
+    rect(16, 128, 268, 16, STEEL_DARK, { r: 6, stroke: LINE4 }),
+    rect(90, 22, 112, 50, color.tomato, { r: [24, 24, 4, 4], stroke: OUTLINE }),
+    rect(104, 32, 40, 28, color.sky, { r: [12, 4, 2, 2], stroke: THIN }),
+    rect(150, 32, 40, 28, color.sky, { r: [4, 12, 2, 2], stroke: THIN }),
+    rect(50, 62, 200, 50, color.tomato, { r: 22, stroke: OUTLINE }),
+    rect(62, 70, 90, 6, WHITE, { r: 3, alpha: fixed ? 0.7 : 0.35 }),
+    oval(230, 74, 14, 12, color.marigold, { stroke: THIN }),
+    oval(68, 92, 42, 42, INK),
+    oval(80, 104, 18, 18, STEEL),
+    ...(fixed
+      ? [
+          oval(188, 92, 42, 42, INK),
+          oval(200, 104, 18, 18, STEEL),
+          rect(108, 36, 8, 18, WHITE, { r: 4, alpha: 0.6 }),
+          rect(162, 36, 8, 18, WHITE, { r: 4, alpha: 0.6 }),
+        ]
+      : [
+          oval(188, 92, 42, 42, INK, { alpha: 0.25 }),
+          oval(196, 140, 50, 28, INK),
+          oval(212, 148, 18, 12, STEEL),
+        ]),
+    rect(0, 162, 300, 10, INK, { r: 5, alpha: 0.12 }),
+  ];
+}
+
 /** The plane that takes off and lands on the runway (drawn by the stage, not furniture). */
 export const flyingPlane: FurnitureKind = {
   id: 'flyingPlane',
@@ -227,12 +260,7 @@ export const townFurniture = {
       rect(18, 106, 244, 12, color.woodDark, { r: 4, stroke: THIN }),
       rect(42, 86, 40, 22, color.tomato, { r: 4, stroke: THIN }),
       rect(178, 90, 52, 18, color.cornflower, { r: 4, stroke: THIN }),
-      // A birdhouse being built, a hammer and the vice.
-      rect(112, 8, 50, 36, color.marigold, { r: 4, stroke: LINE4 }),
-      rect(105, 0, 64, 14, color.tomato, { r: 7, stroke: THIN }),
-      oval(130, 18, 14, 14, INK),
-      rect(44, 32, 52, 7, color.woodDeep, { r: 3.5 }),
-      rect(34, 24, 16, 18, STEEL_DARK, { r: 4, stroke: THIN }),
+      // The vice at the end; the top is clear for the child's things (crafting.ts).
       rect(226, 24, 36, 20, STEEL_DARK, { r: 4, stroke: THIN }),
       rect(258, 30, 18, 7, INK, { r: 3.5 }),
       rect(0, 40, 280, 22, color.wood, { r: 8, stroke: SOFT }),
@@ -294,24 +322,7 @@ export const townFurniture = {
     w: 300,
     h: 172,
     footY: 168,
-    shapes: [
-      rect(8, 20, 18, 148, color.marigold, { r: 4, stroke: LINE4 }),
-      rect(274, 20, 18, 148, color.marigold, { r: 4, stroke: LINE4 }),
-      rect(16, 128, 268, 16, STEEL_DARK, { r: 6, stroke: LINE4 }),
-      // The little car, one wheel off.
-      rect(90, 22, 112, 50, color.tomato, { r: [24, 24, 4, 4], stroke: OUTLINE }),
-      rect(104, 32, 40, 28, color.sky, { r: [12, 4, 2, 2], stroke: THIN }),
-      rect(150, 32, 40, 28, color.sky, { r: [4, 12, 2, 2], stroke: THIN }),
-      rect(50, 62, 200, 50, color.tomato, { r: 22, stroke: OUTLINE }),
-      rect(62, 70, 90, 6, WHITE, { r: 3, alpha: 0.35 }),
-      oval(230, 74, 14, 12, color.marigold, { stroke: THIN }),
-      oval(68, 92, 42, 42, INK),
-      oval(80, 104, 18, 18, STEEL),
-      oval(188, 92, 42, 42, INK, { alpha: 0.25 }),
-      oval(196, 140, 50, 28, INK),
-      oval(212, 148, 18, 12, STEEL),
-      rect(0, 162, 300, 10, INK, { r: 5, alpha: 0.12 }),
-    ],
+    shapes: liftedCar(false),
   },
 
   // ——— Shop ———
@@ -465,27 +476,23 @@ export const townFurniture = {
     label: 'Departure board',
     layer: 'wall',
     w: 260,
-    h: 140,
-    // Planes, colours and lights: no words to read.
+    h: 170,
+    // Pictures, clock digits and coloured status pills: no words to read. In a room
+    // the rows are live (stage/BoardView.ts); this is the still picture.
     shapes: [
       rect(40, 0, 6, 34, INK),
       rect(214, 0, 6, 34, INK),
-      rect(0, 30, 260, 110, color.night, { r: 12, stroke: OUTLINE }),
-      ...(
-        [
-          [color.marigold, color.leaf],
-          [color.teal, color.marigold],
-          [color.blossom, color.leaf],
-        ] as const
-      ).flatMap(([where, light], i) => {
-        const y = 46 + i * 30;
-        return [
-          rect(18, y + 5, 28, 8, WHITE, { r: 4 }),
-          rect(27, y, 8, 18, WHITE, { r: 3 }),
-          rect(58, y + 2, 120, 14, where, { r: 7 }),
-          oval(214, y + 1, 16, 16, light),
-        ];
-      }),
+      rect(0, 30, 260, 140, color.night, { r: 12, stroke: OUTLINE }),
+      ...([color.marigold, color.leaf, color.cornflower, color.leaf] as const).flatMap(
+        (status, i) => {
+          const y = 40 + i * 31;
+          return [
+            rect(12, y, 26, 26, color.sky, { r: 7 }),
+            rect(50, y + 9, 82, 8, color.marigold, { r: 4, alpha: 0.8 }),
+            rect(176, y, 74, 26, status, { r: 13 }),
+          ];
+        },
+      ),
     ],
   },
   checkInDesk: {

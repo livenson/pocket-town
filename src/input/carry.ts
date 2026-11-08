@@ -8,11 +8,14 @@ import { game } from '../app/game';
 import { hint } from '../app/hints';
 import { playSfx } from '../audio/audio';
 import { sim } from '../app/simRunner';
+import { isCraftTool } from '../content/crafting';
 import { surfaceOf } from '../content/furniture';
+import { strings, thingName } from '../i18n';
+import { benchSlotX, benchWouldMake, onBench, type BenchPut } from '../sim/workbench';
 import { findRoom } from '../content/rooms';
 import { usePlay, type Carrying, type CarrySource } from '../state/play';
 import { useUi } from '../state/ui';
-import { clientToRoom } from '../stage/targets';
+import { clientToRoom, roomToClient } from '../stage/targets';
 
 const DRAG_START_PX = 8;
 
@@ -58,7 +61,9 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
     const roomId = useUi.getState().roomId;
     const f = findRoom(roomId)?.furniture.find((x) => x.id === target.slice(8));
     const s = f ? surfaceOf(f) : null;
-    if (s) {
+    if (s && f?.kind === 'workbench') {
+      ok = putOnBench(f.id, c.kind, c.source, clientX, clientY);
+    } else if (s) {
       const p =
         clientX !== undefined && clientY !== undefined ? clientToRoom(clientX, clientY) : null;
       const x = Math.min(s.x1, Math.max(s.x0, p?.x ?? (s.x0 + s.x1) / 2));
@@ -90,6 +95,53 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
   }
   if (ok) play.drop();
   return ok;
+}
+
+/**
+ * Put the carried thing on a workbench (sim/workbench.ts). If it makes something:
+ * a rising sparkle and the new thing on the bench; a tool alone knocks on the wood
+ * (and the bench shows faded pictures of what is missing). Never a "no".
+ */
+function putOnBench(
+  benchId: string,
+  kind: string,
+  source: CarrySource,
+  clientX?: number,
+  clientY?: number,
+): boolean {
+  const roomId = useUi.getState().roomId;
+  const p = clientX !== undefined && clientY !== undefined ? clientToRoom(clientX, clientY) : null;
+  const cmd: BenchPut = {
+    type: 'benchPut',
+    roomId,
+    benchId,
+    kind,
+    x: benchSlotX(
+      sim.world,
+      roomId,
+      benchId,
+      p?.x ?? 0,
+      source.from === 'object' ? source.objectId : undefined,
+    ),
+    ...(source.from === 'object' ? { objectId: source.objectId } : {}),
+  };
+  const recipe = benchWouldMake(sim.world, cmd);
+  if (!game.do(cmd)) return false;
+  // The sparkle goes where the new thing stands (or the thing just put down).
+  const here = onBench(sim.world, roomId, benchId);
+  const spot = (recipe ? here.filter((o) => o.kind === recipe.makes) : here).at(-1);
+  const at = spot ? roomToClient(spot.place.x, spot.place.y - (spot.raise ?? 0) - 40) : null;
+  if (recipe) {
+    playSfx('craft');
+    if (at) usePlay.getState().showBurst(at.x, at.y, recipe.makes);
+    useUi.getState().toast('sparkle', strings.workshop.made(thingName(recipe.makes)));
+  } else if (isCraftTool(kind)) {
+    playSfx('knock');
+    if (at) usePlay.getState().showBurst(at.x, at.y, null);
+  } else {
+    playSfx('place');
+  }
+  return true;
 }
 
 /** A drop that did not land anywhere useful: a gentle "no" and the thing goes back. */

@@ -111,6 +111,7 @@ These must be enforced in code and covered by tests.
 - Puppeted and frozen bots stay exactly where the child left them until released, including across save/reload.
 - Visitors always leave on their own within 2 game hours; the host house is unchanged after a visit.
 - A "tidy" bot only straightens objects that a bot dropped (for example a ball it played with), never the child's.
+- A bot tinkering at a workbench sometimes (about one time in five, at most one at a time per room) leaves a little thing it made on the floor beside it (`madeBy: 'bot'`: only to look at, it offers no activity, and tidy bots put it away later). It never touches what stands on the bench: the child's tools and materials, and anything made from them. The chance comes from a hash of the bot and the minute, not the world's random numbers, so it does not shift any other choice.
 
 ## Legibility
 

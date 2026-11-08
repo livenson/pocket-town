@@ -30,6 +30,10 @@ interface PlayStore {
   /** A brief red-cross mark where a drop did not fit. */
   invalidAt: { x: number; y: number; id: number } | null;
   cameraOpen: boolean;
+  /** A little making burst at the workbench (client px): sparkles, or a tool's knock. */
+  burst: { x: number; y: number; id: number; made: string | null } | null;
+  /** The garage car-fixing minigame: which car (`<roomId>:<pieceId>`), or null. */
+  carFix: string | null;
 
   select: (botId: string | null) => void;
   openCard: (botId: string) => void;
@@ -41,6 +45,8 @@ interface PlayStore {
   addCrumb: (buildingId: string) => void;
   markInvalid: (x: number, y: number) => void;
   setCameraOpen: (open: boolean) => void;
+  showBurst: (x: number, y: number, made: string | null) => void;
+  setCarFix: (key: string | null) => void;
 }
 
 let invalidId = 0;
@@ -54,6 +60,8 @@ export const usePlay = create<PlayStore>()((set) => ({
   breadcrumb: [],
   invalidAt: null,
   cameraOpen: false,
+  burst: null,
+  carFix: null,
 
   select: (selectedBotId) => set({ selectedBotId }),
   openCard: (botId) => set({ selectedBotId: botId, cardOpen: true, carrying: null }),
@@ -70,4 +78,6 @@ export const usePlay = create<PlayStore>()((set) => ({
     ),
   markInvalid: (x, y) => set({ invalidAt: { x, y, id: ++invalidId } }),
   setCameraOpen: (cameraOpen) => set({ cameraOpen, carrying: null }),
+  showBurst: (x, y, made) => set({ burst: { x, y, made, id: ++invalidId } }),
+  setCarFix: (carFix) => set({ carFix, carrying: null, cardOpen: false }),
 }));

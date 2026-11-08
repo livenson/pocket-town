@@ -697,6 +697,51 @@ export const en = {
     give: (name: string) => `Give it to ${name}`,
   },
 
+  workshop: {
+    hintNeeds: (thing: string, missing: string) => `To make ${thing}, add ${missing}`,
+    made: (thing: string) => `You made ${thing}!`,
+    fixCar: 'Fix the car',
+    carFixed: 'The car is fixed and shiny!',
+    tools: 'Tools',
+    spots: {
+      tyre: 'Flat tyre',
+      bolt: 'Loose bolt',
+      dent: 'Dent',
+      window: 'Dirty window',
+      fuel: 'Empty tank',
+    },
+    carTools: {
+      wheel: 'New wheel',
+      wrench: 'Spanner',
+      hammer: 'Hammer',
+      sponge: 'Sponge',
+      fuelPump: 'Fuel pump',
+    },
+    useOn: (tool: string, spot: string) => `${tool} on: ${spot}`,
+    pickTool: (tool: string) => `${tool}: pick it up`,
+    fixed: (spot: string) => `${spot}: fixed`,
+    allFixed: 'All fixed!',
+    close: 'Back to the garage',
+  },
+
+  board: {
+    flight: (place: string, time: string, status: string) => `${place}, ${time}: ${status}`,
+    places: {
+      beach: 'Beach',
+      snow: 'Snowy mountains',
+      castle: 'Castle',
+      island: 'Palm island',
+      city: 'Big city',
+    },
+    status: {
+      boarding: 'Boarding',
+      onTime: 'On time',
+      delayed: 'Delayed',
+      departed: 'Departed',
+      landed: 'Landed',
+    },
+  },
+
   piano: {
     open: 'Open the piano',
     instrument: 'Sound',
@@ -826,6 +871,11 @@ export const en = {
     gear: 'Cogwheel',
     magnet: 'Magnet',
     ruler: 'Ruler',
+    planks: 'Wood',
+    wheel: 'Wheel',
+    birdhouse: 'Birdhouse',
+    woodChair: 'Wooden chair',
+    clock: 'Clock',
     toyPlane: 'Toy plane',
     helicopter: 'Helicopter',
     luggage: 'Suitcase',
