@@ -72,6 +72,13 @@ export interface Mat {
 }
 
 const INK = color.ink;
+/**
+ * The full figure's frame (portraits, the drag ghost), in shares of its height,
+ * with the feet at y = 0: wide enough for a cape and hands, tall enough for a puff
+ * of hair or a crown.
+ */
+export const FULL_FRAME = { x: -0.3, y: -1.08, w: 0.6, h: 1.11 };
+
 /** The head is drawn as a peg head of this share of the figure's height. */
 export const HEAD_SCALE = 0.75;
 

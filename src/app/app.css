@@ -4085,11 +4085,20 @@ html[data-calm='true'] .critter__picture {
 }
 
 .carry-ghost--person {
-  left: -60px;
-  top: -110px;
-  width: 120px;
+  left: 0;
+  top: 0;
+  width: auto;
   height: auto;
+  /* Riding on the marigold halo, like everything carried. */
+  filter: drop-shadow(0 0 4px var(--pt-marigold)) drop-shadow(0 6px 10px rgba(42, 22, 64, 0.3));
   border-radius: 24px;
   box-shadow: none;
   background: none;
+}
+
+/* Characters can be dragged (on the stage and from the dock): the browser must
+   not pan or scroll the page instead. While moved, the one on the stage fades. */
+.stage-target--bot,
+.portrait {
+  touch-action: none;
 }

@@ -198,3 +198,31 @@ test('bring someone from elsewhere into the room: tap them, tap the floor, undo'
   await press(page, button(page, 'Undo'));
   await expect(inRoom).toHaveCount(0);
 });
+
+test('move a character by dragging them across the room; a tap still opens their card', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== 'chromium', 'Mouse drag is checked in Chromium; touch uses tap-tap');
+  await page.goto('./#scene');
+  await press(page, button(page, 'Pause'));
+  const pim = page.locator('[data-target="bot:pim"].stage-target');
+  const before = await pim.boundingBox();
+  if (!before) throw new Error('missing box');
+  const grab = { x: before.x + before.width / 2, y: before.y + before.height * 0.6 };
+  // Where the feet should land: further along the floor.
+  const feet = { x: grab.x + 220, y: before.y + before.height - 6 };
+  await page.mouse.move(grab.x, grab.y);
+  await page.mouse.down();
+  await page.mouse.move(grab.x + 30, grab.y, { steps: 3 });
+  await page.mouse.move(feet.x, feet.y, { steps: 8 });
+  await page.mouse.up();
+  await expect
+    .poll(async () => {
+      const b = await pim.boundingBox();
+      return b ? Math.round(b.x + b.width / 2 - feet.x) : 999;
+    })
+    .toBeLessThan(6);
+  await press(page, pim);
+  await expect(page.getByRole('dialog')).toBeVisible();
+});

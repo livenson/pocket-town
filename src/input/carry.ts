@@ -39,7 +39,8 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
       at = { x: [225, 450, 675][Number(target.slice(5))] ?? 450, y: 470 };
     } else if (clientX !== undefined && clientY !== undefined) {
       const p = clientToRoom(clientX, clientY);
-      if (p && p.x >= 0 && p.x <= 900 && p.y >= 0 && p.y <= 560) at = { x: p.x, y: p.y + 30 };
+      // The feet go where the finger is (the figure is shown standing on it).
+      if (p && p.x >= 0 && p.x <= 900 && p.y >= 0 && p.y <= 560) at = { x: p.x, y: p.y };
     }
     if (!at && target !== 'floor') return false;
     at ??= { x: 450, y: 470 };
@@ -184,7 +185,7 @@ function targetAt(clientX: number, clientY: number): string | null {
  * Pointer handlers for something that can be carried (a drawer tile, a thing on the
  * floor). A tap picks it up; a drag carries it under the pointer.
  */
-export function useCarrySource(kind: string, source: CarrySource) {
+export function useCarrySource(kind: string, source: CarrySource, onTap?: () => void) {
   const start = useRef<{ x: number; y: number; id: number } | null>(null);
   const dragging = useRef(false);
   /** The browser sends a click after a drag ends on the same element: ignore it. */
@@ -194,6 +195,9 @@ export function useCarrySource(kind: string, source: CarrySource) {
     onPointerDown: (e: PointerEvent<HTMLElement>) => {
       start.current = { x: e.clientX, y: e.clientY, id: e.pointerId };
       dragging.current = false;
+      // A finger's drag sends no click afterwards (a mouse's does), so a new press
+      // forgets the last drag; otherwise the next real tap would be swallowed.
+      justDragged.current = false;
       // Capture at once: a quick drag can leave a small button before it counts
       // as a drag, and its moves would then go to whatever is underneath.
       try {
@@ -232,10 +236,17 @@ export function useCarrySource(kind: string, source: CarrySource) {
       if (dragging.current) usePlay.getState().drop();
       dragging.current = false;
     },
-    /** A tap (no drag): pick it up, or put it back if it is already in hand. */
+    /**
+     * A tap (no drag): pick it up, or put it back if it is already in hand; or,
+     * with `onTap` (a character in the room), whatever a tap means there.
+     */
     onClick: () => {
       if (justDragged.current) {
         justDragged.current = false;
+        return;
+      }
+      if (onTap) {
+        onTap();
         return;
       }
       const c = usePlay.getState().carrying;

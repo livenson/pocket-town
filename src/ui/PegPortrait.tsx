@@ -12,6 +12,7 @@ import {
   lineWidthFor,
   outlineOf,
   REST,
+  FULL_FRAME,
   type Angles,
   type Mat,
 } from '../stage/peg/rig';
@@ -305,7 +306,7 @@ export function PegPortrait({
       ? [-0.27 * S, -0.97 * S, 0.54 * S, 0.54 * S]
       : crop === 'reach'
         ? [-0.45 * S, -1.08 * S, 0.9 * S, 1.11 * S]
-        : [-0.3 * S, -1.08 * S, 0.6 * S, 1.11 * S];
+        : [FULL_FRAME.x * S, FULL_FRAME.y * S, FULL_FRAME.w * S, FULL_FRAME.h * S];
   const viewBox = [vbX, vbY, vbW, vbH].map(n).join(' ');
   const hr = g.d / 2;
   const hcx = g.head.x + hr;

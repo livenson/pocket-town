@@ -10,6 +10,9 @@ export interface Rect {
   h: number;
 }
 
+/** A character's height in room units (the stage draws them this tall). */
+export const PEG_SIZE = 122;
+
 /** Room units → stage-element pixels, and back. Set by the stage on every layout. */
 export const view = {
   offsetX: 0,

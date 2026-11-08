@@ -11,7 +11,7 @@ import { findRoom } from '../content/rooms';
 import { strings, thingName } from '../i18n';
 import type { Bot, PlacedObject } from '../sim/types';
 import { useDecor } from '../state/decor';
-import { usePlay } from '../state/play';
+import { PERSON, usePlay } from '../state/play';
 import { DecorTargets } from './decorate/DecorTargets';
 import { useUi } from '../state/ui';
 import { registerTarget } from '../stage/targets';
@@ -29,6 +29,18 @@ function BotTarget({ bot }: { bot: Bot }) {
     ? strings.giveTo(thingName(carrying.kind), bot.name)
     : strings.botHere(bot.name, doingLabel(bot));
   const voice = useVoiceLabel(label);
+  // Drag a character to move them around the room; a tap opens their card.
+  const move = useCarrySource(PERSON, { from: 'person', botId: bot.id }, () => {
+    if (usePlay.getState().carrying) return;
+    playSfx('tap');
+    // Picking someone else lets go of the character the child was steering.
+    const before = game.world.bots.find((b) => b.id === usePlay.getState().selectedBotId);
+    if (before && before.id !== bot.id && before.mode === 'puppet') {
+      game.do({ type: 'control', botId: before.id, on: false });
+    }
+    openCard(bot.id);
+  });
+  const moving = carrying?.source.from === 'person' && carrying.source.botId === bot.id;
   return (
     <button
       ref={(el) => registerTarget(`bot:${bot.id}`, el)}
@@ -37,22 +49,18 @@ function BotTarget({ bot }: { bot: Bot }) {
       data-target={`bot:${bot.id}`}
       data-valid={carryingThing || undefined}
       data-selected={selected || undefined}
+      data-carried={moving || undefined}
       data-activity={bot.now?.activity ?? 'idle'}
       aria-label={label}
       {...voice}
+      {...(carrying && !moving ? {} : move)}
       onClick={() => {
         if (carryingThing) {
           placeOn(`bot:${bot.id}`);
           return;
         }
-        if (carrying) return;
-        playSfx('tap');
-        // Picking someone else lets go of the character the child was steering.
-        const before = game.world.bots.find((b) => b.id === usePlay.getState().selectedBotId);
-        if (before && before.id !== bot.id && before.mode === 'puppet') {
-          game.do({ type: 'control', botId: before.id, on: false });
-        }
-        openCard(bot.id);
+        if (carrying && !moving) return;
+        move.onClick();
       }}
     />
   );

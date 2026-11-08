@@ -11,9 +11,9 @@ import { pegWidth } from './peg/geometry';
 import { gestureFor, placementOn } from './activityPose';
 import { PegView, type PegActivity, type PegLook } from './peg/PegView';
 import type { RoomView } from './RoomView';
-import { setTargetRect } from './targets';
+import { usePlay } from '../state/play';
+import { PEG_SIZE, setTargetRect } from './targets';
 
-const PEG_SIZE = 122;
 const EMOTE_COLOR: Partial<Record<IconName, string>> = {
   talk: color.tealDark,
   heart: color.heart,
@@ -159,6 +159,9 @@ export class SimView {
       const walking = bot.moving && bot.mode !== 'frozen';
       const held = walking ? null : this.lookFor(world, bot, x);
       peg.setLook(held);
+      // Being moved by the child: the one on the floor fades while it rides along.
+      const c = usePlay.getState().carrying;
+      peg.alpha = c?.source.from === 'person' && c.source.botId === bot.id ? 0.3 : 1;
       peg.follow(x, y, bot.facing, walking, walking ? 'idle' : poseFor(bot), dtS, timeS, calm);
       // The tappable button over this character (DOM target layer).
       const W = pegWidth(PEG_SIZE);

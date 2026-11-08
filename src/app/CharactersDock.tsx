@@ -20,6 +20,12 @@ function Portrait({ bot, index }: { bot: Bot; index: number }) {
   const selected = usePlay((s) => s.selectedBotId === bot.id);
   const carrying = usePlay((s) => s.carrying);
   const openCard = usePlay((s) => s.openCard);
+  // Drag them to another spot in the room; a tap opens their card.
+  const move = useCarrySource(PERSON, { from: 'person', botId: bot.id }, () => {
+    playSfx('tap');
+    openCard(bot.id);
+  });
+  const moving = carrying?.source.from === 'person' && carrying.source.botId === bot.id;
   const icon = doingIcon(bot);
   const tint = bot.now ? activityLook[bot.now.activity].color : undefined;
   return (
@@ -31,9 +37,12 @@ function Portrait({ bot, index }: { bot: Bot; index: number }) {
       aria-pressed={selected}
       data-target={carrying ? `bot:${bot.id}` : undefined}
       {...voice}
+      {...(carrying && !moving ? {} : move)}
       onClick={() => {
-        playSfx('tap');
-        openCard(bot.id);
+        if (carrying && !moving) {
+          playSfx('tap');
+          openCard(bot.id);
+        } else move.onClick();
       }}
     >
       <span className="portrait__face">

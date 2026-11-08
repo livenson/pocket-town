@@ -7,6 +7,8 @@ import { HoldButton } from '../ui/HoldButton';
 import { Icon } from '../ui/Icon';
 import { IconButton } from '../ui/IconButton';
 import { PegPortrait } from '../ui/PegPortrait';
+import { FULL_FRAME } from '../stage/peg/rig';
+import { PEG_SIZE, view } from '../stage/targets';
 import { sim } from './simRunner';
 import { CraftBurst } from './workshop/CraftBurst';
 
@@ -23,6 +25,9 @@ export function CarryLayer() {
         )
       : undefined;
 
+  // The whole figure as tall as on the stage; its feet are FEET of the way down.
+  const ghostH = Math.max(72, PEG_SIZE * view.scale * FULL_FRAME.h);
+  const ghostW = (ghostH * FULL_FRAME.w) / FULL_FRAME.h;
   return (
     <>
       {carrying && person && carrying.mode === 'tap' && (
@@ -47,9 +52,13 @@ export function CarryLayer() {
         <div
           className="carry-ghost carry-ghost--person"
           aria-hidden="true"
-          style={{ transform: `translate(${dragAt.x}px, ${dragAt.y}px)` }}
+          // Room-sized and standing on the finger: where the feet are is where
+          // they will stand.
+          style={{
+            transform: `translate(${dragAt.x - ghostW / 2}px, ${dragAt.y - ghostH * (-FULL_FRAME.y / FULL_FRAME.h)}px)`,
+          }}
         >
-          <PegPortrait appearance={person.appearance} size={96} />
+          <PegPortrait appearance={person.appearance} size={ghostH} />
         </div>
       )}
       {carrying && kind && carrying.mode === 'tap' && (
