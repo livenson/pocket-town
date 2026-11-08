@@ -23,6 +23,7 @@ describe('keyboard shortcuts', () => {
     expect(key('e')).toBe('edit');
     expect(key('f')).toBe('faster');
     expect(key('c')).toBe('camera');
+    expect(key('d')).toBe('drawer');
     expect(key(' ')).toBe('togglePause');
     expect(key('Escape')).toBe('escape');
     expect(key('?')).toBe('help');

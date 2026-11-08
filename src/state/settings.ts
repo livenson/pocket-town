@@ -17,6 +17,8 @@ export interface Settings {
   voiceOver: boolean;
   textLabels: boolean;
   leftHanded: boolean;
+  /** The things drawer folded away (tablet and desktop), to see more of the room. */
+  drawerHidden: boolean;
   calmMotion: boolean;
   botEnergy: BotEnergy;
   /** 'auto' follows the device language. Set by grown-ups. */
@@ -30,6 +32,7 @@ export const defaultSettings: Settings = {
   voiceOver: true,
   textLabels: false,
   leftHanded: false,
+  drawerHidden: false,
   calmMotion: false,
   botEnergy: 'lively',
   language: 'auto',

@@ -28,6 +28,9 @@ import { TimePill } from '../TimePill';
 export function SceneScreen() {
   const layout = useLayoutMode();
   const leftHanded = useSettings((s) => s.leftHanded);
+  const drawerHidden = useSettings((s) => s.drawerHidden);
+  const setDrawerHidden = (hidden: boolean) =>
+    useSettings.getState().update({ drawerHidden: hidden });
   const go = useUi((s) => s.go);
   const home = useUi((s) => s.home);
   const sheetOpen = useUi((s) => s.plusSheetOpen);
@@ -66,6 +69,7 @@ export function SceneScreen() {
       data-carrying={carrying || undefined}
       data-camera={cameraOpen || undefined}
       data-decorating={decorating || undefined}
+      data-drawer={!phone && drawerHidden ? 'hidden' : undefined}
     >
       <div className="stage" aria-label={strings.stage} role="region">
         <StageHost />
@@ -132,10 +136,29 @@ export function SceneScreen() {
         </nav>
       )}
 
-      {!phone && (
+      {!phone && !drawerHidden && (
         <section className="dock dock--drawer" aria-label={strings.thingsDrawer}>
           {decorating ? <FurnitureDrawer perPage={perPage} /> : <ObjectDrawer perPage={perPage} />}
+          {/* Fold the drawer away to see more of the room (D). */}
+          <IconButton
+            icon="minus"
+            label={strings.hideThings}
+            shortcut="D"
+            className="drawer-fold"
+            onClick={() => setDrawerHidden(true)}
+          />
         </section>
+      )}
+      {!phone && drawerHidden && (
+        <div className="dock dock--drawer-tab">
+          <IconButton
+            icon="plus"
+            label={strings.showThings}
+            shortcut="D"
+            className={hintStep === 'plus' ? 'hint-glow' : undefined}
+            onClick={() => setDrawerHidden(false)}
+          />
+        </div>
       )}
 
       <div className="dock dock--bottom-right">

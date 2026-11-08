@@ -891,6 +891,40 @@ html[data-labels='true'] .dock--characters {
   }
 }
 
+/* Folding the drawer away (tablet and desktop): a "−" in its top corner, then a
+   "+" where the drawer was. The page dots step aside for the "−". */
+.dock--drawer > .drawer-fold {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+}
+
+.dock--drawer > .drawer-fold .icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--pt-ground);
+  box-shadow: none;
+}
+
+.dock--drawer .carousel__dots {
+  right: 60px;
+}
+
+.dock--drawer-tab {
+  bottom: var(--safe-bottom);
+  left: calc(var(--safe-left) + var(--characters-w) + var(--dock-gap));
+}
+
+.scene[data-hand='left'] .dock--drawer-tab {
+  left: calc(var(--safe-left) + var(--pill-w) + var(--dock-gap));
+}
+
+.scene[data-drawer='hidden'] .dock--bottom-right,
+.scene[data-drawer='hidden'][data-hand='left'] .dock--bottom-right {
+  bottom: var(--safe-bottom);
+}
+
 /* Phone portrait: everything folds into the "+" sheet. */
 .plus-button {
   position: absolute;

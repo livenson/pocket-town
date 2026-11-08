@@ -4,6 +4,7 @@ import { playSfx } from '../audio/audio';
 import { game } from '../app/game';
 import { hint } from '../app/hints';
 import { useDecor } from '../state/decor';
+import { useSettings } from '../state/settings';
 import { usePlay } from '../state/play';
 import { useUi } from '../state/ui';
 import { dropCarried } from './carry';
@@ -28,6 +29,7 @@ export type ShortcutAction =
   | 'undo'
   | 'redo'
   | 'escape'
+  | 'drawer'
   | 'help'
   | 'nextTarget'
   | 'previousTarget';
@@ -53,6 +55,8 @@ export function shortcutFor(
       return 'faster';
     case 'c':
       return 'camera';
+    case 'd':
+      return 'drawer';
     case ' ':
       return focusOnControl(e.target) ? null : 'togglePause';
     case 'escape':
@@ -130,6 +134,12 @@ export function runShortcut(action: ShortcutAction): boolean {
       if (screen !== 'scene') return false;
       play.setCameraOpen(true);
       return true;
+    case 'drawer': {
+      if (screen !== 'scene') return false;
+      const settings = useSettings.getState();
+      settings.update({ drawerHidden: !settings.drawerHidden });
+      return true;
+    }
     case 'togglePause':
       if (screen !== 'scene') return false;
       ui.togglePause();
