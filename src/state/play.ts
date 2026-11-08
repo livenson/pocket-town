@@ -2,7 +2,14 @@
 // being carried, who the camera follows. Not saved.
 import { create } from 'zustand';
 
-export type CarrySource = { from: 'drawer' } | { from: 'object'; objectId: string };
+export type CarrySource =
+  | { from: 'drawer' }
+  | { from: 'object'; objectId: string }
+  /** A character brought into the room from the characters dock. */
+  | { from: 'person'; botId: string };
+
+/** The kind used while carrying a character (not a thing). */
+export const PERSON = 'person';
 
 export interface Carrying {
   kind: string;

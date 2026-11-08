@@ -37,6 +37,8 @@ type Inverse =
     }
   /** The whole cast, as it was (adding, changing or removing a character). */
   | { kind: 'cast'; bots: Bot[] }
+  /** One character exactly as they were, where they stood included (bring). */
+  | { kind: 'oneBot'; bot: Bot }
   | { kind: 'decor'; id: string; variant: number | undefined }
   /** A room's furniture as it was (undefined: never decorated). */
   | { kind: 'room'; roomId: string; furniture: FurnitureInstance[] | undefined };
@@ -95,6 +97,10 @@ function capture(world: World, cmd: Command): Inverse | null {
       };
     case 'setDecor':
       return { kind: 'decor', id: cmd.id, variant: world.decor?.[cmd.id] };
+    case 'bring': {
+      const bot = getBot(world, cmd.botId);
+      return bot ? { kind: 'oneBot', bot: clone(bot) } : null;
+    }
     case 'removeObject': {
       const index = world.objects.findIndex((x) => x.id === cmd.id);
       const o = world.objects[index];
@@ -128,6 +134,11 @@ function revert(world: World, inv: Inverse): void {
     case 'cast':
       world.bots = clone(inv.bots);
       return;
+    case 'oneBot': {
+      const i = world.bots.findIndex((b) => b.id === inv.bot.id);
+      if (i >= 0) world.bots[i] = clone(inv.bot);
+      return;
+    }
     case 'room': {
       const edits = { ...world.roomEdits };
       if (inv.furniture) edits[inv.roomId] = clone(inv.furniture);

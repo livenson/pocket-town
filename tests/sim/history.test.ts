@@ -98,3 +98,25 @@ describe('map decoration', () => {
     expect(w.decor).toEqual({ pond: 1 });
   });
 });
+
+describe('bringing a character into a room (drag or tap from the dock)', () => {
+  it('puts them right there, and undo puts them back where they were', () => {
+    const w = createWorld(4);
+    const h = new History();
+    const bot = w.bots.find((b) => b.place.roomId !== 'cafe-main');
+    if (!bot) throw new Error('no bot');
+    const before = structuredClone(bot.place);
+    const place = { buildingId: 'cafe', roomId: 'cafe-main', x: 300, y: 460 };
+    expect(h.do(w, { type: 'bring', botId: bot.id, place })).toBe(true);
+    const now = getBot(w, bot.id);
+    expect(now?.place.roomId).toBe('cafe-main');
+    expect(now?.place.x).toBe(300);
+    expect(now?.travel).toBeNull();
+    // They stay a little while instead of walking straight off.
+    expect(now?.now?.byChild).toBe(true);
+    run(w, 5);
+    expect(getBot(w, bot.id)?.place.roomId).toBe('cafe-main');
+    h.undo(w);
+    expect(getBot(w, bot.id)?.place).toEqual(before);
+  });
+});

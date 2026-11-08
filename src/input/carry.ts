@@ -28,6 +28,25 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
   const c = play.carrying;
   if (!c) return false;
   let ok = false;
+  // A character only goes on the floor: they appear where they were put.
+  // Dropped anywhere over the room (even the wall), they land on the floor below.
+  if (c.source.from === 'person') {
+    let at: { x: number; y: number } | null = null;
+    if (target.startsWith('spot:')) {
+      at = { x: [225, 450, 675][Number(target.slice(5))] ?? 450, y: 470 };
+    } else if (clientX !== undefined && clientY !== undefined) {
+      const p = clientToRoom(clientX, clientY);
+      if (p && p.x >= 0 && p.x <= 900 && p.y >= 0 && p.y <= 560) at = { x: p.x, y: p.y + 30 };
+    }
+    if (!at && target !== 'floor') return false;
+    at ??= { x: 450, y: 470 };
+    ok = game.do({ type: 'bring', botId: c.source.botId, place: currentPlace(at.x, at.y) });
+    if (ok) {
+      playSfx('jingle');
+      play.drop();
+    }
+    return ok;
+  }
   if (target.startsWith('bot:')) {
     ok = game.do({ type: 'give', botId: target.slice(4), kind: c.kind });
     if (ok) {
@@ -123,13 +142,19 @@ export function useCarrySource(kind: string, source: CarrySource) {
     onPointerDown: (e: PointerEvent<HTMLElement>) => {
       start.current = { x: e.clientX, y: e.clientY, id: e.pointerId };
       dragging.current = false;
+      // Capture at once: a quick drag can leave a small button before it counts
+      // as a drag, and its moves would then go to whatever is underneath.
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {
+        // Not capturable (synthetic event): moves over the button still work.
+      }
     },
     onPointerMove: (e: PointerEvent<HTMLElement>) => {
       const s = start.current;
       if (!s || s.id !== e.pointerId) return;
       if (!dragging.current && Math.hypot(e.clientX - s.x, e.clientY - s.y) > DRAG_START_PX) {
         dragging.current = true;
-        e.currentTarget.setPointerCapture?.(e.pointerId);
         pickUp(kind, source, 'drag');
       }
       if (dragging.current) usePlay.getState().setDragAt({ x: e.clientX, y: e.clientY });
@@ -140,8 +165,15 @@ export function useCarrySource(kind: string, source: CarrySource) {
       dragging.current = false;
       if (!wasDragging) return;
       justDragged.current = true;
-      const target = targetAt(e.clientX, e.clientY);
-      if (!(target && placeOn(target, e.clientX, e.clientY))) missed(e.clientX, e.clientY);
+      // Let go over a dock or the sheet: it simply goes back, no "no".
+      const under = document.elementFromPoint(e.clientX, e.clientY);
+      if (under?.closest('.dock, .sheet') && !targetAt(e.clientX, e.clientY)) {
+        dropCarried();
+        return;
+      }
+      // 'room' is anywhere over the room: only a carried person accepts it.
+      const target = targetAt(e.clientX, e.clientY) ?? 'room';
+      if (!placeOn(target, e.clientX, e.clientY)) missed(e.clientX, e.clientY);
     },
     onPointerCancel: () => {
       start.current = null;
