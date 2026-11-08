@@ -617,6 +617,7 @@ export const lv: Strings = {
   },
 
   photoFace: {
+    calibrating: 'Brīdi paskaties kamerā ar mierīgu seju…',
     open: 'Izveidot tēlu no foto vai kameras',
     privacy:
       'Attēls paliek šajā ierīcē un netiek saglabāts. Paliek tikai ieteiktais izskats, un visu vēlāk var mainīt.',
@@ -653,6 +654,9 @@ export const lv: Strings = {
   },
 
   grownUp: {
+    players: 'Spēlētāji šajā ierīcē',
+    removePlayer: (name: string) => `Turi, lai noņemtu ${name} un viņa pilsētu`,
+    removeNote: 'Noņem spēlētāju, viņa tēlus un pilsētu no šīs ierīces. To nevar atsaukt.',
     credits:
       'Lietu attēli: Microsoft Fluent Emoji (MIT licence). Sejas meklētājs: Google MediaPipe (Apache 2.0 licence), tikai šajā ierīcē.',
     version: (v: string, date: string) => (date ? `Versija ${v}, būvēta ${date}` : `Versija ${v}`),

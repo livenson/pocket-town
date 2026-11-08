@@ -5,7 +5,8 @@ import {
   type Pt,
   type Sampler,
 } from '../../src/photo/faceFromPhoto';
-import { expressionOf, LookAverager } from '../../src/photo/lookAverager';
+import { LookAverager } from '../../src/photo/lookAverager';
+import { ExpressionReader, poseOf } from '../../src/photo/liveFace';
 
 /** A plausible frontal face: 478 points, the ones we read placed by hand. */
 function face(over: Partial<Record<number, Pt>> = {}): Pt[] {
@@ -101,10 +102,44 @@ describe('the live camera', () => {
     expect(avg.current()).toBeNull();
   });
 
-  it('copies smiles, blinks and an open mouth', () => {
-    expect(expressionOf(m({ mouthSmileLeft: 0.8, mouthSmileRight: 0.7 })).mouth).toBe('grin');
-    expect(expressionOf(m({ eyeBlinkLeft: 0.9, eyeBlinkRight: 0.8 })).eyes).toBe('sleep');
-    expect(expressionOf(m({ jawOpen: 0.6 })).eyes).toBe('wow');
-    expect(expressionOf(m({}))).toEqual({ eyes: 'open', mouth: 'calm' });
+  it('learns the resting face, then follows smiles, winks and an open mouth', () => {
+    const r = new ExpressionReader();
+    const pts = Array.from({ length: 478 }, () => ({ x: 0.5, y: 0.5 }));
+    // This child's resting face already reads as a slight smile.
+    const rest = { mouthSmileLeft: 0.3, mouthSmileRight: 0.3 };
+    for (let i = 0; i < 20; i++) r.read(m(rest), pts);
+    expect(r.calibrated).toBe(true);
+    let f = r.read(m(rest), pts);
+    for (let i = 0; i < 5; i++) f = r.read(m(rest), pts);
+    expect(f.smile).toBeCloseTo(0.15, 1); // resting reads as neutral, not a grin
+    for (let i = 0; i < 8; i++) f = r.read(m({ mouthSmileLeft: 0.75, mouthSmileRight: 0.75 }), pts);
+    expect(f.smile).toBeGreaterThan(0.8);
+    for (let i = 0; i < 8; i++) f = r.read(m({ ...rest, eyeBlinkLeft: 0.9 }), pts);
+    expect(f.blinkL).toBeGreaterThan(0.8); // a wink: one eye only
+    expect(f.blinkR).toBeLessThan(0.1);
+    for (let i = 0; i < 8; i++) f = r.read(m({ ...rest, jawOpen: 0.6 }), pts);
+    expect(f.open).toBeGreaterThan(0.8);
+  });
+
+  it('learns the resting face only from frames that have a face', () => {
+    const r = new ExpressionReader();
+    for (let i = 0; i < 30; i++) r.read(m({}), null); // warming up, nobody in view
+    expect(r.calibrated).toBe(false);
+    const pts = Array.from({ length: 478 }, () => ({ x: 0.5, y: 0.5 }));
+    for (let i = 0; i < 20; i++) r.read(m({ mouthSmileLeft: 0.3, mouthSmileRight: 0.3 }), pts);
+    expect(r.calibrated).toBe(true);
+  });
+
+  it('reads a head tilt and turn as a mirror shows them', () => {
+    const pts = Array.from({ length: 478 }, () => ({ x: 0.5, y: 0.5 }));
+    pts[33] = { x: 0.4, y: 0.4 };
+    pts[263] = { x: 0.6, y: 0.45 }; // the right eye lower: head tilted
+    pts[234] = { x: 0.3, y: 0.5 };
+    pts[454] = { x: 0.7, y: 0.5 };
+    pts[1] = { x: 0.55, y: 0.55 }; // nose to the picture's right
+    const pose = poseOf(pts);
+    expect(pose.roll).toBeLessThan(0);
+    expect(pose.yaw).toBeLessThan(0);
+    expect(poseOf([])).toEqual({ roll: 0, yaw: 0 });
   });
 });

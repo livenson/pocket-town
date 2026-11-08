@@ -1,6 +1,6 @@
 // Saving the town on the device: a versioned schema, migrations, and two slots
 // written in turn so a broken save always leaves the previous good one.
-import { get, set } from 'idb-keyval';
+import { del, get, set } from 'idb-keyval';
 import type { World } from '../sim/types';
 
 export const SAVE_SCHEMA = 2;
@@ -100,6 +100,13 @@ export async function writeSave(
   lastGeneration.set(slots[0], generation);
   const file: SaveFile = { schema: SAVE_SCHEMA, savedAt: Date.now(), generation, world, ui };
   await set(slots[generation % 2] ?? slots[0], JSON.stringify(file));
+}
+
+/** Delete a town's saves for good (a player removed in the grown-up area). */
+export async function deleteSave(profileId: string | null): Promise<void> {
+  const slots = slotsFor(profileId);
+  lastGeneration.delete(slots[0]);
+  await Promise.all(slots.map((k) => del(k).catch(() => {})));
 }
 
 /** For tests: forget which generation was written last. */

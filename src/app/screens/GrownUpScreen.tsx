@@ -1,10 +1,47 @@
 import { useRef } from 'react';
 import { LANGUAGES, strings, type Language } from '../../i18n';
 import { playSfx } from '../../audio/audio';
+import { useProfiles } from '../../state/profiles';
 import { useSettings } from '../../state/settings';
 import { useUi } from '../../state/ui';
 import { Button } from '../../ui/Button';
+import { HoldButton } from '../../ui/HoldButton';
+import { PegPortrait } from '../../ui/PegPortrait';
+import { removePlayer } from '../game';
 import { ScreenFrame } from './ScreenFrame';
+
+/** Everyone who plays on this device; a grown-up can remove one (press and hold). */
+function Players() {
+  const profiles = useProfiles((s) => s.profiles);
+  const G = strings.grownUp;
+  if (profiles.length === 0) return null;
+  return (
+    <section className="grown-up__section" aria-labelledby="players-label">
+      <h2 id="players-label" className="grown-up__heading">
+        {G.players}
+      </h2>
+      <ul className="players">
+        {profiles.map((p) => (
+          <li key={p.id} className="players__row">
+            <PegPortrait appearance={p.appearance} size={56} crop="head" />
+            <span className="players__name">{p.name}</span>
+            <HoldButton
+              label={G.removePlayer(p.name)}
+              onConfirm={() => {
+                void removePlayer(p.id).then(({ wasOpen }) => {
+                  playSfx('soft');
+                  // Their town was open: pick who plays next.
+                  if (wasOpen) useUi.getState().go('profile');
+                });
+              }}
+            />
+          </li>
+        ))}
+      </ul>
+      <p className="grown-up__note">{G.removeNote}</p>
+    </section>
+  );
+}
 
 function LanguagePicker() {
   const language = useSettings((s) => s.language);
@@ -76,6 +113,7 @@ export function GrownUpScreen() {
       <div className="grown-up">
         <p>{strings.grownUp.intro}</p>
         <LanguagePicker />
+        <Players />
         <Button
           variant="secondary"
           icon="sliders"

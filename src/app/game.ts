@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { create } from 'zustand';
 import { playSfx } from '../audio/audio';
-import { loadSave, writeSave } from '../persist/save';
+import { deleteSave, loadSave, writeSave } from '../persist/save';
 import type { Command } from '../sim/commands';
 import { AWAY_MIN_MS, awayGameMinutes, catchUp } from '../sim/away';
 import { History } from '../sim/history';
@@ -38,6 +38,8 @@ let saveTimer: ReturnType<typeof setTimeout> | null = null;
 let profileId: string | null = null;
 /** Tests and screenshots (?seed, ?still) never write saves. */
 let saving = true;
+/** No town is open (its player was removed): nothing to save until one is. */
+let noTown = false;
 
 function changed(): void {
   useGame.setState((s) => ({
@@ -56,7 +58,7 @@ export function scheduleSave(): void {
 export async function saveNow(): Promise<void> {
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = null;
-  if (!saving) return;
+  if (!saving || noTown) return;
   try {
     await writeSave(sim.world, { roomId: useUi.getState().roomId }, profileId);
   } catch {
@@ -139,10 +141,13 @@ export async function enterProfile(id: string): Promise<void> {
   useProfiles.getState().choose(id);
   let save = await loadSave(id).catch(() => null);
   if (!save && profiles.length === 1) save = await loadSave(null).catch(() => null);
+  // Removed in the grown-up area while their town was loading: leave it closed.
+  if (!useProfiles.getState().profiles.some((p) => p.id === id)) return;
   const world = save?.world ?? createWorld((Date.now() % 2147483647) | 0);
   ensurePlayerBot(world, profile);
   if (save) comeBack(world, Date.now() - save.savedAt);
   profileId = id;
+  noTown = false;
   history.clear();
   sim.load(world);
   useUi.getState().setRoom(save?.ui.roomId ?? 'home-living');
@@ -234,4 +239,32 @@ export async function finishCreation(): Promise<void> {
     createdAt: Date.now(),
   });
   await enterProfile(id);
+}
+
+/**
+ * Remove a player for good (grown-up area, press and hold): their profile and
+ * their saved town. If their town is open it is unloaded (a fresh, unsaved town
+ * takes its place and the undo history is cleared), so nothing of it can be
+ * played or written back. With no players left, the town from before profiles
+ * goes too, and nothing is saved until a new player's town is opened.
+ */
+export async function removePlayer(id: string): Promise<{ wasOpen: boolean }> {
+  const wasOpen = profileId === id;
+  const { profiles, remove } = useProfiles.getState();
+  const last = profiles.every((p) => p.id === id);
+  if (wasOpen || last) {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = null;
+    noTown = true;
+  }
+  if (wasOpen) {
+    profileId = null;
+    history.clear();
+    sim.load(createWorld((Date.now() % 2147483647) | 0));
+    changed();
+  }
+  remove(id);
+  await deleteSave(id);
+  if (last) await deleteSave(null);
+  return { wasOpen };
 }

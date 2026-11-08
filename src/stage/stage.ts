@@ -3,7 +3,14 @@
 import 'pixi.js/unsafe-eval'; // no eval(): keeps the Content Security Policy strict
 import { offers } from '../content/activities';
 import { fixedKinds, furnitureKinds, surfaceOf, type FurnitureKind } from '../content/furniture';
-import { AccessibilitySystem, Application, Container, extensions, type Ticker } from 'pixi.js';
+import {
+  AccessibilitySystem,
+  Application,
+  Container,
+  extensions,
+  UPDATE_PRIORITY,
+  type Ticker,
+} from 'pixi.js';
 import { sim } from '../app/simRunner';
 import { findRoom, starterRoom } from '../content/rooms';
 import { breakpoints, color, stage as stageSize } from '../design/tokens';
@@ -25,6 +32,8 @@ const BOTTOM_DOCK_PX = 190;
 const FEET_LINE = 500;
 /** Without a GPU, drawing at full rate starves everything else. */
 const SOFTWARE_MAX_FPS = 30;
+/** However slow the machine, the stage still moves a little. */
+const MIN_FPS = 4;
 
 /** Freeze the clock at zero (deterministic screenshots): `?still` in the URL. */
 const STILL = typeof location !== 'undefined' && new URLSearchParams(location.search).has('still');
@@ -49,11 +58,14 @@ export class Stage {
   private time = 0;
 
   async init(): Promise<void> {
+    // Without a GPU the CPU draws every pixel: skip multisampling and extra
+    // resolution, which cost the most there and are least visible.
+    const software = softwareWebGL();
     await this.app.init({
       preference: 'webgl',
       background: color.ground,
-      antialias: true,
-      resolution: Math.min(window.devicePixelRatio || 1, 2),
+      antialias: !software,
+      resolution: software ? 1 : Math.min(window.devicePixelRatio || 1, 2),
       autoDensity: true,
       autoStart: !STILL,
       width: 900,
@@ -69,8 +81,9 @@ export class Stage {
     this.app.ticker.add(this.tick);
     // No GPU, or an automated test browser: draw at most 30 times a second so input
     // and the rest of the page stay responsive.
-    if (usesSoftwareRendering(this.app.canvas) || navigator.webdriver) {
+    if (software || usesSoftwareRendering(this.app.canvas) || navigator.webdriver) {
       this.app.ticker.maxFPS = SOFTWARE_MAX_FPS;
+      this.keepInputResponsive();
     }
     // Follow room changes made elsewhere (the map, the hub).
     useUi.subscribe((s, prev) => {
@@ -83,6 +96,38 @@ export class Stage {
       if (tapped || s.selectedBotId !== prev.selectedBotId || s.followBotId !== prev.followBotId)
         if (useUi.getState().lookX !== null) useUi.getState().setLookX(null);
     });
+  }
+
+  /**
+   * When the CPU draws WebGL, each frame can take tens of milliseconds of native
+   * work, and at 30 frames a second the page never has time for taps and keys.
+   * Measure what a frame really costs (a timer posted at the end of the frame
+   * fires once that work is done) and lower the frame rate so drawing takes at
+   * most about 45% of the time.
+   */
+  private keepInputResponsive(): void {
+    let cost = 0;
+    let pending = false;
+    const ticker = this.app.ticker;
+    ticker.add(
+      () => {
+        if (pending) return;
+        pending = true;
+        const t0 = performance.now();
+        setTimeout(() => {
+          pending = false;
+          const c = performance.now() - t0;
+          cost = cost === 0 ? c : cost + (c - cost) * 0.2;
+          const fps = Math.max(
+            MIN_FPS,
+            Math.min(SOFTWARE_MAX_FPS, Math.floor(450 / Math.max(cost, 1))),
+          );
+          if (Math.abs(fps - ticker.maxFPS) >= 2) ticker.maxFPS = fps;
+        }, 0);
+      },
+      undefined,
+      UPDATE_PRIORITY.UTILITY,
+    );
   }
 
   private makeRoom(roomId: string): RoomView {
@@ -282,6 +327,16 @@ export class Stage {
     relayoutTargets();
     if (STILL) this.app.render();
   }
+}
+
+/** Ask a throwaway canvas whether WebGL here is drawn by the CPU (before the stage exists). */
+function softwareWebGL(): boolean {
+  if (typeof document === 'undefined') return false;
+  const probe = document.createElement('canvas');
+  const soft = usesSoftwareRendering(probe);
+  probe.width = 0;
+  probe.height = 0;
+  return soft;
 }
 
 /** True when WebGL is drawn by the CPU (no GPU): then the stage draws less often. */
