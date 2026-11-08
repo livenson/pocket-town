@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import { pictureUrl } from '../design/thingPicture';
 import { useUi } from '../state/ui';
 import { useCalmMotion } from './media';
-import { mapPlaneAt } from './mapPlane';
+import { mapPlaneAt, mapPlaneNow } from './mapPlane';
 
 /** The picture's nose points north-east; turn it to point east first. */
 const PICTURE_TURN = 45;
@@ -26,7 +26,8 @@ export function MapPlane() {
       el.style.top = `${p.y * 100}%`;
       el.style.setProperty('--turn', `${(p.heading * 180) / Math.PI + PICTURE_TURN}deg`);
       el.style.setProperty('--height', p.height.toFixed(3));
-      el.dataset.flying = p.height > 0.05 ? 'true' : 'false';
+      mapPlaneNow.flying = p.height > 0.05;
+      el.dataset.flying = mapPlaneNow.flying ? 'true' : 'false';
     };
     let t = 0;
     place(t);
