@@ -314,6 +314,8 @@ export const en = {
     copy: (name: string) => `Copy ${name}`,
     shape: 'Shape',
     shapes: { tall: 'Tall', mid: 'Middle', short: 'Short' } as Record<string, string>,
+    figure: 'Boy or girl',
+    figures: { boy: 'Boy', girl: 'Girl' },
     kind: 'Person or animal',
     kinds: {
       person: 'Person',
@@ -342,6 +344,17 @@ export const en = {
       none: 'No hair',
     } as Record<string, string>,
     hairColour: 'Hair colour',
+    clothes: 'What they wear',
+    clothesKinds: {
+      tunic: 'Tunic',
+      dress: 'Dress',
+      pants: 'Trousers',
+      shorts: 'Shorts',
+      overalls: 'Dungarees',
+      space: 'Space suit',
+      cape: 'Superhero cape',
+    },
+    second: 'Trousers and cape colour',
     pattern: 'Pattern',
     patterns: {
       plain: 'Plain',

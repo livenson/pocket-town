@@ -44,7 +44,12 @@ test('every screen is reachable and passes axe (WCAG 2.1 AA)', async ({ page }) 
   await page.goto('./');
   await expectAccessible(page, 'splash');
 
-  await page.getByRole('button', { name: /loading/ }).click();
+  // The splash carries on by itself once loaded; on a slow machine the check above
+  // can outlast it, so tap it only if it is still there.
+  await page
+    .getByRole('button', { name: /loading/ })
+    .click({ timeout: 2000 })
+    .catch(() => {});
   await expect(page.getByRole('heading', { name: 'How old are you?' })).toBeVisible();
   await expectAccessible(page, 'age');
 

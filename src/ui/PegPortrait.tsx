@@ -4,6 +4,14 @@ import type { Appearance, Eyes } from '../content/appearance';
 import { color } from '../design/tokens';
 import { bodyExtras, headExtras, mouthPrims, type Prim } from '../stage/peg/extras';
 import { pegGeometry, type Box, type Corners } from '../stage/peg/geometry';
+import {
+  armPrims,
+  backPrims,
+  bodyFill,
+  clothesPrims,
+  helmetPrims,
+  lashPrims,
+} from '../stage/peg/outfit';
 
 const K = 0.5523;
 const n = (v: number) => v.toFixed(2);
@@ -125,7 +133,9 @@ export function PegPortrait({
   const g = pegGeometry(H, a, eyes);
   const ink = color.ink;
   const viewBox =
-    crop === 'head' ? `${-8} ${-6} ${g.W + 16} ${g.W + 16}` : `${-4} ${-24} ${g.RW + 8} ${H + 28}`;
+    crop === 'head'
+      ? `${-8} ${-6} ${g.W + 16} ${g.W + 16}`
+      : `${g.left - 4} ${-24} ${g.RW + 8} ${H + 28}`;
   const [vbW, vbH] = crop === 'head' ? [g.W + 16, g.W + 16] : [g.RW + 8, H + 28];
   const hr = g.d / 2;
   const hcx = g.head.x + hr;
@@ -142,7 +152,8 @@ export function PegPortrait({
       className="peg-portrait"
     >
       {g.top && <Ellipse b={g.top} fill={a.hair} />}
-      <path d={ellipticalRectPath(g.body, g.bodyCorners)} fill={a.outfit} />
+      <Prims prims={backPrims(g, a)} />
+      <path d={ellipticalRectPath(g.body, g.bodyCorners)} fill={bodyFill(g, a)} />
       <clipPath id={`body-${a.outfit}-${a.kind ?? 'person'}`}>
         <path d={ellipticalRectPath(g.body, g.bodyCorners)} />
       </clipPath>
@@ -166,7 +177,9 @@ export function PegPortrait({
         fill={ink}
         opacity={0.22}
       />
+      <Prims prims={clothesPrims(g, a)} />
       <Prims prims={bodyExtras(g, a)} />
+      <Prims prims={armPrims(g, a)} />
       <circle cx={hcx} cy={hcy} r={hr} fill={a.skin} />
       <clipPath id={`head-${a.skin}`}>
         <circle cx={hcx} cy={hcy} r={hr} />
@@ -198,6 +211,7 @@ export function PegPortrait({
           <Ellipse key={i} b={e} fill={ink} />
         ),
       )}
+      <Prims prims={lashPrims(g)} />
       {g.cheeks.map((c, i) => (
         <Ellipse key={i} b={c} fill="#FF6978" opacity={0.42} />
       ))}
@@ -223,6 +237,7 @@ export function PegPortrait({
         />
       )}
       <Prims prims={headExtras(g, a)} />
+      <Prims prims={helmetPrims(g, a)} />
     </svg>
   );
 }

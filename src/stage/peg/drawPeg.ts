@@ -5,6 +5,7 @@ import { ellipseBox, ellipticalRect, hex } from '../draw';
 import type { Appearance, Box, Eyes, PegGeometry } from './geometry';
 import { pegGeometry } from './geometry';
 import { bodyExtras, headExtras, mouthPrims, type Prim } from './extras';
+import { armPrims, backPrims, bodyFill, clothesPrims, helmetPrims, lashPrims } from './outfit';
 
 const INK = hex(color.ink);
 
@@ -20,8 +21,11 @@ export function drawPeg(
   // Behind the body: hair puff or bun.
   if (geo.top) ellipseBox(g, geo.top).fill(hex(a.hair));
 
+  // Behind the body: cape or backpack, legs and shoes.
+  drawPrims(g, backPrims(geo, a));
+
   // Body (felt outfit) with a light inset on the left and a darker one on the right.
-  ellipticalRect(g, body, bodyCorners).fill(hex(a.outfit));
+  ellipticalRect(g, body, bodyCorners).fill(hex(bodyFill(geo, a)));
   ellipticalRect(g, body, bodyCorners).fill({ color: 0xffffff, alpha: 0.2 });
   ellipticalRect(g, body, bodyCorners, W * 0.09, 0).cut();
   ellipticalRect(g, body, bodyCorners).fill({ color: INK, alpha: 0.12 });
@@ -30,7 +34,9 @@ export function drawPeg(
     color: INK,
     alpha: 0.22,
   });
+  drawPrims(g, clothesPrims(geo, a));
   drawPrims(g, bodyExtras(geo, a));
+  drawPrims(g, armPrims(geo, a));
 
   // Head with a soft shade at the bottom-right.
   const hr = d / 2;
@@ -59,12 +65,14 @@ export function drawPeg(
     if (geo.eyeShape === 'bar') g.roundRect(e.x, e.y, e.w, e.h, Math.min(3, e.h / 2)).fill(INK);
     else ellipseBox(g, e).fill(INK);
   }
+  drawPrims(g, lashPrims(geo));
   for (const c of geo.cheeks) ellipseBox(g, c).fill({ color: 0xff6978, alpha: 0.42 });
   const mouth = mouthPrims(geo);
   if (mouth) drawPrims(g, mouth);
   else drawMouth(g, geo.mouth, geo.mouthShape, geo.lineWidth);
 
   drawPrims(g, headExtras(geo, a));
+  drawPrims(g, helmetPrims(geo, a));
   return { g, geo };
 }
 

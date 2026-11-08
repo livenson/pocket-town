@@ -310,6 +310,8 @@ export const lv: Strings = {
     copy: (name: string) => `Kopēt: ${name}`,
     shape: 'Augums',
     shapes: { tall: 'Garš', mid: 'Vidējs', short: 'Īss' },
+    figure: 'Zēns vai meitene',
+    figures: { boy: 'Zēns', girl: 'Meitene' },
     kind: 'Cilvēks vai dzīvnieks',
     kinds: {
       person: 'Cilvēks',
@@ -338,6 +340,17 @@ export const lv: Strings = {
       none: 'Bez matiem',
     },
     hairColour: 'Matu krāsa',
+    clothes: 'Ko vilkt mugurā',
+    clothesKinds: {
+      tunic: 'Tunika',
+      dress: 'Kleita',
+      pants: 'Bikses',
+      shorts: 'Šorti',
+      overalls: 'Kombinezons',
+      space: 'Skafandrs',
+      cape: 'Supervaroņa apmetnis',
+    },
+    second: 'Bikšu un apmetņa krāsa',
     pattern: 'Raksts',
     patterns: {
       plain: 'Vienkrāsains',

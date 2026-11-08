@@ -5,7 +5,9 @@
 import type {
   Accessory,
   Appearance,
+  Clothes,
   Eyes,
+  Figure,
   HairStyle,
   Kind,
   Pattern,
@@ -29,8 +31,14 @@ export interface Corners {
 export interface PegGeometry {
   H: number;
   W: number;
-  /** Full width of the figure (the same as W). */
+  /** Full width of the figure, arms and hands included. */
   RW: number;
+  /** Left edge of the figure (the left hand reaches past x = 0). */
+  left: number;
+  /** Legs, from under the body to the ankles (left, right). */
+  legs: [Box, Box];
+  /** Height of the shoes or paws at the bottom. */
+  shoeH: number;
   d: number;
   head: Box;
   body: Box;
@@ -53,6 +61,8 @@ export interface PegGeometry {
   hairStyle: HairStyle;
   freckles: boolean;
   kind: Kind;
+  figure: Figure | null;
+  clothes: Clothes;
 }
 
 /** Elliptical corners from CSS percentages of the box size. */
@@ -74,7 +84,10 @@ export function pegGeometry(size: number, a: Appearance, eyes: Eyes = 'open'): P
   const hx = (W - d) / 2;
   const hy = H * 0.1;
   const by = hy + d * 0.8;
-  const bh = H - by;
+  // Legs below the body; the figure keeps its full height, so nothing else moves.
+  const legH = H * 0.15;
+  const shoeH = H * 0.06;
+  const bh = H - legH - by;
   const eS = Math.max(3, d * 0.1);
   const st = a.hairStyle;
 
@@ -89,6 +102,13 @@ export function pegGeometry(size: number, a: Appearance, eyes: Eyes = 'open'): P
         };
 
   const body: Box = { x: 0, y: by, w: W, h: bh };
+  const legW = W * 0.2;
+  const legTop = by + bh - legH * 0.4;
+  const leg = (x: number): Box => ({ x, y: legTop, w: legW, h: H - shoeH * 0.5 - legTop });
+  const figure = a.figure ?? null;
+  // Shoulders: broad and square for boys, soft and round for girls.
+  const shoulders: [number, number] =
+    figure === 'boy' ? [0.34, 0.24] : figure === 'girl' ? [0.5, 0.42] : [0.46, 0.36];
   const cap: Box = {
     x: hx - d * 0.05,
     y: hy - d * 0.05,
@@ -99,12 +119,19 @@ export function pegGeometry(size: number, a: Appearance, eyes: Eyes = 'open'): P
   return {
     H,
     W,
-    RW: W,
+    RW: W * 1.24,
+    left: -W * 0.12,
+    legs: [leg(W * 0.5 - legW - W * 0.04), leg(W * 0.5 + W * 0.04)],
+    shoeH,
     d,
     head: { x: hx, y: hy, w: d, h: d },
     body,
-    bodyCorners: corners(body, [0.46, 0.46, 0.2, 0.2], [0.36, 0.36, 0.1, 0.1]),
-    band: { x: W * 0.06, y: H - bh * 0.18, w: W * 0.88, h: bh * 0.14 },
+    bodyCorners: corners(
+      body,
+      [shoulders[0], shoulders[0], 0.2, 0.2],
+      [shoulders[1], shoulders[1], 0.12, 0.12],
+    ),
+    band: { x: W * 0.06, y: by + bh - bh * 0.2, w: W * 0.88, h: bh * 0.15 },
     cap: st === 'none' ? null : cap,
     capCorners: corners(cap, [0.5, 0.5, 0.3, 0.3], [0.82, 0.82, 0.22, 0.22]),
     locks:
@@ -148,5 +175,7 @@ export function pegGeometry(size: number, a: Appearance, eyes: Eyes = 'open'): P
     hairStyle: st,
     freckles: a.freckles === true,
     kind: a.kind ?? 'person',
+    figure,
+    clothes: a.clothes ?? 'tunic',
   };
 }

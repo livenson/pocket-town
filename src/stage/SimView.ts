@@ -116,10 +116,12 @@ export class SimView {
       peg.follow(x, y, bot.facing, walking, walking ? 'idle' : poseFor(bot), dtS, timeS, calm);
       // The tappable button over this character (DOM target layer).
       const g = pegGeometry(PEG_SIZE, bot.appearance);
+      // The body's width, not the arms': a wider target would cover floor spots
+      // and furniture beside the character.
       setTargetRect(`bot:${bot.id}`, {
-        x: x - g.RW / 2 - 6,
+        x: x - g.W / 2 - 6,
         y: y - PEG_SIZE - 6,
-        w: g.RW + 12,
+        w: g.W + 12,
         h: PEG_SIZE + 12,
       });
 

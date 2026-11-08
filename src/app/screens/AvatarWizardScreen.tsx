@@ -4,7 +4,10 @@ import { playSfx } from '../../audio/audio';
 import { speak } from '../../audio/speech';
 import {
   shapeScale,
+  usesSecondColour,
   type Accessory,
+  type Clothes,
+  type Figure,
   type Kind,
   type Appearance,
   type BodyShape,
@@ -15,6 +18,11 @@ import {
 import { starterCast } from '../../content/characters';
 import {
   allTraits,
+  clothesKinds,
+  figures,
+  randomClothes,
+  secondColours,
+  withFigure,
   kinds,
   hairStyles,
   names,
@@ -218,7 +226,12 @@ export function AvatarWizardScreen() {
         change({ appearance: r, name: randomName(draft.name), traits: randomTraits() });
         break;
       case 'body':
-        look({ shape: pick(SHAPES, 'mid'), kind: pick(kinds, 'person'), skin: r.skin });
+        look({
+          ...withFigure(useCreation.getState().appearance, pick(figures, 'girl')),
+          shape: pick(SHAPES, 'mid'),
+          kind: pick(kinds, 'person'),
+          skin: r.skin,
+        });
         break;
       case 'face':
         look({ mouth: pick(MOUTHS, 'smile') });
@@ -228,6 +241,8 @@ export function AvatarWizardScreen() {
         break;
       case 'clothes':
         look({
+          clothes: randomClothes(useCreation.getState().appearance.figure),
+          second: pick(secondColours, '#3D5AA8'),
           pattern: pick(PATTERNS, 'plain'),
           outfit: r.outfit,
           accent: pick(ACCENTS, '#FFF8F0'),
@@ -330,6 +345,19 @@ export function AvatarWizardScreen() {
       case 'body':
         return (
           <>
+            <Section icon="peg" title={A.figure} columns={2}>
+              {figures.map((f: Figure) => (
+                <Choice
+                  key={f}
+                  label={A.figures[f]}
+                  selected={a.figure === f}
+                  tall
+                  onPick={() => look(withFigure(a, f))}
+                >
+                  <PegPortrait appearance={{ ...withFigure(a, f), accessory: 'none' }} size={110} />
+                </Choice>
+              ))}
+            </Section>
             <Section icon="peg" title={A.shape} columns={3}>
               {SHAPES.map((s) => (
                 <Choice
@@ -444,6 +472,29 @@ export function AvatarWizardScreen() {
       case 'clothes':
         return (
           <>
+            <Section icon="shirt" title={A.clothes}>
+              {clothesKinds.map((c: Clothes) => (
+                <Choice
+                  key={c}
+                  label={A.clothesKinds[c]}
+                  selected={(a.clothes ?? 'tunic') === c}
+                  tall
+                  onPick={() => look({ clothes: c })}
+                >
+                  <PegPortrait appearance={{ ...a, clothes: c, accessory: 'none' }} size={96} />
+                </Choice>
+              ))}
+            </Section>
+            {usesSecondColour.has(a.clothes ?? 'tunic') && (
+              <Section icon="palette" title={A.second}>
+                <Swatches
+                  colors={secondColours.filter((c, i) => secondColours.indexOf(c) === i)}
+                  value={a.second ?? (a.clothes === 'cape' ? '#EF4B2F' : '#3D5AA8')}
+                  label={A.colour}
+                  onPick={(c) => look({ second: c })}
+                />
+              </Section>
+            )}
             <Section icon="shirt" title={A.pattern}>
               {PATTERNS.map((p) => (
                 <Choice

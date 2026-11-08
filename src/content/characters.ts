@@ -16,6 +16,8 @@ export const starterCast: CharacterDef[] = [
     id: 'moku',
     name: 'Moku',
     appearance: {
+      figure: 'girl',
+      clothes: 'dress',
       skin: '#E9B48A',
       outfit: color.tomato,
       hair: color.ink,
@@ -28,6 +30,8 @@ export const starterCast: CharacterDef[] = [
     id: 'pim',
     name: 'Pim',
     appearance: {
+      figure: 'boy',
+      clothes: 'overalls',
       skin: '#8D5A3B',
       outfit: color.marigold,
       hair: color.ink,
@@ -40,6 +44,9 @@ export const starterCast: CharacterDef[] = [
     id: 'lumo',
     name: 'Lumo',
     appearance: {
+      figure: 'girl',
+      clothes: 'pants',
+      second: color.teal,
       skin: '#C98E62',
       outfit: color.cornflower,
       hair: '#5A2E1A',
@@ -52,6 +59,8 @@ export const starterCast: CharacterDef[] = [
     id: 'nella',
     name: 'Nella',
     appearance: {
+      figure: 'girl',
+      clothes: 'cape',
       skin: '#5A3725',
       outfit: color.blossom,
       hair: color.marigold,
@@ -64,6 +73,8 @@ export const starterCast: CharacterDef[] = [
     id: 'oki',
     name: 'Oki',
     appearance: {
+      figure: 'boy',
+      clothes: 'shorts',
       skin: '#F6D2B4',
       outfit: color.leaf,
       hair: color.ink,
@@ -76,6 +87,8 @@ export const starterCast: CharacterDef[] = [
     id: 'tavi',
     name: 'Tavi',
     appearance: {
+      figure: 'boy',
+      clothes: 'space',
       skin: '#F6D2B4',
       outfit: color.marigold,
       hair: '#C2552B',

@@ -308,6 +308,8 @@ export const et: Strings = {
     copy: (name: string) => `Võta eeskujuks: ${name}`,
     shape: 'Kuju',
     shapes: { tall: 'Pikk', mid: 'Keskmine', short: 'Lühike' },
+    figure: 'Poiss või tüdruk',
+    figures: { boy: 'Poiss', girl: 'Tüdruk' },
     kind: 'Inimene või loom',
     kinds: {
       person: 'Inimene',
@@ -336,6 +338,17 @@ export const et: Strings = {
       none: 'Juusteta',
     },
     hairColour: 'Juuksevärv',
+    clothes: 'Mida selga panna',
+    clothesKinds: {
+      tunic: 'Tuunika',
+      dress: 'Kleit',
+      pants: 'Püksid',
+      shorts: 'Lühikesed püksid',
+      overalls: 'Traksipüksid',
+      space: 'Skafander',
+      cape: 'Superkangelase keep',
+    },
+    second: 'Pükste ja keebi värv',
     pattern: 'Muster',
     patterns: {
       plain: 'Ühevärviline',
