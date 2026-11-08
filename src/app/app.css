@@ -857,6 +857,8 @@ html[data-labels='true'] .dock--characters {
 
 .drawer__tabs {
   display: flex;
+  /* Nine kinds of things: on a phone they take two rows rather than run off the side. */
+  flex-wrap: wrap;
   gap: 4px;
 }
 
@@ -3056,7 +3058,31 @@ html[data-layout='phone'] .character-actions__houses {
   background: var(--pt-grass);
 }
 
+/* The town is at least 960 × 720: a smaller screen scrolls across it. */
+.world-map__scroll {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.world-map__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.world-map__area {
+  position: relative;
+  width: max(100%, 960px);
+  height: max(100%, 720px);
+  overflow: hidden;
+}
+
+/* Land, trees, animals and places share one frame, clear of the top and bottom bars. */
 .world-map__land,
+.world-map__decor,
+.world-map__critters,
 .world-map__places {
   position: absolute;
   inset: calc(var(--safe-top) + var(--icon-btn) + 10px) var(--safe-right)
@@ -3074,24 +3100,38 @@ html[data-layout='phone'] .character-actions__houses {
 
 .world-map__road--h {
   left: -10%;
-  right: -10%;
-  top: 46%;
+  right: 38%;
+  top: calc(37% - 28px);
   height: 56px;
 }
 
 .world-map__road--v {
   top: -20%;
   bottom: -20%;
-  left: 44%;
+  left: calc(41% - 28px);
   width: 56px;
+}
+
+/* The airport's runway: where the road ends, the planes begin. */
+.world-map__runway {
+  position: absolute;
+  left: 61%;
+  right: 1%;
+  top: calc(37% - 30px);
+  height: 60px;
+  border: 4px solid var(--pt-ink);
+  border-radius: 18px;
+  background:
+    repeating-linear-gradient(90deg, #fff 0 28px, transparent 28px 52px) center / 100% 6px no-repeat,
+    #7e879a;
 }
 
 .world-map__pond {
   position: absolute;
-  left: 4%;
-  bottom: 2%;
-  width: 20%;
-  height: 22%;
+  left: 1%;
+  top: 80%;
+  width: 16%;
+  height: 24%;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -3124,11 +3164,6 @@ html[data-layout='phone'] .character-actions__houses {
       transparent 23px
     ),
     var(--pt-water);
-}
-
-.world-map__decor {
-  position: absolute;
-  inset: 0;
 }
 
 .world-map__places > * {
@@ -3291,6 +3326,64 @@ html[data-layout='phone'] .character-actions__houses {
 
 .map-pin[data-travelling] {
   background: #fff;
+}
+
+/* Look further across the town (when it is wider than the screen). */
+.world-map__look {
+  position: absolute;
+  z-index: 30;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.92;
+}
+
+.world-map__look--left {
+  left: var(--safe-left);
+}
+
+.world-map__look--right {
+  right: var(--safe-right);
+}
+
+/* The plane over the town (MapPlane.tsx): its shadow drifts away as it climbs. */
+.map-plane {
+  --turn: 180deg;
+  --height: 0;
+  position: absolute;
+  z-index: 18;
+  width: 52px;
+  height: 52px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.map-plane__picture,
+.map-plane__shadow {
+  position: absolute;
+  inset: 0;
+}
+
+.map-plane__picture {
+  display: block;
+  transform: translateY(calc(var(--height) * -18px)) rotate(var(--turn))
+    scale(calc(0.8 + var(--height) * 0.5));
+}
+
+.map-plane__shadow {
+  inset: 10px;
+  border-radius: 50%;
+  background: var(--pt-ink);
+  opacity: calc(0.22 - var(--height) * 0.1);
+  transform: translate(calc(var(--height) * 16px), calc(var(--height) * 22px))
+    scale(calc(1 - var(--height) * 0.3), 0.45);
+}
+
+.world-map__places > .map-plane {
+  pointer-events: none;
+}
+
+.map-plane[data-flying='true'] {
+  z-index: 40;
 }
 
 .world-map__top {
@@ -3513,8 +3606,6 @@ html[data-layout='phone'] .decor-toolbar {
 /* ---------- Animals on the world map ---------- */
 
 .world-map__critters {
-  position: absolute;
-  inset: 0;
   pointer-events: none;
 }
 

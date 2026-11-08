@@ -106,10 +106,10 @@ export const ROOF: Record<Shell, string> = {
 };
 /** Plot positions on the neighbourhood map (0–1 across and down). */
 export const PLOTS: { x: number; y: number }[] = [
-  { x: 0.34, y: 0.42 },
-  { x: 0.66, y: 0.46 },
-  { x: 0.2, y: 0.84 },
-  { x: 0.84, y: 0.84 },
+  { x: 0.09, y: 0.58 },
+  { x: 0.55, y: 0.58 },
+  { x: 0.27, y: 0.9 },
+  { x: 0.91, y: 0.9 },
 ];
 
 export const CELLS = 12;

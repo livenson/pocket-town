@@ -105,7 +105,18 @@ test('a short break does not show the postcard', async ({ page }) => {
 test('the world map shows every building, who is where, and the time of day', async ({ page }) => {
   await page.goto('./#scene');
   await tap(page, b(page, 'World'));
-  for (const place of ['My house', 'Neighbour house', 'Café', 'Park', 'Library', 'Music hall']) {
+  for (const place of [
+    'My house',
+    'Neighbour house',
+    'Café',
+    'Park',
+    'Library',
+    'Music hall',
+    'Hospital',
+    'Workshop',
+    'Shop',
+    'Airport',
+  ]) {
     await expect(
       b(page, `Go into ${place}`).or(b(page, new RegExp(`^Go into ${place}\\.`))),
     ).toBeVisible();
