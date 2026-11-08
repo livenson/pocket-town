@@ -5,6 +5,9 @@
 /** Seconds for one whole trip. */
 export const MAP_PLANE_PERIOD = 48;
 
+/** Whether the plane on screen is in the air right now (the map's animals remark on it). */
+export const mapPlaneNow = { flying: false };
+
 /** Where the plane waits: the east end of the runway (map fractions, as buildings). */
 export const MAP_PLANE_STAND = { x: 0.93, y: 0.37 };
 
