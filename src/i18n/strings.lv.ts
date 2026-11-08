@@ -96,6 +96,8 @@ export const lv: Strings = {
   floorSpot: ['Grīda, pa kreisi', 'Grīda, vidū', 'Grīda, pa labi'],
   frontDoor: 'Ārdurvis: iet ārā',
   doorTo: (room: string) => `Durvis: ${room}`,
+  lookLeft: 'Paskaties pa kreisi',
+  lookRight: 'Paskaties pa labi',
   carrying: (thing: string) => `Rokā: ${thing}. Pieskaries spīdošai vietai vai tēlam.`,
   dropIt: 'Nolikt atpakaļ',
   putAway: 'Turi, lai noliktu prom',
@@ -245,6 +247,7 @@ export const lv: Strings = {
   party: 'Ballīte',
 
   screens: {
+    piano: 'Klavieres',
     splash: 'Pocket Town',
     diceAvatar: 'Tavs tēls',
     hooray: 'Urrā!',
@@ -507,6 +510,21 @@ export const lv: Strings = {
     ok: 'Turpināt',
     entered: 'Ievadītais skaitlis',
     leave: 'Atpakaļ uz spēli',
+  },
+
+  piano: {
+    open: 'Atvērt klavieres',
+    instrument: 'Skaņa',
+    keys: 'Taustiņi',
+    note: 'Pieskaries taustiņiem vai slidini pirkstu pār tiem. Vairāki pirksti spēlē akordus. Datorā spēlē arī burti no A līdz K.',
+    instruments: {
+      grand: 'Flīģelis',
+      electric: 'Elektriskās klavieres',
+      toy: 'Rotaļu klavieres',
+      organ: 'Ērģeles',
+      musicBox: 'Mūzikas kastīte',
+      harpsichord: 'Klavesīns',
+    },
   },
 
   grownUp: {

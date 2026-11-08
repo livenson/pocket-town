@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { LANGUAGES, strings, type Language } from '../../i18n';
 import { playSfx } from '../../audio/audio';
 import { useSettings } from '../../state/settings';
@@ -40,6 +41,33 @@ function LanguagePicker() {
   );
 }
 
+/**
+ * The version line. A little secret: three quick taps open the piano (it is a
+ * real button, so keyboard and screen-reader users can find it too).
+ */
+function VersionLine() {
+  const go = useUi((s) => s.go);
+  const taps = useRef<number[]>([]);
+  return (
+    <button
+      type="button"
+      className="grown-up__note grown-up__build grown-up__secret"
+      onClick={() => {
+        const now = Date.now();
+        taps.current = [...taps.current.filter((t) => now - t < 1200), now];
+        if (taps.current.length >= 3) {
+          taps.current = [];
+          playSfx('jingle');
+          go('piano');
+        }
+      }}
+    >
+      <span>{strings.grownUp.version(__BUILD__.version, __BUILD__.date)}</span>
+      <span className="visually-hidden">. {strings.piano.open}</span>
+    </button>
+  );
+}
+
 /** Local grown-up area (behind the gate). M8 adds wind-down, reset and export/import. */
 export function GrownUpScreen() {
   const go = useUi((s) => s.go);
@@ -63,9 +91,7 @@ export function GrownUpScreen() {
           onClick={() => go('kit')}
         />
         <p className="grown-up__note">{strings.grownUp.credits}</p>
-        <p className="grown-up__note grown-up__build">
-          {strings.grownUp.version(__BUILD__.version, __BUILD__.date)}
-        </p>
+        <VersionLine />
       </div>
     </ScreenFrame>
   );

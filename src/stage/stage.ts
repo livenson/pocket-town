@@ -45,6 +45,8 @@ export class Stage {
   private fit = { w: 1, h: 1, scale: 1, cropped: false };
   private readonly prefs = new StagePrefs();
   private host: HTMLElement | null = null;
+  /** The selected character last frame: a new pick takes the camera back. */
+  private lastSelected: string | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private time = 0;
 
@@ -156,6 +158,16 @@ export class Stage {
   /** Follow-cam: switch rooms with the followed bot; keep it (or the selected bot) in view. */
   private followCamera(): void {
     const play = usePlay.getState();
+    const ui = useUi.getState();
+    if (play.selectedBotId !== this.lastSelected) {
+      this.lastSelected = play.selectedBotId;
+      if (play.selectedBotId && ui.lookX !== null) ui.setLookX(null);
+    }
+    // Looking left or right with the arrows, unless someone is being followed.
+    if (!play.followBotId && ui.lookX !== null) {
+      this.focusX = ui.lookX;
+      return;
+    }
     const id = play.followBotId ?? play.selectedBotId;
     const bot = id ? sim.world.bots.find((b) => b.id === id) : undefined;
     if (!bot) {
@@ -170,10 +182,25 @@ export class Stage {
   }
 
   private panCamera(dt: number): void {
-    if (!this.fit.cropped) return;
     const { w, scale } = this.fit;
+    if (!this.fit.cropped) {
+      useUi.getState().setView({
+        canLeft: false,
+        canRight: false,
+        centreX: stageSize.roomWidth / 2,
+        span: stageSize.roomWidth,
+      });
+      return;
+    }
     const min = w - stageSize.roomWidth * scale;
     const target = Math.max(min, Math.min(0, w / 2 - this.focusX * scale));
+    // Tell the look arrows what is still out of sight (where the camera is heading).
+    useUi.getState().setView({
+      canLeft: target < -2,
+      canRight: target > min + 2,
+      centreX: (w / 2 - target) / scale,
+      span: w / scale,
+    });
     const k = dt === 0 || this.prefs.calm ? 1 : Math.min(1, dt * 4);
     const next = this.cameraX + (target - this.cameraX) * k;
     if (Math.abs(next - this.cameraX) < 0.25) return;

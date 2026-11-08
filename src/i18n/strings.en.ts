@@ -96,6 +96,8 @@ export const en = {
   floorSpot: ['Floor, left', 'Floor, middle', 'Floor, right'],
   frontDoor: 'Front door: go outside',
   doorTo: (room: string) => `Door to the ${room}`,
+  lookLeft: 'Look left',
+  lookRight: 'Look right',
   carrying: (thing: string) => `Carrying ${thing}. Tap a glowing spot or a character.`,
   dropIt: 'Put it back',
   putAway: 'Hold to put it away',
@@ -248,6 +250,7 @@ export const en = {
 
   // Screens
   screens: {
+    piano: 'Piano',
     splash: 'Pocket Town',
     diceAvatar: 'Your character',
     hooray: 'Hooray!',
@@ -516,6 +519,21 @@ export const en = {
     ok: 'Continue',
     entered: 'Number typed so far',
     leave: 'Back to play',
+  },
+
+  piano: {
+    open: 'Open the piano',
+    instrument: 'Sound',
+    keys: 'Piano keys',
+    note: 'Tap or slide along the keys. Several fingers play chords. On a computer, the letter keys from A to K play too.',
+    instruments: {
+      grand: 'Grand piano',
+      electric: 'Electric piano',
+      toy: 'Toy piano',
+      organ: 'Organ',
+      musicBox: 'Music box',
+      harpsichord: 'Harpsichord',
+    },
   },
 
   grownUp: {

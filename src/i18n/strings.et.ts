@@ -94,6 +94,8 @@ export const et: Strings = {
   floorSpot: ['Põrand, vasakul', 'Põrand, keskel', 'Põrand, paremal'],
   frontDoor: 'Välisuks: mine õue',
   doorTo: (room: string) => `Uks: ${room}`,
+  lookLeft: 'Vaata vasakule',
+  lookRight: 'Vaata paremale',
   carrying: (thing: string) => `Käes: ${thing}. Puuduta helendavat kohta või tegelast.`,
   dropIt: 'Pane tagasi',
   putAway: 'Hoia all, et ära panna',
@@ -243,6 +245,7 @@ export const et: Strings = {
   party: 'Pidu',
 
   screens: {
+    piano: 'Klaver',
     splash: 'Pocket Town',
     diceAvatar: 'Sinu tegelane',
     hooray: 'Hurraa!',
@@ -505,6 +508,21 @@ export const et: Strings = {
     ok: 'Jätka',
     entered: 'Sisestatud arv',
     leave: 'Tagasi mängu',
+  },
+
+  piano: {
+    open: 'Ava klaver',
+    instrument: 'Heli',
+    keys: 'Klaviatuur',
+    note: 'Puuduta klahve või libista sõrme üle nende. Mitu sõrme mängivad akorde. Arvutis mängivad ka tähed A kuni K.',
+    instruments: {
+      grand: 'Tiibklaver',
+      electric: 'Elektriklaver',
+      toy: 'Mänguklaver',
+      organ: 'Orel',
+      musicBox: 'Muusikakarp',
+      harpsichord: 'Klavessiin',
+    },
   },
 
   grownUp: {

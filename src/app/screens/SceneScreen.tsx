@@ -12,6 +12,7 @@ import { CarryLayer } from '../CarryLayer';
 import { CharactersDock } from '../CharactersDock';
 import { FollowBar } from '../FollowBar';
 import { HintBubble } from '../HintBubble';
+import { LookArrows } from '../LookArrows';
 import { hint, useHints } from '../hints';
 import { game, useGame } from '../game';
 import { useLayoutMode, useViewportWidth } from '../media';
@@ -69,6 +70,7 @@ export function SceneScreen() {
         <StageHost />
         <StageTargets />
       </div>
+      {!following && <LookArrows />}
 
       {following ? (
         <FollowBar />

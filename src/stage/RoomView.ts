@@ -160,10 +160,50 @@ export class RoomView extends Container {
     return c;
   }
 
+  /** True when this door piece is the room's way outside. */
+  private isFrontDoor(f: FurnitureInstance, kind: FurnitureKind): boolean {
+    if (kind.id !== 'door') return false;
+    const centre = f.x + (kind.w * (f.scale ?? 1)) / 2;
+    return this.def.doors.some((d) => d.to === 'outside' && Math.abs(d.x - centre) < 8);
+  }
+
+  /**
+   * The front door looks different from doors between rooms by shape, not only
+   * colour: a round window with the sky in it, and a doormat on the floor.
+   */
+  private drawFrontDoor(kind: FurnitureKind, paint?: string): Container {
+    const c = new Container();
+    c.addChild(drawFurniture(kind, paint ?? color.teal));
+    const cx = kind.w / 2;
+    const cy = 56;
+    const pane = new Graphics().circle(cx, cy, 26).fill(0xffffff);
+    pane.tint = hex(color.sky);
+    const frame = new Graphics()
+      .circle(cx, cy, 26)
+      .stroke({ width: 6, color: hex(color.ink) })
+      .rect(cx - 2, cy - 26, 4, 52)
+      .fill(hex(color.ink))
+      .rect(cx - 26, cy - 2, 52, 4)
+      .fill(hex(color.ink));
+    const mat = new Graphics()
+      .roundRect(-10, kind.h - 2, kind.w + 20, 16, 8)
+      .fill(hex(color.tomato))
+      .stroke({ width: 4, color: hex(color.ink) });
+    for (let x = 6; x < kind.w; x += 18)
+      mat.rect(x, kind.h + 2, 8, 8).fill({ color: 0xffffff, alpha: 0.55 });
+    c.addChild(pane, frame, mat);
+    this.panes.push(pane);
+    return c;
+  }
+
   addFurniture(f: FurnitureInstance): Container {
     const kind: FurnitureKind = furnitureKinds[f.kind];
     const g: Container =
-      kind.id === 'window' ? this.drawWindow(kind) : drawFurniture(kind, f.paint);
+      kind.id === 'window'
+        ? this.drawWindow(kind)
+        : this.isFrontDoor(f, kind)
+          ? this.drawFrontDoor(kind, f.paint)
+          : drawFurniture(kind, f.paint);
     g.label = `furniture:${f.id}`;
     if (kind.layer === 'wall' && !f.standing) this.wallLayer.addChild(g);
     else if (kind.layer === 'floor') this.floorLayer.addChild(g);

@@ -229,5 +229,13 @@ export function buildingOf(house: HouseDef, name: string): BuildingDef {
     };
   });
   const plot = PLOTS[house.plot] ?? PLOTS[0] ?? { x: 0.5, y: 0.5 };
-  return { id: house.id, kind: 'house', name, map: plot, roofColor: ROOF[house.shell], rooms };
+  return {
+    id: house.id,
+    kind: 'house',
+    name,
+    map: plot,
+    roofColor: ROOF[house.shell],
+    shape: house.shell,
+    rooms,
+  };
 }
