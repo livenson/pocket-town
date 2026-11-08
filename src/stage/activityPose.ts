@@ -26,6 +26,8 @@ export function gestureFor(activity: ActivityId): Gesture {
       return 'point';
     case 'visit':
       return 'wave';
+    case 'phone':
+      return 'phone';
     default:
       return 'none';
   }
@@ -55,6 +57,7 @@ export const SEATS: Partial<Record<string, SeatSpec>> = {
   waitingChairs: { y: 48, x0: 10, x1: 250, seats: seatRow },
   gateSeats: { y: 48, x0: 10, x1: 250, seats: seatRow },
   examBed: { y: 24, x0: 90, x1: 220 },
+  toilet: { y: 50, x0: 40, x1: 70 },
 };
 
 export const BEDS: Partial<Record<string, BedSpec>> = {

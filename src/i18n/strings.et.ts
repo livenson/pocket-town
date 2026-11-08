@@ -271,6 +271,7 @@ export const et: Strings = {
     tinker: 'meisterdab',
     shop: 'käib poes',
     planes: 'vaatab lennukeid',
+    phone: 'mängib telefonimängu',
     idle: 'puhkab',
     travel: 'on teel',
     frozen: 'on külmunud',

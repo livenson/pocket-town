@@ -21,7 +21,9 @@ export type ActivityId =
   | 'checkup'
   | 'tinker'
   | 'shop'
-  | 'planes';
+  | 'planes'
+  // On the toilet with a little phone game (owner's request).
+  | 'phone';
 
 export interface ActivityLook {
   icon: AnyIconName | null;
@@ -49,6 +51,7 @@ export const activityLook: Record<ActivityId, ActivityLook> = {
   tinker: { icon: 'wrench', color: color.tealDark, pose: 'idle' },
   shop: { icon: 'basket', color: color.tomatoText, pose: 'idle' },
   planes: { icon: 'plane', color: color.cornflowerShadow, pose: 'dance' },
+  phone: { icon: 'phone', color: color.purple, pose: 'idle' },
 };
 
 /** The six nudge ideas the child can pick (SIM.md → influence ladder). */
@@ -127,6 +130,8 @@ export const offers: Record<string, AdTemplate[]> = {
   shopping: [{ activity: 'shop', gains: { fun: 25, social: 10 }, duration: 20, capacity: 1 }],
   // The airport: watching the planes, playing pilot, waiting at the gate.
   bigWindow: [{ activity: 'planes', gains: { fun: 50 }, duration: 30, capacity: 3 }],
+  // The bathroom: sitting on the toilet with a phone game.
+  toilet: [{ activity: 'phone', gains: { fun: 35 }, duration: 20, capacity: 1 }],
   gateSeats: [
     { activity: 'planes', gains: { fun: 30, energy: 15, social: 10 }, duration: 30, capacity: 3 },
   ],

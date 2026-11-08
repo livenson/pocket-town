@@ -12,6 +12,7 @@ import {
   type FurnitureInstance,
 } from '../content/furniture';
 import { findBaseRoom, findBuilding, findRoom } from '../content/rooms';
+import type { FurnitureUse } from './ads';
 import { syncHouses } from './houses';
 import { tuning } from '../content/tuning';
 import { emit, startGoHome, startVisit } from './step';
@@ -26,7 +27,7 @@ export type Command =
   | { type: 'control'; botId: string; on: boolean }
   | { type: 'puppetMove'; botId: string; place: Place }
   /** The child put this character here (dragged or tapped in from the dock). */
-  | { type: 'bring'; botId: string; place: Place }
+  | { type: 'bring'; botId: string; place: Place; use?: Omit<FurnitureUse, 'spot'> }
   | { type: 'freeze'; botId: string; on: boolean }
   | { type: 'sendHome'; botId: string }
   | { type: 'placeObject'; kind: string; place: Place; id?: string; raise?: number }
@@ -154,6 +155,11 @@ export function apply(world: World, cmd: Command): boolean {
       bot.travel = null;
       bot.route = [];
       bot.moving = false;
+      // Put on a piece of furniture: they start using it right away.
+      if (cmd.use && bot.mode !== 'frozen' && bot.mode !== 'puppet') {
+        bot.now = { ...cmd.use, phase: 'doing', progress: 0, byChild: true };
+        return true;
+      }
       if (bot.mode !== 'frozen' && bot.mode !== 'puppet')
         bot.now = {
           activity: 'wait',

@@ -273,6 +273,7 @@ export const lv: Strings = {
     tinker: 'meistaro',
     shop: 'iepērkas',
     planes: 'vēro lidmašīnas',
+    phone: 'spēlē telefona spēli',
     idle: 'atpūšas',
     travel: 'ir ceļā',
     frozen: 'nekustas',

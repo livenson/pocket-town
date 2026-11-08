@@ -1173,6 +1173,64 @@ function propParts(s: number, lw: number): Part[] {
       fill: color.leaf,
     },
   ];
+  // A phone with a little game on it: blocks, a coin and a jumping hero.
+  const phone: Prim[] = [
+    {
+      t: 'rect',
+      x: -0.06 * s,
+      y: hy - 0.05 * s,
+      w: 0.065 * s,
+      h: 0.1 * s,
+      r: 0.012 * s,
+      fill: INK,
+      stroke: outlineOf(INK),
+      sw: lw,
+    },
+    {
+      t: 'rect',
+      x: -0.054 * s,
+      y: hy - 0.042 * s,
+      w: 0.053 * s,
+      h: 0.082 * s,
+      r: 0.006 * s,
+      fill: color.sky,
+    },
+    {
+      t: 'rect',
+      x: -0.054 * s,
+      y: hy + 0.026 * s,
+      w: 0.053 * s,
+      h: 0.014 * s,
+      r: 0,
+      fill: color.leaf,
+    },
+    {
+      t: 'rect',
+      x: -0.044 * s,
+      y: hy - 0.004 * s,
+      w: 0.014 * s,
+      h: 0.014 * s,
+      r: 0.002 * s,
+      fill: color.marigold,
+    },
+    {
+      t: 'rect',
+      x: -0.026 * s,
+      y: hy - 0.02 * s,
+      w: 0.014 * s,
+      h: 0.014 * s,
+      r: 0.002 * s,
+      fill: color.tomato,
+    },
+    {
+      t: 'ellipse',
+      cx: -0.012 * s,
+      cy: hy + 0.012 * s,
+      rx: 0.007 * s,
+      ry: 0.009 * s,
+      fill: color.purple,
+    },
+  ];
   return [
     { bone: 'wristR', prims: book, only: 'read' },
     { bone: 'wristR', prims: spoon, only: 'eat' },
@@ -1180,6 +1238,7 @@ function propParts(s: number, lw: number): Part[] {
     { bone: 'wristR', prims: can, only: 'water' },
     { bone: 'wristR', prims: broom, only: 'sweep' },
     { bone: 'wristL', prims: basket, only: 'reach' },
+    { bone: 'wristR', prims: phone, only: 'phone' },
   ];
 }
 
@@ -1193,7 +1252,17 @@ export type RigActivity = 'idle' | 'walk' | 'sleep' | 'dance';
 export type Stance = 'stand' | 'sit' | 'lie';
 /** What the arms do for an activity (and the prop in hand, if any). */
 export type Gesture =
-  'none' | 'eat' | 'read' | 'talk' | 'hammer' | 'water' | 'sweep' | 'wave' | 'reach' | 'point';
+  | 'none'
+  | 'eat'
+  | 'read'
+  | 'talk'
+  | 'hammer'
+  | 'water'
+  | 'sweep'
+  | 'wave'
+  | 'reach'
+  | 'point'
+  | 'phone';
 
 /** Seen from the front, a sitting figure's thighs point at us: drawn this short. */
 export const SIT_THIGH = 0.3;
@@ -1281,6 +1350,15 @@ function gestureAngles(g: Gesture, t: number, k: number): Angles {
       };
     case 'point':
       return { shoulderL: 0.12, elbowL: -0.2, shoulderR: -2.75, elbowR: 0.12, head: -0.05 };
+    case 'phone':
+      // Both hands on the phone in front of the tummy, thumbs tapping away.
+      return {
+        shoulderL: 0.12,
+        elbowL: -1.7 - 0.06 * k * osc(3.1),
+        shoulderR: -0.12,
+        elbowR: 1.7 + 0.06 * k * osc(2.7, 0.4),
+        head: 0.1,
+      };
     case 'none':
       return {};
   }

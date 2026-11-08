@@ -13,6 +13,7 @@ import { surfaceOf } from '../content/furniture';
 import { strings, thingName } from '../i18n';
 import { benchSlotX, benchWouldMake, onBench, type BenchPut } from '../sim/workbench';
 import { findRoom } from '../content/rooms';
+import { furnitureUseAt } from '../sim/ads';
 import { usePlay, type Carrying, type CarrySource } from '../state/play';
 import { useUi } from '../state/ui';
 import { clientToRoom, roomToClient } from '../stage/targets';
@@ -44,7 +45,22 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
     }
     if (!at && target !== 'floor') return false;
     at ??= { x: 450, y: 470 };
-    ok = game.do({ type: 'bring', botId: c.source.botId, place: currentPlace(at.x, at.y) });
+    // Put on a sofa, a bed, the toilet, the piano…: they use it right there.
+    const roomId = useUi.getState().roomId;
+    const furniture = findRoom(roomId)?.furniture ?? [];
+    const use =
+      clientX !== undefined && !target.startsWith('spot:')
+        ? furnitureUseAt(roomId, furniture, at.x, at.y)
+        : null;
+    if (use) {
+      const { spot, ...doing } = use;
+      ok = game.do({
+        type: 'bring',
+        botId: c.source.botId,
+        place: currentPlace(spot.x, spot.y),
+        use: doing,
+      });
+    } else ok = game.do({ type: 'bring', botId: c.source.botId, place: currentPlace(at.x, at.y) });
     if (ok) {
       playSfx('jingle');
       play.drop();

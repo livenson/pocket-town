@@ -274,6 +274,7 @@ export const en = {
     tinker: 'building things',
     shop: 'shopping',
     planes: 'watching planes',
+    phone: 'playing a phone game',
     idle: 'resting',
     travel: 'on the way',
     frozen: 'frozen',
