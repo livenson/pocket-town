@@ -24,13 +24,14 @@ import { StageHost } from '../StageHost';
 import { StageTargets } from '../StageTargets';
 import { TimePill } from '../TimePill';
 
+const setDrawerHidden = (hidden: boolean) =>
+  useSettings.getState().update({ drawerHidden: hidden });
+
 /** The play screen: the stage in the middle, tools on the same edges everywhere. */
 export function SceneScreen() {
   const layout = useLayoutMode();
   const leftHanded = useSettings((s) => s.leftHanded);
   const drawerHidden = useSettings((s) => s.drawerHidden);
-  const setDrawerHidden = (hidden: boolean) =>
-    useSettings.getState().update({ drawerHidden: hidden });
   const go = useUi((s) => s.go);
   const home = useUi((s) => s.home);
   const sheetOpen = useUi((s) => s.plusSheetOpen);
