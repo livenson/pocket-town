@@ -5,8 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { playSfx } from '../audio/audio';
 import { speak } from '../audio/speech';
 import { critters, ideas, type CritterDef } from '../content/critters';
-import { findBuilding, type BuildingKind } from '../content/rooms';
-import type { IconName } from '../design/icons';
+import { findBuilding, buildingIcon } from '../content/rooms';
 import { pictureUrl } from '../design/thingPicture';
 import { buildingName, strings } from '../i18n';
 import { useUi } from '../state/ui';
@@ -16,14 +15,6 @@ import { useVoiceLabel } from '../ui/useVoiceLabel';
 import { useCalmMotion } from './media';
 
 const BUBBLE_MS = 5000;
-
-const PLACE_ICON: Record<BuildingKind, IconName> = {
-  house: 'house',
-  cafe: 'shop',
-  park: 'tree',
-  library: 'book',
-  musicHall: 'note',
-};
 
 function randomIn(z: CritterDef['zone']): { x: number; y: number } {
   return { x: z.x0 + Math.random() * (z.x1 - z.x0), y: z.y0 + Math.random() * (z.y1 - z.y0) };
@@ -117,7 +108,7 @@ function Critter({ def }: { def: CritterDef }) {
               useUi.getState().go('scene');
             }}
           >
-            {words ? text : <Icon name={PLACE_ICON[place.kind]} size={28} />}
+            {words ? text : <Icon name={buildingIcon[place.kind]} size={28} />}
           </button>
         ) : (
           <span className="critter__bubble" role="status">

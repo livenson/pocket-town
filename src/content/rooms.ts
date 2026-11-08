@@ -1,9 +1,32 @@
 // The starter town: buildings, their rooms, doors and furniture. Pure data.
 // The first room is design-reference/Room.dc.html (kitchen and living room).
 import { color, roomColor } from '../design/tokens';
+import type { AnyIconName } from '../design/foodIcons';
 import type { FurnitureInstance } from './furniture';
 
-export type BuildingKind = 'house' | 'cafe' | 'park' | 'library' | 'musicHall';
+export type BuildingKind =
+  | 'house'
+  | 'cafe'
+  | 'park'
+  | 'library'
+  | 'musicHall'
+  | 'hospital'
+  | 'workshop'
+  | 'shop'
+  | 'airport';
+
+/** The sign on each kind of place (map, follow bar, animals' ideas): zero-reading. */
+export const buildingIcon: Record<BuildingKind, AnyIconName> = {
+  house: 'house',
+  cafe: 'shop',
+  park: 'tree',
+  library: 'book',
+  musicHall: 'note',
+  hospital: 'plaster',
+  workshop: 'wrench',
+  shop: 'basket',
+  airport: 'plane',
+};
 
 export interface DoorDef {
   /** Centre of the door on the floor line, in room units. */
@@ -25,6 +48,8 @@ export interface RoomDef {
   dividerX: number | null;
   doors: DoorDef[];
   furniture: FurnitureInstance[];
+  /** Planes take off and land on a runway at the back of the floor (the airport). */
+  runway?: boolean;
 }
 
 export interface BuildingDef {
@@ -38,6 +63,9 @@ export interface BuildingDef {
   shape?: 'cottage' | 'tall' | 'dome';
   rooms: RoomDef[];
 }
+
+/** Pale blue-grey hospital floor. */
+const HOSPITAL_FLOOR = '#B7C4D6';
 
 /** Door pieces are 116 wide; place one centred on a door's x. */
 const door = (id: string, x: number): FurnitureInstance => ({
@@ -77,7 +105,7 @@ export const town: BuildingDef[] = [
     id: 'home',
     kind: 'house',
     name: 'My house',
-    map: { x: 0.24, y: 0.62 },
+    map: { x: 0.27, y: 0.58 },
     roofColor: color.tomato,
     rooms: [
       starterRoom,
@@ -155,7 +183,7 @@ export const town: BuildingDef[] = [
     id: 'neighbour',
     kind: 'house',
     name: 'Neighbour house',
-    map: { x: 0.12, y: 0.3 },
+    map: { x: 0.09, y: 0.2 },
     roofColor: color.cornflower,
     shape: 'tall',
     rooms: [
@@ -230,7 +258,7 @@ export const town: BuildingDef[] = [
     id: 'cafe',
     kind: 'cafe',
     name: 'Café',
-    map: { x: 0.52, y: 0.28 },
+    map: { x: 0.55, y: 0.2 },
     roofColor: color.blossom,
     rooms: [
       {
@@ -281,7 +309,7 @@ export const town: BuildingDef[] = [
     id: 'park',
     kind: 'park',
     name: 'Park',
-    map: { x: 0.8, y: 0.6 },
+    map: { x: 0.91, y: 0.58 },
     roofColor: color.leaf,
     rooms: [
       {
@@ -328,7 +356,7 @@ export const town: BuildingDef[] = [
     id: 'library',
     kind: 'library',
     name: 'Library',
-    map: { x: 0.82, y: 0.24 },
+    map: { x: 0.73, y: 0.58 },
     roofColor: color.teal,
     rooms: [
       {
@@ -380,7 +408,7 @@ export const town: BuildingDef[] = [
     id: 'musicHall',
     kind: 'musicHall',
     name: 'Music hall',
-    map: { x: 0.5, y: 0.75 },
+    map: { x: 0.55, y: 0.9 },
     roofColor: color.purple,
     rooms: [
       {
@@ -421,6 +449,226 @@ export const town: BuildingDef[] = [
           { id: 'piano-1', kind: 'piano', x: 470, y: 270 },
           { id: 'stool-1', kind: 'stool', x: 410, y: 420 },
           { id: 'starLight-1', kind: 'starLight', x: 760, y: 280 },
+        ],
+      },
+    ],
+  },
+  {
+    // The town's public places (owner's request): hospital, workshop, shop, airport.
+    id: 'hospital',
+    kind: 'hospital',
+    name: 'Hospital',
+    map: { x: 0.27, y: 0.2 },
+    roofColor: color.teal,
+    rooms: [
+      {
+        id: 'hospital-reception',
+        buildingId: 'hospital',
+        wall: roomColor.living,
+        stripe: color.teal,
+        floor: HOSPITAL_FLOOR,
+        indoor: true,
+        dividerX: null,
+        doors: [
+          { x: 88, to: 'outside' },
+          { x: 812, to: 'hospital-doctor' },
+        ],
+        furniture: [
+          door('door-front', 88),
+          door('door-doctor', 812),
+          { id: 'clock-1', kind: 'clock', x: 230, y: 70 },
+          { id: 'window-1', kind: 'window', x: 500, y: 52 },
+          { id: 'receptionDesk-1', kind: 'receptionDesk', x: 160, y: 300 },
+          { id: 'waitingChairs-1', kind: 'waitingChairs', x: 470, y: 336 },
+          { id: 'plant-1', kind: 'plant', x: 760, y: 360 },
+        ],
+      },
+      {
+        id: 'hospital-doctor',
+        buildingId: 'hospital',
+        wall: color.paper,
+        stripe: color.cornflower,
+        floor: HOSPITAL_FLOOR,
+        indoor: true,
+        dividerX: null,
+        doors: [
+          { x: 88, to: 'hospital-reception' },
+          { x: 812, to: 'hospital-ward' },
+        ],
+        furniture: [
+          door('door-reception', 88),
+          door('door-ward', 812),
+          { id: 'medCabinet-1', kind: 'medCabinet', x: 180, y: 96 },
+          { id: 'window-1', kind: 'window', x: 360, y: 52 },
+          { id: 'eyeChart-1', kind: 'eyeChart', x: 620, y: 110 },
+          { id: 'examBed-1', kind: 'examBed', x: 330, y: 330 },
+          { id: 'desk-1', kind: 'desk', x: 556, y: 330 },
+          { id: 'stool-1', kind: 'stool', x: 480, y: 392 },
+        ],
+      },
+      {
+        id: 'hospital-ward',
+        buildingId: 'hospital',
+        wall: roomColor.bath,
+        stripe: color.cornflower,
+        floor: HOSPITAL_FLOOR,
+        indoor: true,
+        dividerX: null,
+        doors: [{ x: 88, to: 'hospital-doctor' }],
+        furniture: [
+          door('door-doctor', 88),
+          { id: 'window-1', kind: 'window', x: 330, y: 52 },
+          { id: 'picture-1', kind: 'picture', x: 640, y: 90 },
+          { id: 'hospitalBed-1', kind: 'hospitalBed', x: 170, y: 320 },
+          { id: 'hospitalBed-2', kind: 'hospitalBed', x: 440, y: 320 },
+          { id: 'sideTable-1', kind: 'sideTable', x: 680, y: 380 },
+          { id: 'flowerPot-1', kind: 'flowerPot', x: 780, y: 330 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'workshop',
+    kind: 'workshop',
+    name: 'Workshop',
+    map: { x: 0.73, y: 0.9 },
+    roofColor: color.marigold,
+    rooms: [
+      {
+        id: 'workshop-main',
+        buildingId: 'workshop',
+        wall: color.peach,
+        stripe: color.woodDark,
+        floor: color.wood,
+        indoor: true,
+        dividerX: null,
+        doors: [
+          { x: 88, to: 'outside' },
+          { x: 812, to: 'workshop-garage' },
+        ],
+        furniture: [
+          door('door-front', 88),
+          door('door-garage', 812),
+          { id: 'toolWall-1', kind: 'toolWall', x: 170, y: 80 },
+          { id: 'window-1', kind: 'window', x: 470, y: 52 },
+          { id: 'workbench-1', kind: 'workbench', x: 160, y: 300 },
+          { id: 'stool-1', kind: 'stool', x: 470, y: 400 },
+          { id: 'woodPile-1', kind: 'woodPile', x: 580, y: 400 },
+        ],
+      },
+      {
+        id: 'workshop-garage',
+        buildingId: 'workshop',
+        wall: '#E6E9F0',
+        stripe: color.marigold,
+        floor: '#9AA3B5',
+        indoor: true,
+        dividerX: null,
+        doors: [{ x: 88, to: 'workshop-main' }],
+        furniture: [
+          door('door-workshop', 88),
+          { id: 'shelf-1', kind: 'shelf', x: 600, y: 70 },
+          { id: 'toolWall-1', kind: 'toolWall', x: 600, y: 140 },
+          { id: 'carLift-1', kind: 'carLift', x: 200, y: 290 },
+          { id: 'workbench-1', kind: 'workbench', x: 570, y: 330, paint: color.cornflower },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'shop',
+    kind: 'shop',
+    name: 'Shop',
+    map: { x: 0.73, y: 0.2 },
+    roofColor: color.tomato,
+    rooms: [
+      {
+        id: 'shop-main',
+        buildingId: 'shop',
+        wall: color.paper,
+        stripe: color.tomato,
+        floor: '#C9A385',
+        indoor: true,
+        dividerX: null,
+        doors: [
+          { x: 88, to: 'outside' },
+          { x: 812, to: 'shop-fruit' },
+        ],
+        furniture: [
+          door('door-front', 88),
+          door('door-fruit', 812),
+          { id: 'shopShelf-1', kind: 'shopShelf', x: 190, y: 140 },
+          { id: 'shopShelf-2', kind: 'shopShelf', x: 460, y: 140 },
+          { id: 'basketStack-1', kind: 'basketStack', x: 160, y: 390 },
+          { id: 'till-1', kind: 'till', x: 470, y: 330 },
+        ],
+      },
+      {
+        id: 'shop-fruit',
+        buildingId: 'shop',
+        wall: roomColor.kitchen,
+        stripe: color.leaf,
+        floor: '#C9A385',
+        indoor: true,
+        dividerX: null,
+        doors: [{ x: 88, to: 'shop-main' }],
+        furniture: [
+          door('door-shop', 88),
+          { id: 'bunting-1', kind: 'bunting', x: 200, y: 40 },
+          { id: 'window-1', kind: 'window', x: 500, y: 52 },
+          { id: 'fruitStand-1', kind: 'fruitStand', x: 170, y: 300 },
+          { id: 'fruitStand-2', kind: 'fruitStand', x: 470, y: 310 },
+          { id: 'basketStack-1', kind: 'basketStack', x: 770, y: 390 },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'airport',
+    kind: 'airport',
+    name: 'Airport',
+    map: { x: 0.91, y: 0.2 },
+    roofColor: color.cornflower,
+    rooms: [
+      {
+        id: 'airport-terminal',
+        buildingId: 'airport',
+        wall: '#DDEBFA',
+        stripe: color.cornflower,
+        floor: '#E6E9F0',
+        indoor: true,
+        dividerX: null,
+        doors: [
+          { x: 88, to: 'outside' },
+          { x: 812, to: 'airport-runway' },
+        ],
+        furniture: [
+          door('door-front', 88),
+          door('door-runway', 812),
+          { id: 'departureBoard-1', kind: 'departureBoard', x: 150, y: 20, scale: 0.75 },
+          { id: 'bigWindow-1', kind: 'bigWindow', x: 350, y: 64 },
+          { id: 'checkInDesk-1', kind: 'checkInDesk', x: 150, y: 320 },
+          { id: 'gateSeats-1', kind: 'gateSeats', x: 470, y: 340 },
+          { id: 'plant-1', kind: 'plant', x: 760, y: 360 },
+        ],
+      },
+      {
+        // Outside on the apron: the parked plane, and planes coming and going.
+        id: 'airport-runway',
+        buildingId: 'airport',
+        wall: color.sky,
+        stripe: null,
+        floor: '#A7AFBF',
+        indoor: false,
+        dividerX: null,
+        runway: true,
+        doors: [{ x: 70, to: 'airport-terminal' }],
+        furniture: [
+          { id: 'controlTower-1', kind: 'controlTower', x: 720, y: 30 },
+          { id: 'runwayLines-1', kind: 'runwayLines', x: 10, y: 372 },
+          { id: 'windsock-1', kind: 'windsock', x: 440, y: 210 },
+          { id: 'plane-1', kind: 'plane', x: 40, y: 340, scale: 0.6 },
+          { id: 'luggageCart-1', kind: 'luggageCart', x: 470, y: 400 },
         ],
       },
     ],

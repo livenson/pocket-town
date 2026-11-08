@@ -15,22 +15,22 @@ export interface CritterDef {
 }
 
 export const critters: CritterDef[] = [
-  { id: 'cat', art: 'cat', zone: { x0: 0.08, x1: 0.42, y0: 0.42, y1: 0.58 }, pace: 18, size: 48 },
-  { id: 'dog', art: 'dog', zone: { x0: 0.55, x1: 0.95, y0: 0.42, y1: 0.58 }, pace: 12, size: 52 },
+  { id: 'cat', art: 'cat', zone: { x0: 0.04, x1: 0.34, y0: 0.36, y1: 0.44 }, pace: 18, size: 48 },
+  { id: 'dog', art: 'dog', zone: { x0: 0.39, x1: 0.44, y0: 0.08, y1: 0.95 }, pace: 12, size: 52 },
   // The duck keeps to the pond (bottom left).
-  { id: 'duck', art: 'duck', zone: { x0: 0.07, x1: 0.2, y0: 0.82, y1: 0.92 }, pace: 22, size: 40 },
-  { id: 'bird', art: 'bird', zone: { x0: 0.3, x1: 0.95, y0: 0.08, y1: 0.3 }, pace: 8, size: 40 },
+  { id: 'duck', art: 'duck', zone: { x0: 0.04, x1: 0.14, y0: 0.88, y1: 0.98 }, pace: 22, size: 40 },
+  { id: 'bird', art: 'bird', zone: { x0: 0.3, x1: 0.95, y0: 0.0, y1: 0.12 }, pace: 8, size: 40 },
   {
     id: 'butterfly',
     art: 'butterfly',
-    zone: { x0: 0.6, x1: 0.97, y0: 0.6, y1: 0.85 },
+    zone: { x0: 0.6, x1: 0.97, y0: 0.66, y1: 0.8 },
     pace: 14,
     size: 34,
   },
   {
     id: 'hedgehog',
     art: 'hedgehog',
-    zone: { x0: 0.3, x1: 0.48, y0: 0.7, y1: 0.95 },
+    zone: { x0: 0.31, x1: 0.47, y0: 0.7, y1: 0.98 },
     pace: 30,
     size: 40,
   },
@@ -53,4 +53,8 @@ export const ideas: { key: string; place?: string }[] = [
   { key: 'home', place: 'home' },
   { key: 'neighbours', place: 'neighbour' },
   { key: 'pond', place: 'park' },
+  { key: 'plane', place: 'airport' },
+  { key: 'fix', place: 'workshop' },
+  { key: 'shop', place: 'shop' },
+  { key: 'doctor', place: 'hospital' },
 ];
