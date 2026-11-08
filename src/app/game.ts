@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { create } from 'zustand';
 import { playSfx } from '../audio/audio';
-import { del } from 'idb-keyval';
-import { loadSave, slotsFor, writeSave } from '../persist/save';
+import { deleteSave, loadSave, writeSave } from '../persist/save';
 import type { Command } from '../sim/commands';
 import { AWAY_MIN_MS, awayGameMinutes, catchUp } from '../sim/away';
 import { History } from '../sim/history';
@@ -142,6 +141,8 @@ export async function enterProfile(id: string): Promise<void> {
   useProfiles.getState().choose(id);
   let save = await loadSave(id).catch(() => null);
   if (!save && profiles.length === 1) save = await loadSave(null).catch(() => null);
+  // Removed in the grown-up area while their town was loading: leave it closed.
+  if (!useProfiles.getState().profiles.some((p) => p.id === id)) return;
   const world = save?.world ?? createWorld((Date.now() % 2147483647) | 0);
   ensurePlayerBot(world, profile);
   if (save) comeBack(world, Date.now() - save.savedAt);
@@ -242,22 +243,28 @@ export async function finishCreation(): Promise<void> {
 
 /**
  * Remove a player for good (grown-up area, press and hold): their profile and
- * their saved town. If their town is open, saving stops first, so it is not
- * written back. With no players left, the town from before profiles goes too,
- * so the next player starts fresh.
+ * their saved town. If their town is open it is unloaded (a fresh, unsaved town
+ * takes its place and the undo history is cleared), so nothing of it can be
+ * played or written back. With no players left, the town from before profiles
+ * goes too, and nothing is saved until a new player's town is opened.
  */
 export async function removePlayer(id: string): Promise<{ wasOpen: boolean }> {
   const wasOpen = profileId === id;
-  if (wasOpen) {
-    if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = null;
-    profileId = null;
-    noTown = true;
-  }
   const { profiles, remove } = useProfiles.getState();
   const last = profiles.every((p) => p.id === id);
+  if (wasOpen || last) {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = null;
+    noTown = true;
+  }
+  if (wasOpen) {
+    profileId = null;
+    history.clear();
+    sim.load(createWorld((Date.now() % 2147483647) | 0));
+    changed();
+  }
   remove(id);
-  const slots = [...slotsFor(id), ...(last ? slotsFor(null) : [])];
-  await Promise.all(slots.map((k) => del(k).catch(() => {})));
+  await deleteSave(id);
+  if (last) await deleteSave(null);
   return { wasOpen };
 }

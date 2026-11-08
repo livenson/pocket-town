@@ -113,15 +113,32 @@ export function eyePrims(g: PegGeometry, a: Appearance): Prim[] {
 }
 
 /** Eyebrows in the hair colour (ink when there is no hair). */
+/** Brow colour: the hair's, or a soft dark when there is no hair. */
+export function browColour(a: Appearance): string {
+  return a.hairStyle === 'none' ? mix(a.skin, color.ink, 0.55) : a.hair;
+}
+
+/** The brows' resting height, above the eyes (higher for bigger eyes). */
+export function browY(g: PegGeometry): number {
+  return g.head.y + g.d * 0.47 - g.d * 0.11 * Math.max(1, g.eyeScale);
+}
+
+/** Half the height of an eye as drawn (whites and iris, or the classic dot). */
+export function eyeHalfHeight(g: PegGeometry, a: Appearance, e: { h: number }): number {
+  if (!detailedEyes(g, a)) return e.h / 2;
+  const s = g.eyeScale * (g.eyeShape === 'oval' ? 1.2 : 1);
+  return g.d * (face(a).eyes === 'almond' ? 0.054 : 0.07) * s;
+}
+
 export function browPrims(g: PegGeometry, a: Appearance): Prim[] {
   const b = face(a).brows ?? 'none';
   if (b === 'none') return [];
-  const fill = a.hairStyle === 'none' ? mix(a.skin, color.ink, 0.55) : a.hair;
+  const fill = browColour(a);
   const sw = g.lineWidth * (b === 'thick' ? 1.7 : 0.9);
   const out: Prim[] = [];
   for (const [i, e] of g.eyes.entries()) {
     const cx = e.x + e.w / 2;
-    const y = g.head.y + g.d * 0.47 - g.d * 0.11 * Math.max(1, g.eyeScale);
+    const y = browY(g);
     const half = g.d * 0.075;
     const inner = i === 0 ? 1 : -1;
     if (b === 'arched') {

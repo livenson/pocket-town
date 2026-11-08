@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Appearance } from '../../content/appearance';
 import { randomLook, randomName, randomTraits } from '../../content/looks';
 import { strings } from '../../i18n';
@@ -39,7 +39,8 @@ export function PhotoFaceScreen() {
   const [phase, setPhase] = useState<Phase>('idle');
   const [look, setLook] = useState<PhotoLook | null>(null);
   const [live, setLive] = useState<LiveFace | null>(null);
-  const reader = useRef(new ExpressionReader());
+  // Made once: the camera loop reads expressions from it on every frame.
+  const [reader] = useState(() => new ExpressionReader());
   /** The mirror learns the child's resting face first. */
   const [calibrated, setCalibrated] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
@@ -129,7 +130,7 @@ export function PhotoFaceScreen() {
     }
     let last = 0;
     let lookAt = 0;
-    reader.current.reset();
+    reader.reset();
     setCalibrated(false);
     try {
       const stop = await finder.watchVideo(v, ({ look: l, scores, points }) => {
@@ -137,12 +138,12 @@ export function PhotoFaceScreen() {
         // The expression is read on every frame (so smoothing and calibration see
         // them all) and drawn about 30 times a second; the slower-changing look
         // (shape, colours) about 5 times a second.
-        const face = reader.current.read(scores, points);
+        const face = reader.read(scores, points);
         const now = performance.now();
         if (now - last < 33) return;
         last = now;
         setLive(face);
-        setCalibrated(reader.current.calibrated);
+        setCalibrated(reader.calibrated);
         if (now - lookAt > 200) {
           lookAt = now;
           setLook(averager.current.current());
@@ -179,8 +180,9 @@ export function PhotoFaceScreen() {
     } else setPhase(r.kind);
   };
 
-  const preview = look ? applyLook(base, look) : base;
-  const shown: Appearance = preview;
+  // The look changes about 5 times a second; the expression about 30: only
+  // recompute the look when it changes.
+  const preview = useMemo(() => (look ? applyLook(base, look) : base), [base, look]);
 
   const applyTo = (target: 'new' | 'me') => {
     if (!look) return;
@@ -236,7 +238,7 @@ export function PhotoFaceScreen() {
           </div>
           <figure className="photo-face__preview" aria-label={P.preview}>
             <PegPortrait
-              appearance={shown}
+              appearance={preview}
               live={phase === 'camera' && live ? live : undefined}
               size={260}
             />

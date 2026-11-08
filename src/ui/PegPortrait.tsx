@@ -8,8 +8,11 @@ import { pegGeometry, type Box, type Corners, type PegGeometry } from '../stage/
 import type { LiveFace } from '../photo/liveFace';
 import {
   beardPrims,
+  browColour,
   browPrims,
+  browY,
   detailedEyes,
+  eyeHalfHeight,
   earPrims,
   eyePrims,
   fringePrims,
@@ -147,26 +150,52 @@ export interface PegPortraitProps {
 }
 
 /** Brows that lift and knit with the live expression (thin ones if none were chosen). */
-function LiveBrows({ g, a, live }: { g: PegGeometry; a: Appearance; live: LiveFace }) {
-  const thick = a.face?.brows === 'thick';
-  const fill = a.hairStyle === 'none' ? color.ink : a.hair;
-  const sw = g.lineWidth * (thick ? 1.7 : 1);
+function LiveBrows({
+  g,
+  a,
+  live,
+  wide,
+}: {
+  g: PegGeometry;
+  a: Appearance;
+  live: LiveFace;
+  wide: number;
+}) {
+  const style = a.face?.brows ?? 'thin';
+  const fill = browColour(a);
+  const sw = g.lineWidth * (style === 'thick' ? 1.7 : 0.9);
+  const half = g.d * 0.075;
   return (
     <>
       {g.eyes.map((e, i) => {
         const v = i === 0 ? live.browL : live.browR;
         const cx = e.x + e.w / 2;
-        const y = g.head.y + g.d * 0.36 - v * g.d * 0.06;
-        const half = g.d * 0.08;
+        // Never lower than just above the eye, however wide it opens.
+        const eyeTop = e.y + e.h / 2 - eyeHalfHeight(g, a, e) * wide;
+        const y = Math.min(browY(g) - v * g.d * 0.06, eyeTop - sw * 1.2);
         // Inner end (towards the nose) dips when knitted, lifts when worried.
         const inner = i === 0 ? 1 : -1;
         const tilt = -v * g.d * 0.025;
+        const x1 = cx - inner * half;
+        const x2 = cx + inner * half;
+        if (style === 'arched')
+          return (
+            <polyline
+              key={i}
+              points={`${x1},${y + g.d * 0.02} ${cx},${y - g.d * 0.025 + tilt / 2} ${x2},${y + tilt}`}
+              fill="none"
+              stroke={fill}
+              strokeWidth={sw}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          );
         return (
           <line
             key={i}
-            x1={cx - inner * half}
+            x1={x1}
             y1={y}
-            x2={cx + inner * half}
+            x2={x2}
             y2={y + tilt}
             stroke={fill}
             strokeWidth={sw}
@@ -270,10 +299,12 @@ export function PegPortrait({
     : undefined;
   const faceShift = live ? `translate(${(live.yaw * g.d * 0.1).toFixed(2)} 0)` : undefined;
   /** Squash an eye vertically by its blink (and open it wider when surprised). */
+  /** Eyes open wider when surprised (raised brows, open mouth). */
+  const wide = live ? 1 + 0.25 * Math.max(0, (live.browL + live.browR) / 2) + 0.15 * live.open : 1;
+  const lashes = lashPrims(g);
   const eyeScale = (i: number, e: Box) => {
     if (!live) return undefined;
     const blink = i === 0 ? live.blinkL : live.blinkR;
-    const wide = 1 + 0.25 * Math.max(0, (live.browL + live.browR) / 2) + 0.15 * live.open;
     const sy = Math.max(0.08, (1 - blink) * wide);
     const cx = e.x + e.w / 2;
     const cy = e.y + e.h / 2;
@@ -359,10 +390,15 @@ export function PegPortrait({
               ) : (
                 <Ellipse b={e} fill={ink} />
               )}
+              {/* Lashes belong to their eye: they blink and widen with it. */}
+              <Prims prims={lashes.slice(i * 2, i * 2 + 2)} />
             </g>
           ))}
-          {live ? <LiveBrows g={g} a={a} live={live} /> : <Prims prims={browPrims(g, a)} />}
-          <Prims prims={lashPrims(g)} />
+          {live ? (
+            <LiveBrows g={g} a={a} live={live} wide={wide} />
+          ) : (
+            <Prims prims={browPrims(g, a)} />
+          )}
           {a.face?.blush !== false &&
             g.cheeks.map((c, i) => {
               const puff = live?.puff ?? 0;

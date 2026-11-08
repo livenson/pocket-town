@@ -120,7 +120,8 @@ export class ExpressionReader {
   /** Feed one frame; returns the expression to show. */
   read(scores: ReadonlyMap<string, number>, points: readonly Pt2[] | null): LiveFace {
     const raw = (n: string) => scores.get(n) ?? 0;
-    if (this.frames < CALIBRATION_FRAMES) {
+    // Only frames with a face teach the resting face (not warm-up or empty frames).
+    if (points && this.frames < CALIBRATION_FRAMES) {
       // Learn the resting face as a running average of the first frames.
       for (const n of NAMES) {
         const old = this.base.get(n) ?? raw(n);

@@ -57,7 +57,9 @@ async function freeFloorSpot(page: Page): Promise<Locator> {
       return document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el;
     }),
   );
-  return spots.nth(Math.max(0, free));
+  // Time is paused in these tests, so nobody walks onto it before the tap.
+  if (free < 0) throw new Error('every floor spot is covered by a character');
+  return spots.nth(free);
 }
 
 test('coming back after a while shows the postcard, which a tap skips; the town is consistent', async ({

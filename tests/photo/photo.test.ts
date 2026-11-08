@@ -104,21 +104,30 @@ describe('the live camera', () => {
 
   it('learns the resting face, then follows smiles, winks and an open mouth', () => {
     const r = new ExpressionReader();
+    const pts = Array.from({ length: 478 }, () => ({ x: 0.5, y: 0.5 }));
     // This child's resting face already reads as a slight smile.
     const rest = { mouthSmileLeft: 0.3, mouthSmileRight: 0.3 };
-    for (let i = 0; i < 20; i++) r.read(m(rest), null);
+    for (let i = 0; i < 20; i++) r.read(m(rest), pts);
     expect(r.calibrated).toBe(true);
-    let f = r.read(m(rest), null);
-    for (let i = 0; i < 5; i++) f = r.read(m(rest), null);
+    let f = r.read(m(rest), pts);
+    for (let i = 0; i < 5; i++) f = r.read(m(rest), pts);
     expect(f.smile).toBeCloseTo(0.15, 1); // resting reads as neutral, not a grin
-    for (let i = 0; i < 8; i++)
-      f = r.read(m({ mouthSmileLeft: 0.75, mouthSmileRight: 0.75 }), null);
+    for (let i = 0; i < 8; i++) f = r.read(m({ mouthSmileLeft: 0.75, mouthSmileRight: 0.75 }), pts);
     expect(f.smile).toBeGreaterThan(0.8);
-    for (let i = 0; i < 8; i++) f = r.read(m({ ...rest, eyeBlinkLeft: 0.9 }), null);
+    for (let i = 0; i < 8; i++) f = r.read(m({ ...rest, eyeBlinkLeft: 0.9 }), pts);
     expect(f.blinkL).toBeGreaterThan(0.8); // a wink: one eye only
     expect(f.blinkR).toBeLessThan(0.1);
-    for (let i = 0; i < 8; i++) f = r.read(m({ ...rest, jawOpen: 0.6 }), null);
+    for (let i = 0; i < 8; i++) f = r.read(m({ ...rest, jawOpen: 0.6 }), pts);
     expect(f.open).toBeGreaterThan(0.8);
+  });
+
+  it('learns the resting face only from frames that have a face', () => {
+    const r = new ExpressionReader();
+    for (let i = 0; i < 30; i++) r.read(m({}), null); // warming up, nobody in view
+    expect(r.calibrated).toBe(false);
+    const pts = Array.from({ length: 478 }, () => ({ x: 0.5, y: 0.5 }));
+    for (let i = 0; i < 20; i++) r.read(m({ mouthSmileLeft: 0.3, mouthSmileRight: 0.3 }), pts);
+    expect(r.calibrated).toBe(true);
   });
 
   it('reads a head tilt and turn as a mirror shows them', () => {

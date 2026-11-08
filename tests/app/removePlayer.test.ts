@@ -43,4 +43,14 @@ describe('removing a player (grown-up area)', () => {
     expect(wasOpen).toBe(false);
     expect(await get(legacy[0])).toBeUndefined();
   });
+
+  it('with no town open, removing the last player keeps the old town from coming back', async () => {
+    useProfiles.setState({ profiles: [player('pd', 'Dee')], activeId: null });
+    const legacy = slotsFor(null);
+    await set(legacy[0], 'old town');
+    await removePlayer('pd');
+    await saveNow(); // the 30-second autosave
+    expect(await get(legacy[0])).toBeUndefined();
+    expect(await get(legacy[1])).toBeUndefined();
+  });
 });
