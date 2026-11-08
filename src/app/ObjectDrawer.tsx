@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isMadeAtBench } from '../content/crafting';
 import { categories, objectKinds, type ObjectCategory } from '../content/objects';
 import { pictureUrl } from '../design/thingPicture';
 import { strings, thingName } from '../i18n';
@@ -56,7 +57,7 @@ function ObjectTile({ id, label, art, tint }: TileProps) {
 /** Object drawer: category tabs and a paged carousel of things. */
 export function ObjectDrawer({ perPage, columns }: { perPage: number; columns?: number }) {
   const [category, setCategory] = useState<ObjectCategory>('food');
-  const items = objectKinds.filter((o) => o.category === category);
+  const items = objectKinds.filter((o) => o.category === category && !isMadeAtBench(o.id));
   return (
     <div className="drawer">
       <div className="drawer__tabs" role="group" aria-label={strings.things}>

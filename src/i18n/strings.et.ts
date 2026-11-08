@@ -685,6 +685,51 @@ export const et: Strings = {
     give: (name: string) => `Anna see tegelasele ${name}`,
   },
 
+  workshop: {
+    hintNeeds: (thing: string, missing: string) => `${thing} jaoks lisa veel: ${missing}`,
+    made: (thing: string) => `Valmis: ${thing}!`,
+    fixCar: 'Paranda autot',
+    carFixed: 'Auto on korras ja läigib!',
+    tools: 'Tööriistad',
+    spots: {
+      tyre: 'Tühi rehv',
+      bolt: 'Lahtine polt',
+      dent: 'Mõlk',
+      window: 'Määrdunud aken',
+      fuel: 'Tühi paak',
+    },
+    carTools: {
+      wheel: 'Uus ratas',
+      wrench: 'Mutrivõti',
+      hammer: 'Haamer',
+      sponge: 'Käsn',
+      fuelPump: 'Tankur',
+    },
+    useOn: (tool: string, spot: string) => `${tool}: ${spot}`,
+    pickTool: (tool: string) => `${tool}: võta kätte`,
+    fixed: (spot: string) => `${spot}: parandatud`,
+    allFixed: 'Kõik korras!',
+    close: 'Tagasi garaaži',
+  },
+
+  board: {
+    flight: (place: string, time: string, status: string) => `${place}, ${time}: ${status}`,
+    places: {
+      beach: 'Rand',
+      snow: 'Lumised mäed',
+      castle: 'Loss',
+      island: 'Palmisaar',
+      city: 'Suurlinn',
+    },
+    status: {
+      boarding: 'Pardaleminek',
+      onTime: 'Graafikus',
+      delayed: 'Hilineb',
+      departed: 'Väljunud',
+      landed: 'Maandunud',
+    },
+  },
+
   piano: {
     open: 'Ava klaver',
     instrument: 'Heli',
@@ -812,6 +857,11 @@ export const et: Strings = {
     gear: 'Hammasratas',
     magnet: 'Magnet',
     ruler: 'Joonlaud',
+    planks: 'Puit',
+    wheel: 'Ratas',
+    birdhouse: 'Linnumaja',
+    woodChair: 'Puutool',
+    clock: 'Kell',
     toyPlane: 'Mängulennuk',
     helicopter: 'Helikopter',
     luggage: 'Kohver',

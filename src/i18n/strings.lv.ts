@@ -687,6 +687,51 @@ export const lv: Strings = {
     give: (name: string) => `Dot to tēlam ${name}`,
   },
 
+  workshop: {
+    hintNeeds: (thing: string, missing: string) => `Lai uztaisītu: ${thing}, pievieno: ${missing}`,
+    made: (thing: string) => `Gatavs: ${thing}!`,
+    fixCar: 'Salabo mašīnu',
+    carFixed: 'Mašīna ir salabota un spīd!',
+    tools: 'Instrumenti',
+    spots: {
+      tyre: 'Tukša riepa',
+      bolt: 'Vaļīga skrūve',
+      dent: 'Iespiedums',
+      window: 'Netīrs logs',
+      fuel: 'Tukša bāka',
+    },
+    carTools: {
+      wheel: 'Jauns ritenis',
+      wrench: 'Uzgriežņu atslēga',
+      hammer: 'Āmurs',
+      sponge: 'Sūklis',
+      fuelPump: 'Degvielas pistole',
+    },
+    useOn: (tool: string, spot: string) => `${tool}: ${spot}`,
+    pickTool: (tool: string) => `${tool}: paņem`,
+    fixed: (spot: string) => `${spot}: salabots`,
+    allFixed: 'Viss salabots!',
+    close: 'Atpakaļ uz garāžu',
+  },
+
+  board: {
+    flight: (place: string, time: string, status: string) => `${place}, ${time}: ${status}`,
+    places: {
+      beach: 'Pludmale',
+      snow: 'Sniegoti kalni',
+      castle: 'Pils',
+      island: 'Palmu sala',
+      city: 'Lielpilsēta',
+    },
+    status: {
+      boarding: 'Iekāpšana',
+      onTime: 'Laikā',
+      delayed: 'Kavējas',
+      departed: 'Izlidojis',
+      landed: 'Nolaidies',
+    },
+  },
+
   piano: {
     open: 'Atvērt klavieres',
     instrument: 'Skaņa',
@@ -812,6 +857,11 @@ export const lv: Strings = {
     gear: 'Zobrats',
     magnet: 'Magnēts',
     ruler: 'Lineāls',
+    planks: 'Koks',
+    wheel: 'Ritenis',
+    birdhouse: 'Putnu būrītis',
+    woodChair: 'Koka krēsls',
+    clock: 'Pulkstenis',
     toyPlane: 'Rotaļu lidmašīna',
     helicopter: 'Helikopters',
     luggage: 'Čemodāns',

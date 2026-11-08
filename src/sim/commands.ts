@@ -17,6 +17,7 @@ import { tuning } from '../content/tuning';
 import { emit, startGoHome, startVisit } from './step';
 import type { Place, World } from './types';
 import { clampToFloor, entryRoom, getBot, makeBot, routeTo } from './world';
+import { applyBenchPut, type BenchPut } from './workbench';
 
 export type Command =
   | { type: 'give'; botId: string; kind: string }
@@ -31,6 +32,10 @@ export type Command =
   | { type: 'placeObject'; kind: string; place: Place; id?: string; raise?: number }
   | { type: 'moveObject'; id: string; place: Place; raise?: number }
   | { type: 'removeObject'; id: string }
+  /** Put a thing on a workbench; it may make something (sim/workbench.ts). */
+  | BenchPut
+  /** The child fixed the car in the garage minigame (`<roomId>:<pieceId>`). */
+  | { type: 'fixCar'; key: string }
   /** Create or change a house the child is building (the whole house, so undo is simple). */
   | { type: 'setHouse'; house: HouseDef }
   | { type: 'removeHouse'; id: string }
@@ -218,12 +223,19 @@ export function apply(world: World, cmd: Command): boolean {
       else delete o.raise;
       // Once the child moves it, it is theirs: bots will not tidy it away.
       o.placedBy = 'child';
+      delete o.madeBy;
       return true;
     }
     case 'removeObject': {
       const before = world.objects.length;
       world.objects = world.objects.filter((x) => x.id !== cmd.id);
       return world.objects.length < before;
+    }
+    case 'benchPut':
+      return applyBenchPut(world, cmd);
+    case 'fixCar': {
+      world.fixedCars = { ...world.fixedCars, [cmd.key]: world.minute };
+      return true;
     }
     case 'setHouse': {
       const i = world.houses.findIndex((h) => h.id === cmd.house.id);

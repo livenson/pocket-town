@@ -89,7 +89,8 @@ export function collectAds(world: World, bot: Bot): Ad[] {
   }
 
   for (const o of world.objects) {
-    const offerKey = placedOffers[o.kind];
+    // Something a bot made at the workbench is only there to look at (and tidy).
+    const offerKey = o.madeBy === 'bot' ? undefined : placedOffers[o.kind];
     for (const offer of offerKey ? (offers[offerKey] ?? []) : []) {
       ads.push({
         targetId: `object:${o.id}`,

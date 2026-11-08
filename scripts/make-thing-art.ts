@@ -107,6 +107,14 @@ export const NAMES = [
   'gear',
   'magnet',
   'straight-ruler',
+  // workshop materials, things made at the workbench, and the car-fixing tools
+  'wood',
+  'wheel',
+  'hut',
+  'chair',
+  'mantelpiece-clock',
+  'sponge',
+  'fuel-pump',
   // trips and shopping (the airplane also flies over the world map)
   'airplane',
   'helicopter',
