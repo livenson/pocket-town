@@ -81,6 +81,7 @@ design-reference/       prototypes from the design canvas (read-only reference)
 - `npm run lint`: oxlint + Prettier check.
 - `npm run e2e:screenshots`: re-create the Linux reference pictures for the room test in Docker (as CI renders them). Run it when a change alters the play screen's look, and check the new picture before committing.
 - `npm run art`: copy the pictures listed in `scripts/make-thing-art.ts` into `src/design/thingArt.ts`. `npm run icons`: the app icons in `public/`.
+- `npm run face-model`: copy MediaPipe's runtime and fetch the Face Landmarker model into `public/face/` (committed; the app never fetches it from Google). Run after changing the `@mediapipe/tasks-vision` version.
 - `npm run feedback` / `npm run feedback:lan`: dev server with the kid play-testing tool; run the `kid-feedback` skill to listen and respond (see `.claude/skills/kid-feedback/SKILL.md`). Dev only, never in a build.
 
 ## How to work

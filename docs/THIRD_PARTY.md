@@ -29,3 +29,27 @@ Source: https://github.com/microsoft/fluentui-emoji
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE
 ```
+
+## Google MediaPipe Tasks (Face Landmarker)
+
+"Make a character from a photo or the camera" (grown-up area, behind the parental gate) uses Google's MediaPipe Face Landmarker, entirely on the device. The JavaScript library comes from the `@mediapipe/tasks-vision` package; its WebAssembly runtime and the `face_landmarker.task` model are copied into `public/face/` by `npm run face-model` (`scripts/face-model.ts`, with the exact versions in `public/face/VERSION.txt`) and served from our own site. Pictures are never saved or sent. MediaPipe's built-in usage logger is blocked twice: by the Content Security Policy and by answering requests to other sites locally. The grown-up area credits it.
+
+Source: https://github.com/google-ai-edge/mediapipe
+
+```
+    Apache License 2.0
+
+    Copyright Google LLC.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+```

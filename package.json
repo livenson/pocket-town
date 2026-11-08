@@ -16,11 +16,13 @@
     "format": "prettier --write .",
     "icons": "node scripts/make-icons.ts",
     "art": "node scripts/make-thing-art.ts",
-    "e2e:screenshots": "sh scripts/update-screenshots.sh"
+    "e2e:screenshots": "sh scripts/update-screenshots.sh",
+    "face-model": "node scripts/face-model.ts"
   },
   "dependencies": {
     "@fontsource/baloo-2": "^5.3.0",
     "@fontsource/nunito": "^5.3.0",
+    "@mediapipe/tasks-vision": "1.2.2",
     "idb-keyval": "^6.3.0",
     "pixi.js": "^8.22.0",
     "react": "^19.3.1",

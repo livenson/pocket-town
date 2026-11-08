@@ -34,6 +34,8 @@ export interface BuildingDef {
   /** Position on the world map, 0–1 across and down. */
   map: { x: number; y: number };
   roofColor: string;
+  /** How a house looks from outside on the map (built houses keep their shell). */
+  shape?: 'cottage' | 'tall' | 'dome';
   rooms: RoomDef[];
 }
 
@@ -155,6 +157,7 @@ export const town: BuildingDef[] = [
     name: 'Neighbour house',
     map: { x: 0.12, y: 0.3 },
     roofColor: color.cornflower,
+    shape: 'tall',
     rooms: [
       {
         id: 'neighbour-main',

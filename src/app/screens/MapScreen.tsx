@@ -13,6 +13,7 @@ import { PegPortrait } from '../../ui/PegPortrait';
 import { useShowTextLabels } from '../../ui/labels';
 import { useVoiceLabel } from '../../ui/useVoiceLabel';
 import { game, useWorldTick } from '../game';
+import { BuildingArt } from '../BuildingArt';
 import { MapCritters } from '../MapCritters';
 import { TimePill } from '../TimePill';
 
@@ -62,9 +63,9 @@ function Building({ b, world }: { b: BuildingDef; world: World }) {
         go('scene');
       }}
     >
-      <span className="map-building__roof" style={{ background: b.roofColor }} aria-hidden="true" />
-      <span className="map-building__body" aria-hidden="true">
-        <Icon name={ICON[b.kind]} size={30} />
+      <BuildingArt b={b} />
+      <span className="map-building__sign" aria-hidden="true">
+        <Icon name={ICON[b.kind]} size={22} />
       </span>
       {guest && (
         <span className="map-building__flag" aria-hidden="true">
@@ -228,7 +229,7 @@ export function MapScreen() {
               }}
               style={{
                 left: `calc(${at.x * 100}% + ${dx}px)`,
-                top: `calc(${at.y * 100}% - ${bot.travel ? 30 : 88}px)`,
+                top: `calc(${at.y * 100}% - ${bot.travel ? 30 : 104}px)`,
                 zIndex: 20 + i,
               }}
             >

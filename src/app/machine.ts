@@ -17,10 +17,12 @@ export type ScreenId =
   | 'settings'
   | 'characters'
   | 'photo'
-  | 'kit';
+  | 'kit'
+  | 'piano'
+  | 'photoFace';
 
 /** Screens that sit behind the parental gate. */
-const GATED: ReadonlySet<ScreenId> = new Set<ScreenId>(['grownUp', 'kit']);
+const GATED: ReadonlySet<ScreenId> = new Set<ScreenId>(['grownUp', 'kit', 'piano', 'photoFace']);
 
 /** Where each screen may go next (besides back and home, which always work). */
 export const EDGES: Readonly<Record<ScreenId, readonly ScreenId[]>> = {
@@ -35,11 +37,13 @@ export const EDGES: Readonly<Record<ScreenId, readonly ScreenId[]>> = {
   map: ['scene', 'hub'],
   scene: ['map', 'photo', 'houseWizard', 'hub'],
   gate: ['grownUp', 'kit'],
-  grownUp: ['kit', 'settings'],
+  grownUp: ['kit', 'settings', 'piano', 'photoFace'],
   settings: [],
   characters: ['avatarWizard', 'scene', 'hub'],
   photo: [],
   kit: [],
+  piano: [],
+  photoFace: ['avatarWizard'],
 };
 
 /** Screens where back and home make no sense yet (first launch). */

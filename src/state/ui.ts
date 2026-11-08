@@ -6,6 +6,15 @@ import type { Moment } from '../sim/away';
 
 export type TimeSpeed = 'pause' | 'play' | 'fast';
 
+export interface StageView {
+  canLeft: boolean;
+  canRight: boolean;
+  /** Room x at the middle of the screen. */
+  centreX: number;
+  /** How much of the room's width fits on screen, in room units. */
+  span: number;
+}
+
 export interface ToastMessage {
   id: number;
   icon: IconName;
@@ -17,6 +26,12 @@ interface UiStore {
   /** The room the play stage is looking at. */
   roomId: string;
   setRoom: (roomId: string) => void;
+  /** Where the child asked the camera to look (room x), or null to follow as usual. */
+  lookX: number | null;
+  setLookX: (x: number | null) => void;
+  /** What the stage can show: more room to either side, and the room x in the middle. */
+  view: StageView;
+  setView: (view: StageView) => void;
   /** The house open in the house wizard (null: building a new one). */
   editingHouseId: string | null;
   setEditingHouse: (id: string | null) => void;
@@ -57,7 +72,21 @@ function initialNavFromHash(): NavState {
 export const useUi = create<UiStore>()((set, get) => ({
   nav: initialNavFromHash(),
   roomId: 'home-living',
-  setRoom: (roomId) => set({ roomId }),
+  // A new room starts with the camera following as usual.
+  setRoom: (roomId) => set((s) => (s.roomId === roomId ? {} : { roomId, lookX: null })),
+  lookX: null,
+  setLookX: (lookX) => set({ lookX }),
+  view: { canLeft: false, canRight: false, centreX: 450, span: 900 },
+  setView: (view) => {
+    const v = get().view;
+    if (
+      v.canLeft !== view.canLeft ||
+      v.canRight !== view.canRight ||
+      Math.abs(v.centreX - view.centreX) > 1 ||
+      Math.abs(v.span - view.span) > 1
+    )
+      set({ view });
+  },
   editingHouseId: null,
   setEditingHouse: (editingHouseId) => set({ editingHouseId }),
   postcard: null,

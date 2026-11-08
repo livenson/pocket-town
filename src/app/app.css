@@ -877,6 +877,18 @@ html[data-labels='true'] .dock--characters {
   right: 0;
 }
 
+/* A narrow drawer has no room for the page dots beside the tabs (they used to run
+   over them); the arrows still page, so the dots step aside. */
+.dock--drawer {
+  container-type: inline-size;
+}
+
+@container (max-width: 760px) {
+  .dock--drawer .carousel__dots {
+    display: none;
+  }
+}
+
 /* Phone portrait: everything folds into the "+" sheet. */
 .plus-button {
   position: absolute;
@@ -1355,32 +1367,6 @@ html[data-layout='phone'] .gate__card {
   font-size: 11px;
   font-weight: 900;
   color: var(--pt-muted-text);
-}
-
-/* ---------- Map (until M7 draws the town) ---------- */
-
-.map-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
-  width: min(100%, 640px);
-}
-
-.map-building {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 1.1;
-  border-top: 18px solid var(--pt-tomato);
-  border-radius: 28px;
-  background: #fff;
-  color: var(--pt-ink);
-  box-shadow: 0 6px 0 #e3b48f;
-  transition: transform var(--pt-press-ms) var(--pt-ease);
-}
-
-.map-building:active {
-  transform: translateY(6px);
-  box-shadow: none;
 }
 
 /* ---------- Stage targets (buttons over the canvas) ---------- */
@@ -2515,8 +2501,6 @@ html[data-labels='false'] .wizard-section__title span {
   place-items: center;
   width: 26px;
   height: 26px;
-  border-radius: 8px;
-  box-shadow: 0 0 0 2px var(--pt-ink);
 }
 
 .diorama__faces {
@@ -2636,6 +2620,7 @@ html[data-labels='false'] .wizard-section__title span {
 
 .furnish__cell[data-filled] {
   border: 0;
+  background: rgba(255, 255, 255, 0.7);
   box-shadow: 0 4px 0 rgba(42, 22, 64, 0.25);
 }
 
@@ -2689,11 +2674,6 @@ html[data-labels='false'] .wizard-section__title span {
   gap: 10px;
   min-height: 48px;
   font-weight: 800;
-}
-
-.bot-test input {
-  width: 28px;
-  height: 28px;
 }
 
 .warming {
@@ -3216,39 +3196,26 @@ html[data-layout='phone'] .character-actions__houses {
   transform: translate(-50%, -60%) translateY(6px);
 }
 
-.map-building__roof {
-  width: 118px;
-  height: 52px;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+.map-building__art {
+  display: block;
+  width: 128px;
+  height: 112px;
+  overflow: visible;
 }
 
-.map-building--musicHall .map-building__roof {
-  clip-path: none;
-  border-radius: 60px 60px 0 0;
-  width: 104px;
-}
-
-.map-building--park .map-building__roof {
-  width: 84px;
-  height: 64px;
-  clip-path: none;
-  border-radius: 50%;
-}
-
-.map-building__body {
+/* What kind of place it is, as a small round sign (zero-reading). */
+.map-building__sign {
+  position: absolute;
+  top: 70px;
+  right: -8px;
   display: grid;
   place-items: center;
-  width: 100px;
-  height: 66px;
-  border: 5px solid var(--pt-ink);
-  border-radius: 0 0 14px 14px;
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--pt-ink);
+  border-radius: 50%;
   background: var(--pt-paper);
-}
-
-.map-building--park .map-building__body {
-  width: 60px;
-  height: 40px;
-  border-radius: 12px;
+  color: var(--pt-ink);
 }
 
 .map-building__label {
@@ -3644,4 +3611,249 @@ html[data-calm='true'] .critter__picture {
   .critter__picture {
     animation: none !important;
   }
+}
+
+/* Look left and right when the room is wider than the screen (phone portrait). */
+.look-arrow {
+  position: absolute;
+  z-index: 9;
+  top: 60%;
+  opacity: 0.92;
+}
+
+.look-arrow--left {
+  left: var(--safe-left);
+}
+
+.look-arrow--right {
+  right: var(--safe-right);
+}
+
+/* Move-in: everyone to choose from, three to a row (four on narrow screens). */
+.residents {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Narrow screens, move-in: a compact house so the front door (the place to tap)
+   stays in view above the residents. */
+@media (max-width: 899px) {
+  .residents {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .residents .choice--tall {
+    min-height: 0;
+  }
+
+  .residents svg {
+    width: 56px;
+    height: 56px;
+  }
+
+  .diorama[data-step='moveIn'] .diorama__roof {
+    height: 56px;
+  }
+
+  .diorama[data-step='moveIn'] .diorama__room {
+    min-height: 74px;
+  }
+
+  .diorama[data-step='moveIn'] .diorama__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .diorama[data-step='moveIn'] .diorama__door {
+    width: 68px;
+    height: 68px;
+    margin-top: 8px;
+  }
+}
+
+/* ---------- The hidden piano (grown-up area) ---------- */
+
+.grown-up__secret {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  padding: 0;
+  text-align: left;
+  cursor: default;
+}
+
+.piano {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(100%, 1100px);
+  margin: 0 auto;
+}
+
+.piano__sounds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.piano__keys {
+  position: relative;
+  height: clamp(220px, 46vh, 380px);
+  padding: 8px 6px 14px;
+  border-radius: 24px;
+  background: var(--pt-ink);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.piano__bed {
+  position: relative;
+  height: 100%;
+}
+
+.piano__key {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 0 12px;
+  border: 2px solid var(--pt-ink);
+  border-radius: 0 0 12px 12px;
+  background: #fff;
+  box-shadow: inset 0 -10px 0 #e9dccd;
+  color: var(--pt-muted-text);
+  font-family: var(--pt-font-display);
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.piano__key--black {
+  z-index: 1;
+  bottom: 40%;
+  border-radius: 0 0 10px 10px;
+  background: #3b2a50;
+  box-shadow: inset 0 -8px 0 #1c0f2c;
+}
+
+/* Pressed: the key sinks (shape), and turns marigold (colour). */
+.piano__key[data-down] {
+  background: var(--pt-marigold);
+  box-shadow: inset 0 -3px 0 var(--pt-marigold-shadow);
+  translate: 0 3px;
+}
+
+.piano__key:focus-visible {
+  outline: 4px solid var(--pt-teal);
+  outline-offset: -6px;
+}
+
+/* Avatar wizard: "more face detail" switch and any-colour pickers. */
+.wizard-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 8px 0 4px;
+}
+
+.wizard-more__note {
+  margin: 0;
+  color: var(--pt-muted-text);
+  font-weight: 700;
+}
+
+.any-colour {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 6px 10px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 4px 0 #efc39f;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.any-colour input {
+  width: 48px;
+  height: 44px;
+  padding: 0;
+  border: 3px solid var(--pt-ink);
+  border-radius: 12px;
+  background: none;
+  cursor: pointer;
+}
+
+/* ---------- A character from a face (grown-up area) ---------- */
+
+.photo-face {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(100%, 980px);
+  margin: 0 auto;
+}
+
+.photo-face__stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+@media (max-width: 699px) {
+  .photo-face__stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.photo-face__camera {
+  display: none;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: 28px;
+  background: var(--pt-ink);
+}
+
+.photo-face__camera[data-on='true'] {
+  display: block;
+}
+
+/* A mirror: the child sees themself the way round they expect. */
+.photo-face__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.photo-face__preview {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 16px;
+  border-radius: 28px;
+  background: var(--pt-sky);
+}
+
+.photo-face__status {
+  margin: 0;
+  font-weight: 800;
+}
+
+.photo-face__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.photo-face__file {
+  cursor: pointer;
 }

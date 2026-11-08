@@ -44,7 +44,12 @@ test('every screen is reachable and passes axe (WCAG 2.1 AA)', async ({ page }) 
   await page.goto('./');
   await expectAccessible(page, 'splash');
 
-  await page.getByRole('button', { name: /loading/ }).click();
+  // The splash carries on by itself once loaded; on a slow machine the check above
+  // can outlast it, so tap it only if it is still there.
+  await page
+    .getByRole('button', { name: /loading/ })
+    .click({ timeout: 2000 })
+    .catch(() => {});
   await expect(page.getByRole('heading', { name: 'How old are you?' })).toBeVisible();
   await expectAccessible(page, 'age');
 
@@ -251,4 +256,51 @@ test('keyboard shortcuts work on the scene', async ({ page, browserName }) => {
   await expect(page.getByRole('img', { name: /^Time of day/ })).toBeVisible();
   await page.keyboard.press('h');
   await expect(page.getByRole('button', { name: 'World' })).toBeVisible();
+});
+
+test('a character from a face: behind the gate, on the device, and gentle without a face', async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  const outside: string[] = [];
+  const csp: string[] = [];
+  page.on('request', (r) => {
+    if (!new URL(r.url()).origin.startsWith('http://localhost') && !/^(data|blob):/.test(r.url()))
+      outside.push(r.url());
+  });
+  page.on('console', (m) => {
+    if (/Content Security Policy/i.test(m.text())) csp.push(m.text());
+  });
+  await page.goto('./#scene');
+  await press(page, 'Home');
+  await press(page, 'Grown-ups');
+  await passGate(page);
+  await press(page, 'Make a character from a photo or the camera');
+  await expect(page.getByRole('heading', { name: 'A character from a face' })).toBeVisible();
+  await expect(page.getByText(/stays on this device and is never saved/)).toBeVisible();
+  await expectAccessible(page, 'photo face');
+  // A plain picture with no face in it: the real face finder loads, finds nothing,
+  // and says so kindly.
+  const blank = await page.evaluate(async () => {
+    const c = document.createElement('canvas');
+    c.width = 320;
+    c.height = 240;
+    const ctx = c.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = '#9AD46F';
+      ctx.fillRect(0, 0, 320, 240);
+    }
+    const blob = await new Promise<Blob | null>((res) => c.toBlob(res, 'image/png'));
+    return Array.from(new Uint8Array(await (blob ?? new Blob()).arrayBuffer()));
+  });
+  await page.locator('input[type=file]').setInputFiles({
+    name: 'grass.png',
+    mimeType: 'image/png',
+    buffer: Buffer.from(blank),
+  });
+  await expect(page.locator('.photo-face__status')).toHaveText(/No face found/, {
+    timeout: 60_000,
+  });
+  expect(outside).toEqual([]);
+  expect(csp).toEqual([]);
 });

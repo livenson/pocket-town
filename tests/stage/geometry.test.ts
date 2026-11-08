@@ -17,7 +17,11 @@ describe('peg geometry (DESIGN.md → Peg-folk)', () => {
     expect(g.d).toBe(Math.round(g.W * 0.86));
     expect(g.head.y).toBeCloseTo(15); // top at 0.1 H
     expect(g.body.y).toBeCloseTo(15 + g.d * 0.8);
-    expect(g.body.y + g.body.h).toBeCloseTo(150); // feet at H
+    // The body ends above the legs; the shoes reach the feet at H.
+    expect(g.body.y + g.body.h).toBeLessThan(150);
+    const [left] = g.legs;
+    expect(left.y).toBeLessThan(g.body.y + g.body.h);
+    expect(left.y + left.h + g.shoeH / 2).toBeCloseTo(150);
     expect(g.head.x + g.d / 2).toBeCloseTo(g.W / 2); // head centred
   });
 

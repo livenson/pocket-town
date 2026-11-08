@@ -33,6 +33,8 @@ import { Icon } from '../../ui/Icon';
 import { IconButton } from '../../ui/IconButton';
 import { PegPortrait } from '../../ui/PegPortrait';
 import { StepRail } from '../../ui/StepRail';
+import { Switch } from '../../ui/Switch';
+import { FurnitureThumb } from '../decorate/FurnitureThumb';
 import { useShowTextLabels } from '../../ui/labels';
 import { useVoiceLabel } from '../../ui/useVoiceLabel';
 import { game, useGame, useWorldTick } from '../game';
@@ -343,7 +345,7 @@ export function HouseWizardScreen() {
 
   const h = house ?? current();
   const diorama = (
-    <div className="diorama" data-shell={h.shell}>
+    <div className="diorama" data-shell={h.shell} data-step={step}>
       <Roof shell={h.shell} />
       <div className="diorama__rooms">
         {[0, 1, 2, 3].map((i) => {
@@ -386,11 +388,8 @@ export function HouseWizardScreen() {
                   .filter((p) => p.room === i)
                   .slice(0, 6)
                   .map((p, k) => (
-                    <span
-                      key={k}
-                      style={{ background: ITEMS[p.item].tint, color: ITEMS[p.item].ink }}
-                    >
-                      <Icon name={ITEMS[p.item].icon} size={16} strokeWidth={3} />
+                    <span key={k}>
+                      <FurnitureThumb kind={ITEMS[p.item].kind} size={22} />
                     </span>
                   ))}
               </span>
@@ -481,7 +480,6 @@ export function HouseWizardScreen() {
                 data-valid={target || undefined}
                 data-selected={sel || undefined}
                 data-bad={bad === c || undefined}
-                style={def ? { background: def.tint, color: def.ink } : undefined}
                 aria-label={label}
                 onClick={() => {
                   if (pickedItem) {
@@ -518,11 +516,11 @@ export function HouseWizardScreen() {
                   <span
                     style={{ transform: placed.flip ? 'scaleX(-1)' : undefined, display: 'grid' }}
                   >
-                    <Icon name={def.icon} size={34} />
+                    <FurnitureThumb kind={def.kind} size={46} />
                   </span>
                 ) : pickedItem ? (
                   <span className="furnish__ghost" aria-hidden="true">
-                    <Icon name={ITEMS[pickedItem].icon} size={30} />
+                    <FurnitureThumb kind={ITEMS[pickedItem].kind} size={40} />
                   </span>
                 ) : null}
                 {bad === c && (
@@ -706,14 +704,13 @@ export function HouseWizardScreen() {
                   key={k}
                   label={H.items[k] ?? k}
                   selected={pickedItem === k}
-                  style={{ background: ITEMS[k].tint, color: ITEMS[k].ink }}
                   onPick={() => {
                     playSfx('pick');
                     setSelectedIdx(null);
                     setPickedItem(pickedItem === k ? null : k);
                   }}
                 >
-                  <Icon name={ITEMS[k].icon} size={40} />
+                  <FurnitureThumb kind={ITEMS[k].kind} size={60} />
                 </Tile>
               ))}
             </div>
@@ -755,23 +752,15 @@ export function HouseWizardScreen() {
                 />
               </div>
             )}
-            <label className="bot-test">
-              <input
-                type="checkbox"
-                checked={botTest}
-                onChange={(e) => setBotTest(e.target.checked)}
-              />
-              <Icon name="peg" size={26} />
-              <span className={words ? '' : 'visually-hidden'}>{H.botTest}</span>
-            </label>
+            <div className="bot-test">
+              <Icon name="peg" size={30} />
+              <Switch label={H.botTest} checked={botTest} onChange={setBotTest} showLabel={words} />
+            </div>
           </>
         );
       case 'moveIn':
         return (
-          <div
-            className="wizard-section__grid"
-            style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}
-          >
+          <div className="wizard-section__grid residents">
             {world.bots.map((b) => (
               <Tile
                 key={b.id}

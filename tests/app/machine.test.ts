@@ -68,3 +68,20 @@ describe('onboarding edges', () => {
     expect(s.screen).toBe('scene');
   });
 });
+
+describe('hidden piano', () => {
+  it('sits behind the parental gate, reached from the grown-up area', () => {
+    expect(EDGES.grownUp).toContain('piano');
+    const gated = navigate({ ...initialNav, screen: 'hub' }, { type: 'go', to: 'piano' });
+    expect(gated.screen).toBe('gate');
+    expect(navigate(gated, { type: 'gatePassed' }).screen).toBe('piano');
+  });
+});
+
+describe('a character from a face', () => {
+  it('is for grown-ups: behind the parental gate', () => {
+    const gated = navigate({ ...initialNav, screen: 'hub' }, { type: 'go', to: 'photoFace' });
+    expect(gated.screen).toBe('gate');
+    expect(EDGES.photoFace).toContain('avatarWizard');
+  });
+});
