@@ -8,11 +8,12 @@ import type { IconName } from '../design/icons';
 import { color } from '../design/tokens';
 import type { Bot, World } from '../sim/types';
 import { pegWidth } from './peg/geometry';
-import { PegView, type PegActivity } from './peg/PegView';
+import { gestureFor, placementOn } from './activityPose';
+import { PegView, type PegActivity, type PegLook } from './peg/PegView';
 import type { RoomView } from './RoomView';
-import { setTargetRect } from './targets';
+import { usePlay } from '../state/play';
+import { PEG_SIZE, setTargetRect } from './targets';
 
-const PEG_SIZE = 122;
 const EMOTE_COLOR: Partial<Record<IconName, string>> = {
   talk: color.tealDark,
   heart: color.heart,
@@ -34,6 +35,19 @@ function voicePitch(id: string): number {
 function poseFor(bot: Bot): PegActivity {
   if (bot.now?.phase !== 'doing') return 'idle';
   return activityLook[bot.now.activity].pose;
+}
+
+/** The character's tap area: around the figure, wherever it sits or lies. */
+function targetRect(look: PegLook | null, x: number, y: number, W: number) {
+  const S = PEG_SIZE;
+  if (look?.at && look.stance === 'sit')
+    return { x: look.at.x - W / 2 - 6, y: look.at.y - S * 0.66, w: W + 12, h: S * 0.84 };
+  if (look?.at && look.stance === 'lie') {
+    const dir = look.facing ?? 1;
+    const x0 = dir > 0 ? look.at.x - S * 0.25 : look.at.x - S * 0.85;
+    return { x: x0, y: look.at.y - S * 0.25, w: S * 1.1, h: S * 0.5 };
+  }
+  return { x: x - W / 2 - 6, y: y - S - 6, w: W + 12, h: S + 12 };
 }
 
 export class SimView {
@@ -102,6 +116,36 @@ export class SimView {
     this.seenSeq = latest;
   }
 
+  /** Standing with a gesture, or sitting or lying on the piece being used. */
+  private lookFor(world: World, bot: Bot, x: number): PegLook | null {
+    const now = bot.now;
+    if (!now || now.phase !== 'doing') return null;
+    const gesture = gestureFor(now.activity);
+    const target = now.targetId;
+    const [what, roomId, id] = target?.split(':') ?? [];
+    const f =
+      what === 'furniture' && roomId === this.room.def.id
+        ? this.room.def.furniture.find((p) => p.id === id)
+        : undefined;
+    if (f) {
+      // Everyone using the same piece takes their own seat or pillow.
+      const users = world.bots
+        .filter((b) => b.now?.targetId === target && b.now?.phase === 'doing' && !b.travel)
+        .map((b) => b.id)
+        .toSorted();
+      const p = placementOn(f, now.activity, Math.max(0, users.indexOf(bot.id)), x, PEG_SIZE);
+      if (p)
+        return {
+          stance: p.stance,
+          gesture: p.stance === 'lie' ? 'none' : gesture,
+          at: p.at,
+          facing: p.facing,
+          z: p.z,
+        };
+    }
+    return { stance: 'stand', gesture };
+  }
+
   update(world: World, alpha: number, dtS: number, timeS: number, calm: boolean): void {
     this.playEvents(world);
     const roomId = this.room.def.id;
@@ -113,17 +157,17 @@ export class SimView {
       const x = bot.prev.x + (bot.place.x - bot.prev.x) * alpha;
       const y = bot.prev.y + (bot.place.y - bot.prev.y) * alpha;
       const walking = bot.moving && bot.mode !== 'frozen';
+      const held = walking ? null : this.lookFor(world, bot, x);
+      peg.setLook(held);
+      // Being moved by the child: the one on the floor fades while it rides along.
+      const c = usePlay.getState().carrying;
+      peg.alpha = c?.source.from === 'person' && c.source.botId === bot.id ? 0.3 : 1;
       peg.follow(x, y, bot.facing, walking, walking ? 'idle' : poseFor(bot), dtS, timeS, calm);
       // The tappable button over this character (DOM target layer).
       const W = pegWidth(PEG_SIZE);
       // The body's width, not the arms': a wider target would cover floor spots
       // and furniture beside the character.
-      setTargetRect(`bot:${bot.id}`, {
-        x: x - W / 2 - 6,
-        y: y - PEG_SIZE - 6,
-        w: W + 12,
-        h: PEG_SIZE + 12,
-      });
+      setTargetRect(`bot:${bot.id}`, targetRect(held, x, y, W));
 
       // A happy reaction (a gift, a wish come true) is a jump.
       const seen = this.lastHappy.get(bot.id) ?? -1;

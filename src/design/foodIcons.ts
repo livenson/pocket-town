@@ -22,6 +22,10 @@ export const foodIcons = {
     'M12 12l-2-6h3l6 6M12 18l-2 6h3l6-6' +
     D(22, 15),
   basket: 'M4 13h24l-3 13H7zM10 13l4-8M22 13l-4-8M11 17v5M16 17v5M21 17v5',
+  // A phone game (on the toilet, in the bathroom).
+  phone:
+    'M11 3h10a2 2 0 0 1 2 2v22a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z' +
+    'M9 7h14M9 24h14M13 13l3 3 3-3M14 19h4',
   plaster:
     'M6.2 20.2L20.2 6.2a4 4 0 0 1 5.6 5.6L11.8 25.8a4 4 0 0 1-5.6-5.6z' +
     'M13.2 16L16 13.2 18.8 16 16 18.8z',

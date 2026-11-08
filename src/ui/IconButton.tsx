@@ -10,7 +10,7 @@ export interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonEle
   icon: AnyIconName;
   /** Required: used for aria-label, voice-over and the optional text label. */
   label: string;
-  /** Desktop keyboard shortcut, shown in the hover label. */
+  /** Desktop keyboard shortcut, shown in the hover label (HoverTips). */
   shortcut?: string;
   /** Toggle state (time control, tabs); rendered as aria-pressed plus a filled look. */
   pressed?: boolean;
@@ -44,6 +44,8 @@ export function IconButton({
         aria-label={label}
         aria-pressed={pressed}
         aria-keyshortcuts={shortcut}
+        data-tip={label}
+        data-tip-key={shortcut}
         className={`icon-btn icon-btn--${tone}`}
         onClick={(e: MouseEvent<HTMLButtonElement>) => {
           if (sound && !rest['aria-disabled']) playSfx(sound);
@@ -52,10 +54,6 @@ export function IconButton({
       >
         <Icon name={icon} />
       </button>
-      <span className="hover-tip" aria-hidden="true">
-        {label}
-        {shortcut && <kbd>{shortcut}</kbd>}
-      </span>
       {textLabels && (
         <span className="text-label" aria-hidden="true">
           {label}

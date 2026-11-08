@@ -41,8 +41,13 @@ interface BoneDef {
   y: number;
 }
 
-/** A drawn part on a bone, or the place in the drawing order where the head goes. */
-export type Part = { bone: BoneId; prims: Prim[] } | { bone: 'head'; head: true };
+/**
+ * A drawn part on a bone, or the place in the drawing order where the head goes.
+ * Parts with `only` are props shown for one gesture (a book, a spoon) or the
+ * blanket shown when lying down; portraits leave them out.
+ */
+export type Part =
+  { bone: BoneId; prims: Prim[]; only?: Gesture | 'lie' } | { bone: 'head'; head: true };
 
 export interface Rig {
   size: number;
@@ -67,6 +72,13 @@ export interface Mat {
 }
 
 const INK = color.ink;
+/**
+ * The full figure's frame (portraits, the drag ghost), in shares of its height,
+ * with the feet at y = 0: wide enough for a cape and hands, tall enough for a puff
+ * of hair or a crown.
+ */
+export const FULL_FRAME = { x: -0.3, y: -1.08, w: 0.6, h: 1.11 };
+
 /** The head is drawn as a peg head of this share of the figure's height. */
 export const HEAD_SCALE = 0.75;
 
@@ -962,8 +974,10 @@ export function buildRig(size: number, a: Appearance): Rig {
   add('pelvis', beltPart(s, a, lw));
   add('torso', bibPart(s, a, lw));
   add('torso', claspPart(s, a, lw));
+  parts.push({ bone: 'root', prims: blanketPart(s, a, lw), only: 'lie' });
   parts.push({ bone: 'head', head: true });
   parts.push(...armParts(s, a, 'R', lw));
+  parts.push(...propParts(s, lw));
   return {
     size: s,
     bones: bonesFor(s, a),
@@ -973,12 +987,287 @@ export function buildRig(size: number, a: Appearance): Rig {
   };
 }
 
+/** A cosy blanket over a character lying down (root space: the body lies along -y). */
+function blanketPart(s: number, a: Appearance, lw: number): Prim[] {
+  const fill = mix(a.accent ?? a.outfit, '#FFFFFF', 0.55);
+  const edge = mix(fill, '#FFFFFF', 0.5);
+  return [
+    {
+      t: 'rect',
+      x: -0.15 * s,
+      y: -0.5 * s,
+      w: 0.3 * s,
+      h: 0.53 * s,
+      r: 0.06 * s,
+      fill,
+      stroke: outlineOf(fill),
+      sw: lw,
+    },
+    // A folded-over edge by the shoulders, and a few stitches.
+    {
+      t: 'rect',
+      x: -0.155 * s,
+      y: -0.52 * s,
+      w: 0.31 * s,
+      h: 0.07 * s,
+      r: 0.03 * s,
+      fill: edge,
+      stroke: outlineOf(fill),
+      sw: lw,
+    },
+    ...[-0.32, -0.18, -0.04].map((y): Prim => ({
+      t: 'rect',
+      x: -0.15 * s,
+      y: y * s,
+      w: 0.3 * s,
+      h: lw,
+      r: lw / 2,
+      fill: outlineOf(fill),
+      alpha: 0.35,
+    })),
+  ];
+}
+
+/** Things held in the front hand (wrist space; the hand's middle is at y ≈ 0.026·s). */
+function propParts(s: number, lw: number): Part[] {
+  const hy = 0.026 * s;
+  const metal = '#B9C2D6';
+  const wood = color.wood;
+  const line = (
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    stroke: string,
+    w: number,
+  ): Prim[] => [
+    { t: 'line', x1, y1, x2, y2, stroke: outlineOf(stroke), sw: w + lw * 1.6 },
+    { t: 'line', x1, y1, x2, y2, stroke, sw: w },
+  ];
+  const book: Prim[] = [
+    {
+      t: 'rect',
+      x: -0.075 * s,
+      y: hy - 0.05 * s,
+      w: 0.1 * s,
+      h: 0.085 * s,
+      r: 0.008 * s,
+      fill: color.tomato,
+      stroke: outlineOf(color.tomato),
+      sw: lw,
+    },
+    {
+      t: 'rect',
+      x: -0.065 * s,
+      y: hy - 0.042 * s,
+      w: 0.08 * s,
+      h: 0.07 * s,
+      r: 0.004 * s,
+      fill: color.paper,
+    },
+    {
+      t: 'rect',
+      x: -0.027 * s,
+      y: hy - 0.045 * s,
+      w: 0.004 * s,
+      h: 0.078 * s,
+      r: 0,
+      fill: outlineOf(color.paper),
+    },
+  ];
+  const spoon: Prim[] = [
+    ...line(0, hy, 0.012 * s, hy - 0.07 * s, metal, 0.009 * s),
+    {
+      t: 'ellipse',
+      cx: 0.013 * s,
+      cy: hy - 0.078 * s,
+      rx: 0.014 * s,
+      ry: 0.01 * s,
+      fill: metal,
+      stroke: outlineOf(metal),
+      sw: lw * 0.8,
+    },
+  ];
+  const hammer: Prim[] = [
+    ...line(0, hy - 0.01 * s, 0, hy + 0.075 * s, wood, 0.014 * s),
+    {
+      t: 'rect',
+      x: -0.035 * s,
+      y: hy + 0.068 * s,
+      w: 0.07 * s,
+      h: 0.03 * s,
+      r: 0.006 * s,
+      fill: metal,
+      stroke: outlineOf(metal),
+      sw: lw,
+    },
+  ];
+  const can: Prim[] = [
+    ...line(0.03 * s, hy + 0.05 * s, 0.08 * s, hy + 0.02 * s, color.teal, 0.01 * s),
+    {
+      t: 'rect',
+      x: -0.03 * s,
+      y: hy + 0.015 * s,
+      w: 0.065 * s,
+      h: 0.06 * s,
+      r: 0.012 * s,
+      fill: color.teal,
+      stroke: outlineOf(color.teal),
+      sw: lw,
+    },
+  ];
+  const broom: Prim[] = [
+    ...line(0, hy - 0.09 * s, 0, hy + 0.2 * s, wood, 0.012 * s),
+    {
+      t: 'poly',
+      pts: [
+        -0.02 * s,
+        hy + 0.19 * s,
+        0.02 * s,
+        hy + 0.19 * s,
+        0.045 * s,
+        hy + 0.26 * s,
+        -0.045 * s,
+        hy + 0.26 * s,
+      ],
+      fill: color.marigold,
+      stroke: outlineOf(color.marigold),
+      sw: lw,
+    },
+  ];
+  const basket: Prim[] = [
+    {
+      t: 'ellipse',
+      cx: 0,
+      cy: hy + 0.012 * s,
+      rx: 0.03 * s,
+      ry: 0.03 * s,
+      stroke: outlineOf(color.wood),
+      sw: 0.008 * s,
+    },
+    {
+      t: 'rect',
+      x: -0.045 * s,
+      y: hy + 0.03 * s,
+      w: 0.09 * s,
+      h: 0.05 * s,
+      r: 0.012 * s,
+      fill: color.wood,
+      stroke: outlineOf(color.wood),
+      sw: lw,
+    },
+    {
+      t: 'ellipse',
+      cx: -0.015 * s,
+      cy: hy + 0.03 * s,
+      rx: 0.014 * s,
+      ry: 0.012 * s,
+      fill: color.tomato,
+    },
+    {
+      t: 'ellipse',
+      cx: 0.016 * s,
+      cy: hy + 0.028 * s,
+      rx: 0.012 * s,
+      ry: 0.011 * s,
+      fill: color.leaf,
+    },
+  ];
+  // A phone with a little game on it: blocks, a coin and a jumping hero.
+  const phone: Prim[] = [
+    {
+      t: 'rect',
+      x: -0.06 * s,
+      y: hy - 0.05 * s,
+      w: 0.065 * s,
+      h: 0.1 * s,
+      r: 0.012 * s,
+      fill: INK,
+      stroke: outlineOf(INK),
+      sw: lw,
+    },
+    {
+      t: 'rect',
+      x: -0.054 * s,
+      y: hy - 0.042 * s,
+      w: 0.053 * s,
+      h: 0.082 * s,
+      r: 0.006 * s,
+      fill: color.sky,
+    },
+    {
+      t: 'rect',
+      x: -0.054 * s,
+      y: hy + 0.026 * s,
+      w: 0.053 * s,
+      h: 0.014 * s,
+      r: 0,
+      fill: color.leaf,
+    },
+    {
+      t: 'rect',
+      x: -0.044 * s,
+      y: hy - 0.004 * s,
+      w: 0.014 * s,
+      h: 0.014 * s,
+      r: 0.002 * s,
+      fill: color.marigold,
+    },
+    {
+      t: 'rect',
+      x: -0.026 * s,
+      y: hy - 0.02 * s,
+      w: 0.014 * s,
+      h: 0.014 * s,
+      r: 0.002 * s,
+      fill: color.tomato,
+    },
+    {
+      t: 'ellipse',
+      cx: -0.012 * s,
+      cy: hy + 0.012 * s,
+      rx: 0.007 * s,
+      ry: 0.009 * s,
+      fill: color.purple,
+    },
+  ];
+  return [
+    { bone: 'wristR', prims: book, only: 'read' },
+    { bone: 'wristR', prims: spoon, only: 'eat' },
+    { bone: 'wristR', prims: hammer, only: 'hammer' },
+    { bone: 'wristR', prims: can, only: 'water' },
+    { bone: 'wristR', prims: broom, only: 'sweep' },
+    { bone: 'wristL', prims: basket, only: 'reach' },
+    { bone: 'wristR', prims: phone, only: 'phone' },
+  ];
+}
+
 // ---------- Poses ----------
 
 /** Standing at rest: arms a little away from the body, elbows soft. */
 export const REST: Angles = { shoulderL: 0.1, shoulderR: -0.1, elbowL: -0.08, elbowR: 0.08 };
 
 export type RigActivity = 'idle' | 'walk' | 'sleep' | 'dance';
+/** Standing, sitting on a seat, or lying in a bed. */
+export type Stance = 'stand' | 'sit' | 'lie';
+/** What the arms do for an activity (and the prop in hand, if any). */
+export type Gesture =
+  | 'none'
+  | 'eat'
+  | 'read'
+  | 'talk'
+  | 'hammer'
+  | 'water'
+  | 'sweep'
+  | 'wave'
+  | 'reach'
+  | 'point'
+  | 'phone';
+
+/** Seen from the front, a sitting figure's thighs point at us: drawn this short. */
+export const SIT_THIGH = 0.3;
+/** Lying in bed: the body turned onto its back, the head a little raised. */
+export const LIE_ANGLE = -Math.PI / 2 + 0.2;
 
 export interface PoseInput {
   activity: RigActivity;
@@ -991,6 +1280,95 @@ export interface PoseInput {
   calm: boolean;
   /** 0 … 1: arms up for a happy jump. */
   cheer: number;
+  stance?: Stance;
+  gesture?: Gesture;
+  /** Lying: the angle of the whole body (LIE_ANGLE unless the bed needs another). */
+  lieAngle?: number;
+}
+
+/** Arm (and head) angles for a gesture at time t (seconds). */
+function gestureAngles(g: Gesture, t: number, k: number): Angles {
+  const osc = (hz: number, off = 0) => Math.sin((t * hz + off) * Math.PI * 2);
+  switch (g) {
+    case 'eat':
+      // Spoon to the mouth and down again.
+      return {
+        shoulderL: 0.12,
+        elbowL: -0.5,
+        shoulderR: -0.28,
+        elbowR: 2.25 + 0.35 * k * osc(0.7),
+      };
+    case 'read':
+      return {
+        shoulderL: 0.2,
+        elbowL: -1.9,
+        shoulderR: -0.2,
+        elbowR: 1.85,
+        head: 0.05 * k * osc(0.15),
+      };
+    case 'talk':
+      return {
+        shoulderL: 0.28 + 0.12 * k * osc(0.9),
+        elbowL: -1.1 - 0.35 * k * osc(0.9, 0.3),
+        shoulderR: -0.28 - 0.12 * k * osc(0.7, 0.5),
+        elbowR: 1.1 + 0.35 * k * osc(0.7, 0.8),
+        head: 0.06 * k * osc(0.5),
+      };
+    case 'hammer':
+      return {
+        shoulderL: 0.25,
+        elbowL: -0.9,
+        shoulderR: -0.55,
+        elbowR: 1.0 + 0.7 * k * Math.max(0, osc(1.6)),
+        torso: 0.04,
+      };
+    case 'water':
+      return {
+        shoulderL: 0.12,
+        elbowL: -0.2,
+        shoulderR: -0.95,
+        elbowR: 0.3 + 0.15 * k * osc(0.4),
+        torso: 0.08,
+        head: 0.08,
+      };
+    case 'sweep':
+      return {
+        shoulderL: -0.15 + 0.22 * k * osc(0.8),
+        elbowL: -0.5,
+        shoulderR: -0.45 + 0.22 * k * osc(0.8),
+        elbowR: 0.7,
+        torso: 0.04 * k * osc(0.8),
+      };
+    case 'wave':
+      return { shoulderL: 0.12, elbowL: -0.1, shoulderR: -2.45, elbowR: 0.35 * k * osc(1.4) };
+    case 'reach':
+      return {
+        shoulderL: 0.1,
+        elbowL: -0.3,
+        shoulderR: -1.5 - 0.45 * k * Math.max(0, osc(0.35)),
+        elbowR: 0.45,
+      };
+    case 'point':
+      return { shoulderL: 0.12, elbowL: -0.2, shoulderR: -2.75, elbowR: 0.12, head: -0.05 };
+    case 'phone':
+      // Both hands on the phone in front of the tummy, thumbs tapping away.
+      return {
+        shoulderL: 0.12,
+        elbowL: -1.7 - 0.06 * k * osc(3.1),
+        shoulderR: -0.12,
+        elbowR: 1.7 + 0.06 * k * osc(2.7, 0.4),
+        head: 0.1,
+      };
+    case 'none':
+      return {};
+  }
+}
+
+/** Bones drawn shorter for a pose (sitting: the thighs, which point at the viewer). */
+export function poseScales(
+  p: Pick<PoseInput, 'stance' | 'walking'>,
+): Partial<Record<BoneId, number>> {
+  return p.stance === 'sit' && !p.walking ? { hipL: SIT_THIGH, hipR: SIT_THIGH } : {};
 }
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -1051,6 +1429,29 @@ export function poseAngles(p: PoseInput): Angles {
       head: 0.04 * k * look,
     };
   }
+  if (!p.walking && p.gesture && p.gesture !== 'none' && p.activity !== 'dance')
+    out = { ...out, ...gestureAngles(p.gesture, t, k) };
+  if (!p.walking && p.stance === 'sit') {
+    // Legs hang from the seat and swing a little.
+    out = {
+      ...out,
+      hipL: 0.08,
+      hipR: -0.08,
+      kneeL: 0.14 * k * Math.sin(t * 1.3),
+      kneeR: 0.14 * k * Math.sin(t * 1.3 + 1.7),
+    };
+  } else if (!p.walking && p.stance === 'lie') {
+    // Tucked in: straight legs, arms by the side, the head on the pillow.
+    out = {
+      root: p.lieAngle ?? LIE_ANGLE,
+      shoulderL: 0.05,
+      shoulderR: -0.05,
+      elbowL: -0.1,
+      elbowR: 0.1,
+      // The head turns back towards us, resting on the pillow.
+      head: 1.0 + (p.activity === 'sleep' ? 0.04 * Math.sin(t * 0.7) : 0),
+    };
+  }
   if (p.cheer > 0) {
     const c = Math.sin(Math.min(1, p.cheer) * Math.PI);
     out = {
@@ -1073,8 +1474,15 @@ const mul = (m: Mat, n: Mat): Mat => ({
   ty: m.b * n.tx + m.d * n.ty + m.ty,
 });
 
-/** Where every bone is, for a set of joint angles. */
-export function boneMatrices(rig: Rig, angles: Angles): Record<BoneId, Mat> {
+/**
+ * Where every bone is, for a set of joint angles. A bone with a scale is drawn that
+ * much shorter (see partMatrix) and its children move up to its shortened end.
+ */
+export function boneMatrices(
+  rig: Rig,
+  angles: Angles,
+  scales: Partial<Record<BoneId, number>> = {},
+): Record<BoneId, Mat> {
   const I: Mat = { a: 1, b: 0, c: 0, d: 1, tx: 0, ty: 0 };
   const out: Record<BoneId, Mat> = {
     root: I,
@@ -1101,10 +1509,22 @@ export function boneMatrices(rig: Rig, angles: Angles): Record<BoneId, Mat> {
     const r = angles[id] ?? 0;
     const cos = Math.cos(r);
     const sin = Math.sin(r);
-    const local: Mat = { a: cos, b: sin, c: -sin, d: cos, tx: b.x, ty: b.y };
+    const shorten = b.parent ? (scales[b.parent] ?? 1) : 1;
+    const local: Mat = { a: cos, b: sin, c: -sin, d: cos, tx: b.x, ty: b.y * shorten };
     out[id] = b.parent ? mul(out[b.parent], local) : local;
   }
   return out;
+}
+
+/** A part's matrix: its bone's, squashed along the bone if the bone is scaled. */
+export function partMatrix(
+  mats: Record<BoneId, Mat>,
+  bone: BoneId,
+  scales: Partial<Record<BoneId, number>> = {},
+): Mat {
+  const m = mats[bone];
+  const k = scales[bone] ?? 1;
+  return k === 1 ? m : { ...m, c: m.c * k, d: m.d * k };
 }
 
 /** Apply a matrix to a point. */
@@ -1122,3 +1542,10 @@ export const CHEER: Angles = poseAngles({
   calm: false,
   cheer: 0.5,
 });
+
+/** The middle of the head, relative to the feet, standing at rest. */
+export function headCentre(rig: Rig, a: Appearance): { x: number; y: number } {
+  const g = headGeometry(rig.size, a);
+  const m = boneMatrices(rig, {}).head;
+  return apply(m, g.W / 2 - rig.headPivot.x, g.head.y + g.headRy - rig.headPivot.y);
+}

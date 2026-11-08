@@ -7,6 +7,7 @@ import { apply, type Command } from './commands';
 import { syncHouses } from './houses';
 import type { Bot, PlacedObject, World } from './types';
 import { getBot } from './world';
+import { onBench } from './workbench';
 
 /** The parts of a bot a child command can change (not where it is standing). */
 type BotControlState = Pick<
@@ -41,7 +42,10 @@ type Inverse =
   | { kind: 'oneBot'; bot: Bot }
   | { kind: 'decor'; id: string; variant: number | undefined }
   /** A room's furniture as it was (undefined: never decorated). */
-  | { kind: 'room'; roomId: string; furniture: FurnitureInstance[] | undefined };
+  | { kind: 'room'; roomId: string; furniture: FurnitureInstance[] | undefined }
+  /** A workbench put: the things it may touch as they were, and the ids it adds. */
+  | { kind: 'bench'; added: string[]; touched: { object: PlacedObject; index: number }[] }
+  | { kind: 'car'; key: string; at: number | undefined };
 
 interface Entry {
   cmd: Command;
@@ -97,6 +101,19 @@ function capture(world: World, cmd: Command): Inverse | null {
       };
     case 'setDecor':
       return { kind: 'decor', id: cmd.id, variant: world.decor?.[cmd.id] };
+    case 'benchPut': {
+      const ids = new Set(onBench(world, cmd.roomId, cmd.benchId).map((o) => o.id));
+      if (cmd.objectId) ids.add(cmd.objectId);
+      const touched = world.objects.flatMap((object, index) =>
+        ids.has(object.id) ? [{ object: clone(object), index }] : [],
+      );
+      const added = [cmd.objectId ? null : cmd.id, cmd.resultId].filter(
+        (id): id is string => id !== undefined && id !== null,
+      );
+      return { kind: 'bench', added, touched };
+    }
+    case 'fixCar':
+      return { kind: 'car', key: cmd.key, at: world.fixedCars?.[cmd.key] };
     case 'bring': {
       const bot = getBot(world, cmd.botId);
       return bot ? { kind: 'oneBot', bot: clone(bot) } : null;
@@ -154,6 +171,23 @@ function revert(world: World, inv: Inverse): void {
       world.decor = decor;
       return;
     }
+    case 'bench': {
+      const added = new Set(inv.added);
+      world.objects = world.objects.filter((o) => !added.has(o.id));
+      for (const { object, index } of inv.touched) {
+        const i = world.objects.findIndex((o) => o.id === object.id);
+        if (i >= 0) world.objects[i] = clone(object);
+        else world.objects.splice(Math.min(index, world.objects.length), 0, clone(object));
+      }
+      return;
+    }
+    case 'car': {
+      const cars = { ...world.fixedCars };
+      if (inv.at === undefined) delete cars[inv.key];
+      else cars[inv.key] = inv.at;
+      world.fixedCars = cars;
+      return;
+    }
     case 'town':
       world.houses = clone(inv.houses);
       world.roomEdits = inv.roomEdits && clone(inv.roomEdits);
@@ -166,6 +200,20 @@ function revert(world: World, inv: Inverse): void {
   }
 }
 
+/**
+ * Give new objects a fixed id up front, so redo recreates the same ones (and undo
+ * knows what to take away).
+ */
+function withIds(world: World, cmd: Command): Command {
+  const n = world.nextObjectId;
+  if (cmd.type === 'placeObject' && !cmd.id) return { ...cmd, id: `o${n}` };
+  if (cmd.type === 'benchPut' && !cmd.resultId) {
+    if (cmd.objectId) return { ...cmd, resultId: `o${n}` };
+    return { ...cmd, id: cmd.id ?? `o${n}`, resultId: `o${n + 1}` };
+  }
+  return cmd;
+}
+
 export const HISTORY_LIMIT = 100;
 
 export class History {
@@ -174,9 +222,7 @@ export class History {
 
   /** Apply a child command and remember how to undo it. */
   do(world: World, cmd: Command): boolean {
-    // Give placed objects a fixed id up front, so redo recreates the same one.
-    const fixed: Command =
-      cmd.type === 'placeObject' && !cmd.id ? { ...cmd, id: `o${world.nextObjectId}` } : cmd;
+    const fixed = withIds(world, cmd);
     const inverse = capture(world, fixed);
     if (!inverse || !apply(world, fixed)) return false;
     this.done.push({ cmd: fixed, inverse });

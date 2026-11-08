@@ -9,7 +9,8 @@ import {
   type Shape,
 } from '../content/furniture';
 import type { RoomDef } from '../content/rooms';
-import { flyingPlane } from '../content/townFurniture';
+import { flyingPlane, liftedCar } from '../content/townFurniture';
+import { BoardView } from './BoardView';
 import { runwayPlaneAt, windowPlaneAt } from './planes';
 import type { Daylight } from './daylight';
 import { color, stage } from '../design/tokens';
@@ -97,6 +98,10 @@ export class RoomView extends Container {
   private runwayShadow: Graphics | null = null;
   /** Small planes passing behind big windows, and how wide each window is. */
   private readonly windowPlanes: { plane: Container; w: number; h: number }[] = [];
+  /** Departure boards with live rows (the airport terminal). */
+  private boards: BoardView[] = [];
+  /** Cars on lifts (the garage): broken, or fixed and shiny. */
+  private cars: { id: string; broken: Container; fixed: Container; shine: Graphics[] }[] = [];
   /** What is shown while dragging: a piece moved (or a new one) under the finger. */
   private previewing: { f: FurnitureInstance; ghost: Container | null } | null = null;
 
@@ -165,8 +170,14 @@ export class RoomView extends Container {
     return c;
   }
 
-  /** Planes coming and going. Calm motion: the plane waits on the runway. */
-  animate(seconds: number, calm: boolean): void {
+  /**
+   * Planes coming and going, and the departure board in step with them. Calm motion:
+   * the plane waits on the runway (and its row keeps boarding).
+   */
+  animate(seconds: number, calm: boolean, minute = 0): void {
+    // A see-through piece shown while decorating may have come and gone.
+    this.boards = this.boards.filter((b) => !b.destroyed);
+    for (const b of this.boards) b.update(minute, calm ? 0 : seconds, calm);
     if (this.runwayPlane && this.runwayShadow) {
       const p = runwayPlaneAt(calm ? 0 : seconds);
       this.runwayPlane.visible = !p.away;
@@ -182,6 +193,53 @@ export class RoomView extends Container {
       w.plane.visible = u !== null;
       if (u !== null) w.plane.position.set(u * w.w, w.h * (0.42 - 0.12 * u));
     }
+  }
+
+  /** Show each car on a lift broken or fixed; a fixed one twinkles (still when calm). */
+  showCars(isShiny: (pieceId: string) => boolean, seconds: number, calm: boolean): void {
+    this.cars = this.cars.filter((car) => !car.fixed.destroyed);
+    for (const car of this.cars) {
+      const shiny = isShiny(car.id);
+      car.broken.visible = !shiny;
+      car.fixed.visible = shiny;
+      if (!shiny) continue;
+      car.shine.forEach((g, i) => {
+        const t = calm ? 0.5 : (Math.sin(seconds * 3 + i * 2.1) + 1) / 2;
+        g.alpha = 0.35 + 0.65 * t;
+        g.scale.set(0.7 + 0.4 * t);
+      });
+    }
+  }
+
+  private drawCar(f: FurnitureInstance, kind: FurnitureKind): Container {
+    const c = new Container();
+    const broken = drawFurniture(kind, f.paint);
+    const fixed = drawFurniture({ ...kind, shapes: liftedCar(true) }, f.paint);
+    const shine = [
+      [70, 30],
+      [236, 50],
+      [150, 8],
+    ].map(([x = 0, y = 0]) => {
+      const g = new Graphics()
+        .poly([0, -12, 3, -3, 12, 0, 3, 3, 0, 12, -3, 3, -12, 0, -3, -3])
+        .fill(hex(color.marigold))
+        .stroke({ width: 2, color: hex(color.ink) });
+      g.position.set(x, y);
+      fixed.addChild(g);
+      return g;
+    });
+    fixed.visible = false;
+    c.addChild(broken, fixed);
+    this.cars.push({ id: f.id, broken, fixed, shine });
+    return c;
+  }
+
+  private drawBoard(kind: FurnitureKind, paint?: string): Container {
+    const c = new Container();
+    const board = new BoardView();
+    c.addChild(drawFurniture(kind, paint), board);
+    this.boards.push(board);
+    return c;
   }
 
   private drawWindow(kind: FurnitureKind): Container {
@@ -265,7 +323,11 @@ export class RoomView extends Container {
         ? this.drawWindow(kind)
         : this.isFrontDoor(f, kind)
           ? this.drawFrontDoor(kind, f.paint)
-          : drawFurniture(kind, f.paint);
+          : kind.id === 'departureBoard'
+            ? this.drawBoard(kind, f.paint)
+            : kind.id === 'carLift'
+              ? this.drawCar(f, kind)
+              : drawFurniture(kind, f.paint);
     g.label = `furniture:${f.id}`;
     if (kind.layer === 'wall' && !f.standing) this.wallLayer.addChild(g);
     else if (kind.layer === 'floor') this.floorLayer.addChild(g);

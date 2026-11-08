@@ -10,6 +10,9 @@ export interface Rect {
   h: number;
 }
 
+/** A character's height in room units (the stage draws them this tall). */
+export const PEG_SIZE = 122;
+
 /** Room units → stage-element pixels, and back. Set by the stage on every layout. */
 export const view = {
   offsetX: 0,
@@ -35,6 +38,16 @@ export function clientToRoom(clientX: number, clientY: number): { x: number; y: 
   return {
     x: (clientX - box.left - view.offsetX) / view.scale,
     y: (clientY - box.top - view.offsetY) / view.scale,
+  };
+}
+
+/** Room units → client (pointer) coordinates, or null when the stage is not shown. */
+export function roomToClient(x: number, y: number): { x: number; y: number } | null {
+  const box = view.host?.getBoundingClientRect();
+  if (!box) return null;
+  return {
+    x: box.left + view.offsetX + x * view.scale,
+    y: box.top + view.offsetY + y * view.scale,
   };
 }
 

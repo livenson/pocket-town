@@ -12,11 +12,13 @@ import {
   type FurnitureInstance,
 } from '../content/furniture';
 import { findBaseRoom, findBuilding, findRoom } from '../content/rooms';
+import type { FurnitureUse } from './ads';
 import { syncHouses } from './houses';
 import { tuning } from '../content/tuning';
 import { emit, startGoHome, startVisit } from './step';
 import type { Place, World } from './types';
 import { clampToFloor, entryRoom, getBot, makeBot, routeTo } from './world';
+import { applyBenchPut, type BenchPut } from './workbench';
 
 export type Command =
   | { type: 'give'; botId: string; kind: string }
@@ -25,12 +27,16 @@ export type Command =
   | { type: 'control'; botId: string; on: boolean }
   | { type: 'puppetMove'; botId: string; place: Place }
   /** The child put this character here (dragged or tapped in from the dock). */
-  | { type: 'bring'; botId: string; place: Place }
+  | { type: 'bring'; botId: string; place: Place; use?: Omit<FurnitureUse, 'spot'> }
   | { type: 'freeze'; botId: string; on: boolean }
   | { type: 'sendHome'; botId: string }
   | { type: 'placeObject'; kind: string; place: Place; id?: string; raise?: number }
   | { type: 'moveObject'; id: string; place: Place; raise?: number }
   | { type: 'removeObject'; id: string }
+  /** Put a thing on a workbench; it may make something (sim/workbench.ts). */
+  | BenchPut
+  /** The child fixed the car in the garage minigame (`<roomId>:<pieceId>`). */
+  | { type: 'fixCar'; key: string }
   /** Create or change a house the child is building (the whole house, so undo is simple). */
   | { type: 'setHouse'; house: HouseDef }
   | { type: 'removeHouse'; id: string }
@@ -149,6 +155,11 @@ export function apply(world: World, cmd: Command): boolean {
       bot.travel = null;
       bot.route = [];
       bot.moving = false;
+      // Put on a piece of furniture: they start using it right away.
+      if (cmd.use && bot.mode !== 'frozen' && bot.mode !== 'puppet') {
+        bot.now = { ...cmd.use, phase: 'doing', progress: 0, byChild: true };
+        return true;
+      }
       if (bot.mode !== 'frozen' && bot.mode !== 'puppet')
         bot.now = {
           activity: 'wait',
@@ -218,12 +229,19 @@ export function apply(world: World, cmd: Command): boolean {
       else delete o.raise;
       // Once the child moves it, it is theirs: bots will not tidy it away.
       o.placedBy = 'child';
+      delete o.madeBy;
       return true;
     }
     case 'removeObject': {
       const before = world.objects.length;
       world.objects = world.objects.filter((x) => x.id !== cmd.id);
       return world.objects.length < before;
+    }
+    case 'benchPut':
+      return applyBenchPut(world, cmd);
+    case 'fixCar': {
+      world.fixedCars = { ...world.fixedCars, [cmd.key]: world.minute };
+      return true;
     }
     case 'setHouse': {
       const i = world.houses.findIndex((h) => h.id === cmd.house.id);

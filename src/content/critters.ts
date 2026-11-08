@@ -1,5 +1,5 @@
-// Animals that wander about the world map. Tap one: it hops and shares an idea;
-// some ideas lead to a place. Pure data (positions are 0–1 across and down the map).
+// Animals that wander about the world map. Tap one: it hops and says what it thinks
+// (src/content/critterThoughts.ts). Pure data (positions are 0–1 across and down the map).
 
 export type CritterId = 'cat' | 'dog' | 'duck' | 'bird' | 'butterfly' | 'hedgehog';
 
@@ -34,27 +34,4 @@ export const critters: CritterDef[] = [
     pace: 30,
     size: 40,
   },
-];
-
-/** Ideas the animals share; `place` makes the bubble a way to go there. */
-export const ideas: { key: string; place?: string }[] = [
-  { key: 'fastest' },
-  { key: 'ducks' },
-  { key: 'clouds' },
-  { key: 'dance' },
-  { key: 'nap' },
-  { key: 'hello' },
-  { key: 'stick' },
-  { key: 'secret' },
-  { key: 'cake', place: 'cafe' },
-  { key: 'park', place: 'park' },
-  { key: 'story', place: 'library' },
-  { key: 'music', place: 'musicHall' },
-  { key: 'home', place: 'home' },
-  { key: 'neighbours', place: 'neighbour' },
-  { key: 'pond', place: 'park' },
-  { key: 'plane', place: 'airport' },
-  { key: 'fix', place: 'workshop' },
-  { key: 'shop', place: 'shop' },
-  { key: 'doctor', place: 'hospital' },
 ];

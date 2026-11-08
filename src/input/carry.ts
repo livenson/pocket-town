@@ -8,11 +8,15 @@ import { game } from '../app/game';
 import { hint } from '../app/hints';
 import { playSfx } from '../audio/audio';
 import { sim } from '../app/simRunner';
+import { isCraftTool } from '../content/crafting';
 import { surfaceOf } from '../content/furniture';
+import { strings, thingName } from '../i18n';
+import { benchSlotX, benchWouldMake, onBench, type BenchPut } from '../sim/workbench';
 import { findRoom } from '../content/rooms';
+import { furnitureUseAt } from '../sim/ads';
 import { usePlay, type Carrying, type CarrySource } from '../state/play';
 import { useUi } from '../state/ui';
-import { clientToRoom } from '../stage/targets';
+import { clientToRoom, roomToClient } from '../stage/targets';
 
 const DRAG_START_PX = 8;
 
@@ -36,11 +40,27 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
       at = { x: [225, 450, 675][Number(target.slice(5))] ?? 450, y: 470 };
     } else if (clientX !== undefined && clientY !== undefined) {
       const p = clientToRoom(clientX, clientY);
-      if (p && p.x >= 0 && p.x <= 900 && p.y >= 0 && p.y <= 560) at = { x: p.x, y: p.y + 30 };
+      // The feet go where the finger is (the figure is shown standing on it).
+      if (p && p.x >= 0 && p.x <= 900 && p.y >= 0 && p.y <= 560) at = { x: p.x, y: p.y };
     }
     if (!at && target !== 'floor') return false;
     at ??= { x: 450, y: 470 };
-    ok = game.do({ type: 'bring', botId: c.source.botId, place: currentPlace(at.x, at.y) });
+    // Put on a sofa, a bed, the toilet, the piano…: they use it right there.
+    const roomId = useUi.getState().roomId;
+    const furniture = findRoom(roomId)?.furniture ?? [];
+    const use =
+      clientX !== undefined && !target.startsWith('spot:')
+        ? furnitureUseAt(roomId, furniture, at.x, at.y)
+        : null;
+    if (use) {
+      const { spot, ...doing } = use;
+      ok = game.do({
+        type: 'bring',
+        botId: c.source.botId,
+        place: currentPlace(spot.x, spot.y),
+        use: doing,
+      });
+    } else ok = game.do({ type: 'bring', botId: c.source.botId, place: currentPlace(at.x, at.y) });
     if (ok) {
       playSfx('jingle');
       play.drop();
@@ -58,7 +78,9 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
     const roomId = useUi.getState().roomId;
     const f = findRoom(roomId)?.furniture.find((x) => x.id === target.slice(8));
     const s = f ? surfaceOf(f) : null;
-    if (s) {
+    if (s && f?.kind === 'workbench') {
+      ok = putOnBench(f.id, c.kind, c.source, clientX, clientY);
+    } else if (s) {
       const p =
         clientX !== undefined && clientY !== undefined ? clientToRoom(clientX, clientY) : null;
       const x = Math.min(s.x1, Math.max(s.x0, p?.x ?? (s.x0 + s.x1) / 2));
@@ -90,6 +112,53 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
   }
   if (ok) play.drop();
   return ok;
+}
+
+/**
+ * Put the carried thing on a workbench (sim/workbench.ts). If it makes something:
+ * a rising sparkle and the new thing on the bench; a tool alone knocks on the wood
+ * (and the bench shows faded pictures of what is missing). Never a "no".
+ */
+function putOnBench(
+  benchId: string,
+  kind: string,
+  source: CarrySource,
+  clientX?: number,
+  clientY?: number,
+): boolean {
+  const roomId = useUi.getState().roomId;
+  const p = clientX !== undefined && clientY !== undefined ? clientToRoom(clientX, clientY) : null;
+  const cmd: BenchPut = {
+    type: 'benchPut',
+    roomId,
+    benchId,
+    kind,
+    x: benchSlotX(
+      sim.world,
+      roomId,
+      benchId,
+      p?.x ?? 0,
+      source.from === 'object' ? source.objectId : undefined,
+    ),
+    ...(source.from === 'object' ? { objectId: source.objectId } : {}),
+  };
+  const recipe = benchWouldMake(sim.world, cmd);
+  if (!game.do(cmd)) return false;
+  // The sparkle goes where the new thing stands (or the thing just put down).
+  const here = onBench(sim.world, roomId, benchId);
+  const spot = (recipe ? here.filter((o) => o.kind === recipe.makes) : here).at(-1);
+  const at = spot ? roomToClient(spot.place.x, spot.place.y - (spot.raise ?? 0) - 40) : null;
+  if (recipe) {
+    playSfx('craft');
+    if (at) usePlay.getState().showBurst(at.x, at.y, recipe.makes);
+    useUi.getState().toast('sparkle', strings.workshop.made(thingName(recipe.makes)));
+  } else if (isCraftTool(kind)) {
+    playSfx('knock');
+    if (at) usePlay.getState().showBurst(at.x, at.y, null);
+  } else {
+    playSfx('place');
+  }
+  return true;
 }
 
 /** A drop that did not land anywhere useful: a gentle "no" and the thing goes back. */
@@ -132,7 +201,7 @@ function targetAt(clientX: number, clientY: number): string | null {
  * Pointer handlers for something that can be carried (a drawer tile, a thing on the
  * floor). A tap picks it up; a drag carries it under the pointer.
  */
-export function useCarrySource(kind: string, source: CarrySource) {
+export function useCarrySource(kind: string, source: CarrySource, onTap?: () => void) {
   const start = useRef<{ x: number; y: number; id: number } | null>(null);
   const dragging = useRef(false);
   /** The browser sends a click after a drag ends on the same element: ignore it. */
@@ -142,6 +211,9 @@ export function useCarrySource(kind: string, source: CarrySource) {
     onPointerDown: (e: PointerEvent<HTMLElement>) => {
       start.current = { x: e.clientX, y: e.clientY, id: e.pointerId };
       dragging.current = false;
+      // A finger's drag sends no click afterwards (a mouse's does), so a new press
+      // forgets the last drag; otherwise the next real tap would be swallowed.
+      justDragged.current = false;
       // Capture at once: a quick drag can leave a small button before it counts
       // as a drag, and its moves would then go to whatever is underneath.
       try {
@@ -180,10 +252,17 @@ export function useCarrySource(kind: string, source: CarrySource) {
       if (dragging.current) usePlay.getState().drop();
       dragging.current = false;
     },
-    /** A tap (no drag): pick it up, or put it back if it is already in hand. */
+    /**
+     * A tap (no drag): pick it up, or put it back if it is already in hand; or,
+     * with `onTap` (a character in the room), whatever a tap means there.
+     */
     onClick: () => {
       if (justDragged.current) {
         justDragged.current = false;
+        return;
+      }
+      if (onTap) {
+        onTap();
         return;
       }
       const c = usePlay.getState().carrying;

@@ -9,8 +9,11 @@ import {
   buildRig,
   headGeometry,
   poseAngles,
+  partMatrix,
+  poseScales,
   REST,
   shoulderWidth,
+  SIT_THIGH,
   type Angles,
   type PoseInput,
   type Rig,
@@ -49,7 +52,7 @@ function bounds(rig: Rig, angles: Angles = REST) {
   const m = boneMatrices(rig, angles);
   let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
   for (const part of rig.parts) {
-    if ('head' in part) continue;
+    if ('head' in part || part.only) continue;
     for (const p of part.prims)
       for (const [x, y] of points(p)) {
         const w = apply(m[part.bone], x, y);
@@ -177,5 +180,51 @@ describe('poses', () => {
     }
     const rest = boneMatrices(rig, REST);
     expect(rest.wristL.ty).toBeGreaterThan(rest.shoulderL.ty);
+  });
+});
+
+describe('activity poses', () => {
+  const rig = buildRig(S, base);
+
+  it('eating lifts the spoon hand towards the mouth; reading holds the hands together', () => {
+    const eat = boneMatrices(rig, pose({ gesture: 'eat' }));
+    expect(eat.wristR.ty).toBeLessThan(eat.elbowR.ty);
+    const read = boneMatrices(rig, pose({ gesture: 'read' }));
+    expect(Math.abs(read.wristL.tx - read.wristR.tx)).toBeLessThan(0.12 * S);
+  });
+
+  it('waving and pointing raise the front hand above the head', () => {
+    for (const gesture of ['wave', 'point'] as const) {
+      const m = boneMatrices(rig, pose({ gesture }));
+      expect(m.wristR.ty).toBeLessThan(m.shoulderR.ty);
+    }
+  });
+
+  it('sitting shortens the thighs and keeps the shins hanging down', () => {
+    const p = { stance: 'sit' as const, walking: false };
+    const scales = poseScales(p);
+    const m = boneMatrices(rig, pose(p), scales);
+    expect(m.kneeL.ty - m.hipL.ty).toBeCloseTo(0.125 * S * SIT_THIGH, 1);
+    expect(m.ankleL.ty).toBeGreaterThan(m.kneeL.ty);
+    expect(partMatrix(m, 'hipL', scales).d).toBeCloseTo(SIT_THIGH, 1);
+  });
+
+  it('lying turns the body flat with the head to one side', () => {
+    const m = boneMatrices(rig, pose({ stance: 'lie' }));
+    expect(Math.abs(m.head.ty)).toBeLessThan(0.3 * S);
+    expect(m.head.tx).toBeLessThan(-0.4 * S);
+  });
+
+  it('props and the blanket belong to one gesture or lying, and portraits leave them out', () => {
+    const only = rig.parts.flatMap((p) => ('only' in p && p.only ? [p.only] : []));
+    expect(only).toEqual(
+      expect.arrayContaining(['lie', 'read', 'eat', 'hammer', 'water', 'sweep', 'reach']),
+    );
+  });
+
+  it('walking overrides a gesture and a seat', () => {
+    const w = pose({ walking: true, stepPhase: 0.5, gesture: 'read', stance: 'sit' });
+    expect(w.hipL).not.toBe(0.08);
+    expect(poseScales({ stance: 'sit', walking: true })).toEqual({});
   });
 });

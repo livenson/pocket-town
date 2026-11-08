@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { History, HISTORY_LIMIT } from '../../src/sim/history';
 import { run } from '../../src/sim/step';
 import { createWorld, getBot } from '../../src/sim/world';
+import { furnitureUseAt } from '../../src/sim/ads';
+import { findRoom } from '../../src/content/rooms';
 
 const livingFloor = { buildingId: 'home', roomId: 'home-living', x: 300, y: 500 };
 
@@ -116,6 +118,46 @@ describe('bringing a character into a room (drag or tap from the dock)', () => {
     expect(now?.now?.byChild).toBe(true);
     run(w, 5);
     expect(getBot(w, bot.id)?.place.roomId).toBe('cafe-main');
+    h.undo(w);
+    expect(getBot(w, bot.id)?.place).toEqual(before);
+  });
+});
+
+describe('putting a character on a piece of furniture', () => {
+  const bath = findRoom('home-bath');
+  const bedroom = findRoom('home-bedroom');
+
+  it('finds what the piece under the drop offers: the toilet is a phone game', () => {
+    const toilet = bath?.furniture.find((f) => f.kind === 'toilet');
+    if (!bath || !toilet) throw new Error('no toilet');
+    const use = furnitureUseAt(bath.id, bath.furniture, toilet.x + 50, toilet.y + 60);
+    expect(use?.activity).toBe('phone');
+    expect(use?.targetId).toBe(`furniture:home-bath:${toilet.id}`);
+    // The empty floor offers nothing.
+    expect(furnitureUseAt(bath.id, bath.furniture, 150, 540)).toBeNull();
+  });
+
+  it('a bed the child picks is a nap, never a night', () => {
+    const bed = bedroom?.furniture.find((f) => f.kind === 'bed');
+    if (!bedroom || !bed) throw new Error('no bed');
+    expect(furnitureUseAt(bedroom.id, bedroom.furniture, bed.x + 100, bed.y + 50)?.activity).toBe(
+      'nap',
+    );
+  });
+
+  it('they start using it at once, and undo puts them back', () => {
+    const w = createWorld(4);
+    const h = new History();
+    const bot = w.bots[0];
+    const toilet = bath?.furniture.find((f) => f.kind === 'toilet');
+    if (!bot || !bath || !toilet) throw new Error('missing');
+    const before = structuredClone(bot.place);
+    const use = furnitureUseAt(bath.id, bath.furniture, toilet.x + 50, toilet.y + 60);
+    if (!use) throw new Error('no use');
+    const { spot, ...doing } = use;
+    const place = { buildingId: 'home', roomId: 'home-bath', ...spot };
+    expect(h.do(w, { type: 'bring', botId: bot.id, place, use: doing })).toBe(true);
+    expect(getBot(w, bot.id)?.now).toMatchObject({ activity: 'phone', phase: 'doing' });
     h.undo(w);
     expect(getBot(w, bot.id)?.place).toEqual(before);
   });

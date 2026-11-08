@@ -1,7 +1,7 @@
 // Advertisements: every thing, place and bot offers activities with need gains
 // (docs/SIM.md → Choosing what to do).
 import { chatOffer, offers, tidyOffer, visitOffer, type ActivityId } from '../content/activities';
-import { furnitureKinds, type FurnitureKind } from '../content/furniture';
+import { furnitureKinds, type FurnitureInstance, type FurnitureKind } from '../content/furniture';
 import { placedOffers } from '../content/objects';
 import { allBuildings } from '../content/rooms';
 import type { NeedKey } from '../content/tuning';
@@ -43,6 +43,55 @@ function furnitureSpot(
   if (kind.layer === 'wall' && !standing) return { x, y: WALL_SPOT_Y };
   if (kind.layer === 'floor') return { x, y: fy + (kind.h * scale) / 2 };
   return { x, y: Math.max(404, Math.min(520, foot - 46 * Math.max(0.6, scale))) };
+}
+
+/** What a character does on a piece of furniture the child put them on. */
+export interface FurnitureUse {
+  targetId: string;
+  activity: ActivityId;
+  gains: Partial<Record<NeedKey, number>>;
+  duration: number;
+  /** Where they stand to use it (the stage then seats them, or tucks them in). */
+  spot: { x: number; y: number };
+}
+
+/**
+ * The piece of furniture under a room point that offers something to do (the one
+ * in front, if they overlap), or null. A bed put to use by the child is a nap:
+ * nights' sleep stays the characters' own choice.
+ */
+export function furnitureUseAt(
+  roomId: string,
+  furniture: readonly FurnitureInstance[],
+  x: number,
+  y: number,
+): FurnitureUse | null {
+  let best: FurnitureInstance | null = null;
+  let bestZ = -Infinity;
+  for (const f of furniture) {
+    const kind: FurnitureKind = furnitureKinds[f.kind];
+    if (kind.layer !== 'stand' || !offers[f.kind]?.length) continue;
+    const s = f.scale ?? 1;
+    if (x < f.x || x > f.x + kind.w * s || y < f.y || y > f.y + kind.h * s) continue;
+    const z = f.y + (kind.footY ?? kind.h) * s;
+    if (z > bestZ) {
+      best = f;
+      bestZ = z;
+    }
+  }
+  const offer = best ? offers[best.kind]?.[0] : undefined;
+  if (!best || !offer) return null;
+  const kind: FurnitureKind = furnitureKinds[best.kind];
+  const s = best.scale ?? 1;
+  const spot = furnitureSpot(kind, best.x, best.y, best.scale, best.standing);
+  const sleep = offer.activity === 'sleep';
+  return {
+    targetId: `furniture:${roomId}:${best.id}`,
+    activity: sleep ? 'nap' : offer.activity,
+    gains: sleep ? { energy: 30 } : offer.gains,
+    duration: sleep ? 45 : offer.duration,
+    spot: { x: Math.min(best.x + kind.w * s, Math.max(best.x, x)), y: spot.y },
+  };
 }
 
 /** Bots that could start chatting now. */
@@ -89,7 +138,8 @@ export function collectAds(world: World, bot: Bot): Ad[] {
   }
 
   for (const o of world.objects) {
-    const offerKey = placedOffers[o.kind];
+    // Something a bot made at the workbench is only there to look at (and tidy).
+    const offerKey = o.madeBy === 'bot' ? undefined : placedOffers[o.kind];
     for (const offer of offerKey ? (offers[offerKey] ?? []) : []) {
       ads.push({
         targetId: `object:${o.id}`,

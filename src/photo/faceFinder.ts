@@ -24,7 +24,7 @@ let guarded = false;
  * sends nothing anywhere: the Content Security Policy already blocks it, and
  * this answers any request to another site locally, so it is never even tried.
  */
-function keepRequestsAtHome(): void {
+export function keepRequestsAtHome(): void {
   if (guarded || typeof window === 'undefined') return;
   guarded = true;
   const original = window.fetch.bind(window);

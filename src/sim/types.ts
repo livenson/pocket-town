@@ -83,6 +83,8 @@ export interface PlacedObject {
   /** Standing on furniture: drawn this far above `place` (which stays on the floor
    *  in front, where characters stand to use it). */
   raise?: number;
+  /** Made at a workbench by a bot (only to look at; it offers nothing to do). */
+  madeBy?: 'bot';
 }
 
 export type SimEventType =
@@ -118,4 +120,6 @@ export interface World {
   decor?: Record<string, number>;
   /** Rooms the child decorated: each one's whole furniture list. */
   roomEdits?: Record<string, FurnitureInstance[]>;
+  /** Cars the child fixed in the garage minigame: `<roomId>:<pieceId>` → game minute. */
+  fixedCars?: Record<string, number>;
 }

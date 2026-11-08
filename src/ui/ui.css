@@ -144,13 +144,14 @@
   pointer-events: none;
 }
 
-/* Desktop hover labels with the shortcut key. */
+/* Desktop hover labels with the shortcut key (HoverTips.tsx): one layer above
+   everything, placed by script so it always stays on screen. */
 .hover-tip {
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 50%;
-  z-index: 30;
-  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2147483000;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 6px 10px;
@@ -160,7 +161,8 @@
   font-size: 14px;
   font-weight: 800;
   white-space: nowrap;
-  transform: translateX(-50%);
+  box-shadow: 0 4px 12px rgb(42 22 64 / 0.25);
+  visibility: hidden;
   pointer-events: none;
 }
 
@@ -170,18 +172,6 @@
   background: #fff;
   color: var(--pt-ink);
   font-size: 13px;
-}
-
-html[data-layout='desktop'] .icon-btn-wrap:hover > .hover-tip,
-html[data-layout='desktop'] .icon-btn-wrap:has(> .icon-btn:focus-visible) > .hover-tip {
-  display: inline-flex;
-}
-
-/* Tips near the bottom edge open upwards. */
-.dock--bottom-right .hover-tip,
-.dock--drawer .hover-tip {
-  top: auto;
-  bottom: calc(100% + 10px);
 }
 
 /* ---------- HoldButton ---------- */

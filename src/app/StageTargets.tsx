@@ -11,12 +11,13 @@ import { findRoom } from '../content/rooms';
 import { strings, thingName } from '../i18n';
 import type { Bot, PlacedObject } from '../sim/types';
 import { useDecor } from '../state/decor';
-import { usePlay } from '../state/play';
+import { PERSON, usePlay } from '../state/play';
 import { DecorTargets } from './decorate/DecorTargets';
 import { useUi } from '../state/ui';
 import { registerTarget } from '../stage/targets';
 import { useVoiceLabel } from '../ui/useVoiceLabel';
 import { doingLabel } from './botText';
+import { BenchHints, BoardTargets } from './workshop/WorkshopTargets';
 
 function BotTarget({ bot }: { bot: Bot }) {
   const carrying = usePlay((s) => s.carrying);
@@ -28,6 +29,18 @@ function BotTarget({ bot }: { bot: Bot }) {
     ? strings.giveTo(thingName(carrying.kind), bot.name)
     : strings.botHere(bot.name, doingLabel(bot));
   const voice = useVoiceLabel(label);
+  // Drag a character to move them around the room; a tap opens their card.
+  const move = useCarrySource(PERSON, { from: 'person', botId: bot.id }, () => {
+    if (usePlay.getState().carrying) return;
+    playSfx('tap');
+    // Picking someone else lets go of the character the child was steering.
+    const before = game.world.bots.find((b) => b.id === usePlay.getState().selectedBotId);
+    if (before && before.id !== bot.id && before.mode === 'puppet') {
+      game.do({ type: 'control', botId: before.id, on: false });
+    }
+    openCard(bot.id);
+  });
+  const moving = carrying?.source.from === 'person' && carrying.source.botId === bot.id;
   return (
     <button
       ref={(el) => registerTarget(`bot:${bot.id}`, el)}
@@ -36,22 +49,18 @@ function BotTarget({ bot }: { bot: Bot }) {
       data-target={`bot:${bot.id}`}
       data-valid={carryingThing || undefined}
       data-selected={selected || undefined}
+      data-carried={moving || undefined}
       data-activity={bot.now?.activity ?? 'idle'}
       aria-label={label}
       {...voice}
+      {...(carrying && !moving ? {} : move)}
       onClick={() => {
         if (carryingThing) {
           placeOn(`bot:${bot.id}`);
           return;
         }
-        if (carrying) return;
-        playSfx('tap');
-        // Picking someone else lets go of the character the child was steering.
-        const before = game.world.bots.find((b) => b.id === usePlay.getState().selectedBotId);
-        if (before && before.id !== bot.id && before.mode === 'puppet') {
-          game.do({ type: 'control', botId: before.id, on: false });
-        }
-        openCard(bot.id);
+        if (carrying && !moving) return;
+        move.onClick();
       }}
     />
   );
@@ -85,6 +94,11 @@ function ObjectTarget({ object }: { object: PlacedObject }) {
 
 let shownPencilHint = false;
 
+function furnitureLabel(kind: string): string {
+  if (kind === 'carLift') return strings.workshop.fixCar;
+  return strings.useFurniture(strings.furnitureNames[kind] ?? kind);
+}
+
 /**
  * Furniture that offers something to do: tap it and someone goes to use it. The
  * picked character if there is one (this is also how to steer them to it),
@@ -102,7 +116,9 @@ function FurnitureTarget({
   roomId: string;
 }) {
   const carrying = usePlay((s) => s.carrying);
-  const label = strings.useFurniture(strings.furnitureNames[kind] ?? kind);
+  // The car in the garage opens the car-fixing game instead (owner's request).
+  const fixing = kind === 'carLift';
+  const label = furnitureLabel(kind);
   const voice = useVoiceLabel(label);
   const activity = offers[kind]?.[0]?.activity;
   return (
@@ -114,6 +130,11 @@ function FurnitureTarget({
       tabIndex={carrying ? -1 : 0}
       {...voice}
       onClick={() => {
+        if (fixing) {
+          playSfx('tap');
+          usePlay.getState().setCarFix(`${roomId}:${id}`);
+          return;
+        }
         if (!activity) return;
         const world = game.world;
         const here = world.bots.filter(
@@ -300,6 +321,7 @@ export function StageTargets() {
       {room?.doors.map((d, i) => (
         <DoorTarget key={`${roomId}-${i}`} index={i} to={d.to} />
       ))}
+      <BoardTargets roomId={roomId} />
       <FloorTargets controlling={controlling} />
       <SurfaceTargets roomId={roomId} />
       {objects.map((o) => (
@@ -308,6 +330,7 @@ export function StageTargets() {
       {bots.map((b) => (
         <BotTarget key={b.id} bot={b} />
       ))}
+      <BenchHints world={world} roomId={roomId} />
       <span className="visually-hidden" aria-live="polite">
         {bots.map((b) => `${b.name}: ${doingLabel(b)}${b.now ? '' : ''}`).join('. ')}
       </span>

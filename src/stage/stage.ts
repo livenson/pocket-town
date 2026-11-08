@@ -25,6 +25,7 @@ import { clearTargetRects, relayoutTargets, setTargetRect, view as targetView } 
 import { useDecor } from '../state/decor';
 import { usePlay } from '../state/play';
 import { FLOOR } from '../sim/world';
+import { carIsShiny } from '../sim/workbench';
 
 /** Height the bottom docks take in landscape (object drawer and gap), in CSS px. */
 const BOTTOM_DOCK_PX = 190;
@@ -171,6 +172,22 @@ export class Stage {
       const s = f.scale ?? 1;
       setTargetRect(`piece:${f.id}`, { x: f.x, y: f.y, w: kind.w * s, h: kind.h * s });
     }
+    // The workshop and the airport: a workbench's hint of what is missing (above its
+    // top), and the departure board (tap it to hear the flights).
+    for (const f of room.def.furniture) {
+      const kind: FurnitureKind = furnitureKinds[f.kind];
+      const s = f.scale ?? 1;
+      const top = surfaceOf(f);
+      if (f.kind === 'workbench' && top)
+        setTargetRect(`benchHint:${f.id}`, {
+          x: top.x0,
+          y: top.top - 150,
+          w: top.x1 - top.x0,
+          h: 60,
+        });
+      if (f.kind === 'departureBoard')
+        setTargetRect(`board:${f.id}`, { x: f.x, y: f.y, w: kind.w * s, h: kind.h * s });
+    }
     // Furniture that offers something to do: tap it to send someone there.
     for (const f of room.def.furniture) {
       const kind: FurnitureKind = furnitureKinds[f.kind];
@@ -202,7 +219,12 @@ export class Stage {
     this.room.preview(useDecor.getState().preview);
     this.room.setDaylight(daylight(minuteOfDay(world.minute)));
     this.planeTime += dt * Math.min(this.prefs.speed, 2);
-    this.room.animate(this.planeTime, this.prefs.calm);
+    this.room.animate(this.planeTime, this.prefs.calm, world.minute);
+    this.room.showCars(
+      (id) => carIsShiny(world, `${this.room.def.id}:${id}`),
+      this.planeTime,
+      this.prefs.calm,
+    );
     this.view.update(world, STILL ? 0 : sim.alpha, dt, this.time, this.prefs.calm);
     const carried = play.carrying?.source.from === 'object' ? play.carrying.source.objectId : null;
     this.objects.update(world, carried);
