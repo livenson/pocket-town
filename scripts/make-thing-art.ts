@@ -143,7 +143,7 @@ export const NAMES = [
   'red-heart',
   'paw-prints',
   'feather',
-  'wood',
+  // ('wood' is above, with the workshop materials)
   'droplet',
   'snowflake',
   'umbrella',
