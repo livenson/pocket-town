@@ -327,7 +327,21 @@ html[data-layout='phone'] .age-grid {
 }
 
 .profile-face {
+  grid-template-rows: 1fr auto;
   background: var(--pt-peach);
+}
+
+.profile-face__name {
+  max-width: 100%;
+  padding: 0 12px 12px;
+  overflow: hidden;
+  color: var(--pt-ink);
+  font-family: var(--pt-font-display);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .profile-grid[data-count='0'] .profile-new {

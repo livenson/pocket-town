@@ -130,6 +130,13 @@ export function GrownUpScreen() {
         />
         <Button
           variant="secondary"
+          icon="note"
+          label={strings.screens.piano}
+          showWord
+          onClick={() => go('piano')}
+        />
+        <Button
+          variant="secondary"
           icon="grid4"
           label={strings.grownUp.kit}
           showWord

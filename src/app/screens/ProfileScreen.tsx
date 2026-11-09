@@ -27,7 +27,11 @@ function Face({ profile }: { profile: Profile }) {
         void enterProfile(profile.id).then(() => go('scene'));
       }}
     >
-      <PegPortrait appearance={profile.appearance} size={150} crop="head" />
+      <PegPortrait appearance={profile.appearance} size={130} crop="head" />
+      {/* Their own name, always: children know their name before they read. */}
+      <span className="profile-face__name" aria-hidden="true">
+        {profile.name}
+      </span>
     </button>
   );
 }
