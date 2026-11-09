@@ -2,7 +2,9 @@ import { playSfx } from '../../audio/audio';
 import { speak } from '../../audio/speech';
 import { activityLook } from '../../content/activities';
 import { houseRooms, ROOF, roomIdOf } from '../../content/house';
-import { findBuilding, type BuildingDef } from '../../content/rooms';
+import { findBuilding, type BuildingDef, type RoomDef } from '../../content/rooms';
+import { roomSummary } from '../../content/roomSummary';
+import { FurnitureThumb } from '../decorate/FurnitureThumb';
 import type { IconName } from '../../design/icons';
 import { buildingName, strings } from '../../i18n';
 import type { World } from '../../sim/types';
@@ -70,11 +72,30 @@ function homeOf(world: World): BuildingDef | undefined {
   return findBuilding(bot?.homeId ?? 'home') ?? findBuilding('home');
 }
 
+/** What a room is for: its main pieces along the floor, and an icon in the corner. */
+function RoomAtAGlance({ room, name }: { room: RoomDef; name: string | null }) {
+  const { kinds, icon } = roomSummary(room);
+  return (
+    <>
+      <span className="hub-diorama__badge" aria-hidden="true">
+        {icon && <Icon name={icon} size={22} strokeWidth={3} />}
+        {name && <span className="hub-diorama__name">{name}</span>}
+      </span>
+      <span className="hub-diorama__pieces" aria-hidden="true">
+        {kinds.map((k) => (
+          <FurnitureThumb key={k} kind={k} size={70} />
+        ))}
+      </span>
+    </>
+  );
+}
+
 /** A live cut-away of a house: every room, and who is in it doing what. */
 export function HouseDiorama({ building, world }: { building: BuildingDef; world: World }) {
   const go = useUi((s) => s.go);
   const setRoom = useUi((s) => s.setRoom);
   const house = world.houses.find((h) => h.id === building.id);
+  const words = useShowTextLabels();
   return (
     <div className="hub-diorama" data-rooms={building.rooms.length}>
       <span
@@ -100,6 +121,7 @@ export function HouseDiorama({ building, world }: { building: BuildingDef; world
                 go('scene');
               }}
             >
+              <RoomAtAGlance room={room} name={words ? roomName : null} />
               <span className="hub-diorama__people" aria-hidden="true">
                 {here.map((b) => {
                   const look = b.now ? activityLook[b.now.activity] : null;

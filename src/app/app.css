@@ -327,7 +327,21 @@ html[data-layout='phone'] .age-grid {
 }
 
 .profile-face {
+  grid-template-rows: 1fr auto;
   background: var(--pt-peach);
+}
+
+.profile-face__name {
+  max-width: 100%;
+  padding: 0 12px 12px;
+  overflow: hidden;
+  color: var(--pt-ink);
+  font-family: var(--pt-font-display);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .profile-grid[data-count='0'] .profile-new {
@@ -1439,14 +1453,18 @@ html[data-layout='phone'] .gate__card {
 }
 
 /* Valid places for the carried thing: teal dashed outline plus a tick (never colour alone). */
-.stage-target[data-valid]:not(.stage-target--floor) {
+.stage-target--bot[data-valid],
+.stage-target[data-valid][data-suggested],
+.stage-target--spot[data-valid]:focus-visible {
   outline: 4px dashed var(--pt-teal-dark);
   outline-offset: -2px;
   background: rgba(15, 163, 148, 0.14);
   animation: target-glow 1.2s ease-in-out infinite;
 }
 
-.stage-target[data-valid]:not(.stage-target--floor)::after {
+.stage-target--bot[data-valid]::after,
+.stage-target[data-valid][data-suggested]::after,
+.stage-target--spot[data-valid]:focus-visible::after {
   content: '';
   position: absolute;
   top: -10px;
@@ -1464,7 +1482,8 @@ html[data-layout='phone'] .gate__card {
   border-radius: 18px;
 }
 
-.stage-target--spot[data-valid] {
+.stage-target--spot[data-valid],
+.stage-target--near[data-valid] {
   border-radius: 50%;
 }
 
@@ -2962,7 +2981,50 @@ html[data-labels='false'] .wizard-section__title span {
   background-image: linear-gradient(transparent 72%, var(--floor) 72%);
 }
 
+/* What each room is for: its main pieces along the floor, and a corner badge with
+   the icon of what is done there (and the room's name when words are on). */
+.hub-diorama__room {
+  position: relative;
+}
+
+.hub-diorama__badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--pt-ink);
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.hub-diorama__badge:empty {
+  display: none;
+}
+
+.hub-diorama__name::first-letter {
+  text-transform: uppercase;
+}
+
+.hub-diorama__pieces {
+  position: absolute;
+  inset: auto 6px 10%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
 .hub-diorama__people {
+  position: relative;
+  z-index: 1;
+
   display: flex;
   align-items: flex-end;
   gap: 2px;

@@ -9,7 +9,7 @@ import { hint } from '../app/hints';
 import { playSfx } from '../audio/audio';
 import { sim } from '../app/simRunner';
 import { isCraftTool } from '../content/crafting';
-import { surfaceOf } from '../content/furniture';
+import { nearSpot, surfaceOf } from '../content/furniture';
 import { strings, thingName } from '../i18n';
 import { benchSlotX, benchWouldMake, onBench, type BenchPut } from '../sim/workbench';
 import { findRoom } from '../content/rooms';
@@ -90,6 +90,18 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
         c.source.from === 'object'
           ? game.do({ type: 'moveObject', id: c.source.objectId, place, raise })
           : game.do({ type: 'placeObject', kind: c.kind, place, raise });
+      if (ok) playSfx('place');
+    }
+  } else if (target.startsWith('near:')) {
+    // In front of a piece it suits (a ball by the toy box): right there.
+    const f = findRoom(useUi.getState().roomId)?.furniture.find((x) => x.id === target.slice(5));
+    if (f) {
+      const at = nearSpot(f);
+      const place = currentPlace(at.x, at.y);
+      ok =
+        c.source.from === 'object'
+          ? game.do({ type: 'moveObject', id: c.source.objectId, place })
+          : game.do({ type: 'placeObject', kind: c.kind, place });
       if (ok) playSfx('place');
     }
   } else if (target === 'floor' || target.startsWith('spot:')) {

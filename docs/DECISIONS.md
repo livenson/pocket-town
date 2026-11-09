@@ -280,3 +280,11 @@ Full write-up in `docs/REVIEW-2026-11.md`.
 - **One animal talks at a time**, and the bubble leans inwards near the edge of the view and hangs below animals at the top of the map, so it stays readable on a phone and clear of the map's buttons. It stays up longer for longer thoughts and for riddles.
 - **Riddles and jokes avoid puns**, so each language has natural words of its own (the clock riddle is "what goes all the time but never takes a step?" in Estonian and Latvian, where a clock has no "hands"). No pressure or rewards: wishes are invitations, never tasks.
 - The old shared `ideas` list and its words were replaced (they were never saved).
+
+## 2026-11-09: Smaller fixes from the owner's play (names, piano, carrying, home screen)
+
+- **Who is playing?** shows each player's name under their face, always: children recognise their own name before they read, and grown-ups can tell players apart.
+- **The piano** has a visible button in the grown-up area; the three-tap secret on the version line still works.
+- **Carrying a thing**: the three fixed floor spots no longer show (they were a leftover of keyboard placing; they still take keyboard focus and appear when focused). Anywhere on the floor takes the thing. Only places that suit it glow: tables for food, the floor by the bookshelf for a book, by the toy box for a ball, the workbench for a tool (pieces offering what the thing is for). Characters still glow; other tables still take things without glowing.
+- **Repeated messages** ("tap the pencil") replace the one showing instead of stacking.
+- **Home screen rooms** show what they are for: up to three small pictures of their defining pieces (stove, bed, bathtub, toy box…) and the icon of that kind of room in a corner badge (the house wizard's room icons); the room's name joins it when words are on.

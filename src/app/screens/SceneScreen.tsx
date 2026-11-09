@@ -146,6 +146,7 @@ export function SceneScreen() {
             label={strings.hideThings}
             shortcut="D"
             className="drawer-fold"
+            noTextLabel
             onClick={() => setDrawerHidden(true)}
           />
         </section>

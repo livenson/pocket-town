@@ -1793,3 +1793,17 @@ export function paintedShapes(kind: FurnitureKind, paint: string | undefined): S
   if (!paint || !main) return kind.shapes;
   return kind.shapes.map((s) => (s.fill === main ? { ...s, fill: paint } : s));
 }
+
+/**
+ * The floor just in front of a piece: where a thing that suits it is put (a ball
+ * by the toy box, a book by the bookshelf), in room units.
+ */
+export function nearSpot(f: FurnitureInstance): { x: number; y: number } {
+  const kind: FurnitureKind = furnitureKinds[f.kind];
+  const s = f.scale ?? 1;
+  const x = f.x + (kind.w * s) / 2;
+  if (kind.layer === 'wall') return { x, y: 440 };
+  if (kind.layer === 'floor') return { x, y: f.y + (kind.h * s) / 2 };
+  const foot = f.y + (kind.footY ?? kind.h) * s;
+  return { x, y: Math.min(530, Math.max(420, foot + 16)) };
+}
