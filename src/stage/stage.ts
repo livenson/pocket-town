@@ -201,8 +201,12 @@ export class Stage {
       const s = f.scale ?? 1;
       setTargetRect(`furniture:${f.id}`, { x: f.x, y: f.y, w: kind.w * s, h: kind.h * s });
       // In front of it on the floor: where a thing that suits it goes (it glows).
+      // Over the lower part of the piece, so it is easy to hit and never hidden by a
+      // dock along the bottom; the thing then goes on the floor just in front.
       const near = nearSpot(f);
-      setTargetRect(`near:${f.id}`, { x: near.x - 55, y: near.y - 30, w: 110, h: 50 });
+      const w = Math.min(kind.w * s, 180);
+      const top = Math.max(f.y, near.y - 110);
+      setTargetRect(`near:${f.id}`, { x: near.x - w / 2, y: top, w, h: near.y - top + 10 });
     }
     return room;
   }

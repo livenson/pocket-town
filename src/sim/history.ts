@@ -45,7 +45,9 @@ type Inverse =
   | { kind: 'room'; roomId: string; furniture: FurnitureInstance[] | undefined }
   /** A workbench put: the things it may touch as they were, and the ids it adds. */
   | { kind: 'bench'; added: string[]; touched: { object: PlacedObject; index: number }[] }
-  | { kind: 'car'; key: string; at: number | undefined };
+  | { kind: 'car'; key: string; at: number | undefined }
+  /** Something else to undo, and the characters a moment may have invited. */
+  | { kind: 'withBots'; inner: Inverse; bots: Bot[] };
 
 interface Entry {
   cmd: Command;
@@ -71,6 +73,20 @@ function botState(bot: Bot): BotControlState {
 }
 
 function capture(world: World, cmd: Command): Inverse | null {
+  const inner = captureOne(world, cmd);
+  // A moment invites characters in the room: undo puts them back too.
+  if (inner && (cmd.type === 'placeObject' || cmd.type === 'moveObject') && cmd.moment) {
+    const roomId = cmd.place.roomId;
+    return {
+      kind: 'withBots',
+      inner,
+      bots: clone(world.bots.filter((b) => b.place.roomId === roomId && !b.travel)),
+    };
+  }
+  return inner;
+}
+
+function captureOne(world: World, cmd: Command): Inverse | null {
   switch (cmd.type) {
     case 'placeObject':
       return { kind: 'removeObject', id: cmd.id ?? `o${world.nextObjectId}` };
@@ -132,6 +148,13 @@ function capture(world: World, cmd: Command): Inverse | null {
 
 function revert(world: World, inv: Inverse): void {
   switch (inv.kind) {
+    case 'withBots':
+      revert(world, inv.inner);
+      for (const saved of inv.bots) {
+        const i = world.bots.findIndex((b) => b.id === saved.id);
+        if (i >= 0) world.bots[i] = clone(saved);
+      }
+      return;
     case 'bot': {
       const bot = getBot(world, inv.botId);
       if (bot) Object.assign(bot, clone(inv.state));

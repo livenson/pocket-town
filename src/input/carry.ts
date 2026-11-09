@@ -10,6 +10,8 @@ import { playSfx } from '../audio/audio';
 import { sim } from '../app/simRunner';
 import { isCraftTool } from '../content/crafting';
 import { nearSpot, surfaceOf } from '../content/furniture';
+import { momentFor } from '../content/objects';
+import { moments, type Moment } from '../content/placeIdeas';
 import { strings, thingName } from '../i18n';
 import { benchSlotX, benchWouldMake, onBench, type BenchPut } from '../sim/workbench';
 import { findRoom } from '../content/rooms';
@@ -80,29 +82,19 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
     const s = f ? surfaceOf(f) : null;
     if (s && f?.kind === 'workbench') {
       ok = putOnBench(f.id, c.kind, c.source, clientX, clientY);
-    } else if (s) {
+    } else if (s && f) {
       const p =
         clientX !== undefined && clientY !== undefined ? clientToRoom(clientX, clientY) : null;
       const x = Math.min(s.x1, Math.max(s.x0, p?.x ?? (s.x0 + s.x1) / 2));
-      const place = currentPlace(x, s.floorY);
       const raise = Math.max(0, s.floorY - s.top);
-      ok =
-        c.source.from === 'object'
-          ? game.do({ type: 'moveObject', id: c.source.objectId, place, raise })
-          : game.do({ type: 'placeObject', kind: c.kind, place, raise });
-      if (ok) playSfx('place');
+      ok = putThing(c, x, s.floorY, raise, momentFor(c.kind, f.kind), { x, y: s.top });
     }
   } else if (target.startsWith('near:')) {
     // In front of a piece it suits (a ball by the toy box): right there.
     const f = findRoom(useUi.getState().roomId)?.furniture.find((x) => x.id === target.slice(5));
     if (f) {
       const at = nearSpot(f);
-      const place = currentPlace(at.x, at.y);
-      ok =
-        c.source.from === 'object'
-          ? game.do({ type: 'moveObject', id: c.source.objectId, place })
-          : game.do({ type: 'placeObject', kind: c.kind, place });
-      if (ok) playSfx('place');
+      ok = putThing(c, at.x, at.y, 0, momentFor(c.kind, f.kind), at);
     }
   } else if (target === 'floor' || target.startsWith('spot:')) {
     let at: { x: number; y: number } | null = null;
@@ -115,12 +107,8 @@ export function placeOn(target: string, clientX?: number, clientY?: number): boo
       at = p ? { x: p.x, y: p.y + 20 } : null;
     }
     at ??= { x: 450, y: 450 };
-    const place = currentPlace(at.x, at.y);
-    ok =
-      c.source.from === 'object'
-        ? game.do({ type: 'moveObject', id: c.source.objectId, place })
-        : game.do({ type: 'placeObject', kind: c.kind, place });
-    if (ok) playSfx('place');
+    // Close to one of its places (by the toy box, next to the piano): its moment.
+    ok = putThing(c, at.x, at.y, 0, momentNear(c.kind, at.x, at.y), at);
   }
   if (ok) play.drop();
   return ok;
@@ -171,6 +159,48 @@ function putOnBench(
     playSfx('place');
   }
   return true;
+}
+
+/**
+ * Put the carried thing down at a room point (raised onto a table top by `raise`).
+ * In one of its places, a moment starts: a burst there, and the characters in the
+ * room come to share it (sim/gather.ts).
+ */
+function putThing(
+  c: Carrying,
+  x: number,
+  y: number,
+  raise: number,
+  moment: Moment | null,
+  burstAt: { x: number; y: number },
+): boolean {
+  const place = currentPlace(x, y);
+  const extra = { ...(raise ? { raise } : {}), ...(moment ? { moment } : {}) };
+  const ok =
+    c.source.from === 'object'
+      ? game.do({ type: 'moveObject', id: c.source.objectId, place, ...extra })
+      : game.do({ type: 'placeObject', kind: c.kind, place, ...extra });
+  if (!ok) return false;
+  if (moment) {
+    playSfx('jingle');
+    const at = roomToClient(burstAt.x, burstAt.y - 40);
+    if (at) usePlay.getState().showMoment(at.x, at.y, moments[moment].burst);
+  } else playSfx('place');
+  return true;
+}
+
+/** The moment of the nearest of a thing's places within reach of a floor point. */
+function momentNear(kind: string, x: number, y: number): Moment | null {
+  const room = findRoom(useUi.getState().roomId);
+  let best: { m: Moment; d: number } | null = null;
+  for (const f of room?.furniture ?? []) {
+    const m = momentFor(kind, f.kind);
+    if (!m) continue;
+    const n = nearSpot(f);
+    const d = Math.hypot(n.x - x, (n.y - y) * 1.5);
+    if (d < 120 && (!best || d < best.d)) best = { m, d };
+  }
+  return best?.m ?? null;
 }
 
 /** A drop that did not land anywhere useful: a gentle "no" and the thing goes back. */
