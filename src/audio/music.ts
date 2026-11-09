@@ -50,14 +50,19 @@ class MusicPlayer {
   }
 
   private tick(): void {
-    let ctx: AudioContext;
+    // Music is a nice-to-have: audio that is missing or broken never stops play.
     try {
-      ctx = audioContext();
+      this.schedule();
     } catch {
-      return;
+      // Silent until it works.
     }
-    // Before the first tap, browsers keep audio off: wait.
-    if (ctx.state !== 'running') return;
+  }
+
+  private schedule(): void {
+    const ctx = audioContext();
+    // Before the first tap, browsers keep audio off: wait. Without real audio
+    // (some test environments), there is nothing to play on.
+    if (ctx.state !== 'running' || typeof ctx.createGain !== 'function') return;
     const master = this.ensureMaster(ctx);
     const now = ctx.currentTime;
     // A new mood: fade out, then start the new song from its beginning.
