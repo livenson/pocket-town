@@ -2,6 +2,7 @@ import { HoverTips } from '../ui/HoverTips';
 import { useEffect, type ReactElement } from 'react';
 import { applyLanguageSetting, currentLanguage, strings } from '../i18n';
 import { useKeyboardShortcuts } from '../input/shortcuts';
+import { useMusic } from './useMusic';
 import { setHouseNamer } from '../sim/houses';
 import { useSettings } from '../state/settings';
 import { useUi } from '../state/ui';
@@ -100,6 +101,7 @@ export function App() {
   const language = useLanguage();
   useDocumentAttributes();
   useKeyboardShortcuts();
+  useMusic();
   return (
     <>
       <div key={`${screen}:${language}`} className="screen-transition" data-screen={screen}>

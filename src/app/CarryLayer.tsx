@@ -11,6 +11,7 @@ import { FULL_FRAME } from '../stage/peg/rig';
 import { PEG_SIZE, view } from '../stage/targets';
 import { sim } from './simRunner';
 import { CraftBurst } from './workshop/CraftBurst';
+import { PlaceBurst } from './PlaceBurst';
 
 /** What is being carried: the drag ghost, the "in hand" pill, and the red-cross mark. */
 export function CarryLayer() {
@@ -103,6 +104,7 @@ export function CarryLayer() {
         </div>
       )}
       <CraftBurst />
+      <PlaceBurst />
     </>
   );
 }

@@ -249,6 +249,58 @@ export const sfx = {
     repeatTime: 0.18,
     sustainVolume: 0.8,
   }),
+  /** The phone game on the toilet: a coin picked up (it starts, and now and then). */
+  gameCoin: zzfxParams({
+    volume: 0.35,
+    randomness: 0,
+    frequency: 988,
+    attack: 0,
+    sustain: 0.03,
+    release: 0.12,
+    shape: 1, // triangle: soft chiptune
+    pitchJump: 330,
+    pitchJumpTime: 0.05,
+    sustainVolume: 0.7,
+  }),
+  /** The phone game: a little hero jumps. */
+  gameJump: zzfxParams({
+    volume: 0.3,
+    randomness: 0.05,
+    frequency: 300,
+    attack: 0,
+    sustain: 0.05,
+    release: 0.1,
+    shape: 2, // square
+    slide: 12,
+    sustainVolume: 0.5,
+    filter: 1800,
+  }),
+  /** The phone game: a quick bleep (a button pressed). */
+  gameBleep: zzfxParams({
+    volume: 0.25,
+    randomness: 0.1,
+    frequency: 660,
+    attack: 0,
+    sustain: 0.02,
+    release: 0.04,
+    shape: 2,
+    sustainVolume: 0.5,
+    filter: 2400,
+  }),
+  /** The phone game is won: a tiny rising tune. */
+  gameWin: zzfxParams({
+    volume: 0.4,
+    randomness: 0,
+    frequency: 523,
+    attack: 0.01,
+    sustain: 0.06,
+    release: 0.2,
+    shape: 1,
+    pitchJump: 262,
+    pitchJumpTime: 0.08,
+    repeatTime: 0.08,
+    sustainVolume: 0.7,
+  }),
   /** Ding-dong: a visitor at the door. */
   doorbell: zzfxParams({
     volume: 0.9,

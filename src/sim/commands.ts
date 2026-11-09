@@ -13,6 +13,8 @@ import {
 } from '../content/furniture';
 import { findBaseRoom, findBuilding, findRoom } from '../content/rooms';
 import type { FurnitureUse } from './ads';
+import { gather } from './gather';
+import type { Moment } from '../content/placeIdeas';
 import { syncHouses } from './houses';
 import { tuning } from '../content/tuning';
 import { emit, startGoHome, startVisit } from './step';
@@ -30,8 +32,16 @@ export type Command =
   | { type: 'bring'; botId: string; place: Place; use?: Omit<FurnitureUse, 'spot'> }
   | { type: 'freeze'; botId: string; on: boolean }
   | { type: 'sendHome'; botId: string }
-  | { type: 'placeObject'; kind: string; place: Place; id?: string; raise?: number }
-  | { type: 'moveObject'; id: string; place: Place; raise?: number }
+  /** `moment`: put in one of its places, characters in the room come to share it. */
+  | {
+      type: 'placeObject';
+      kind: string;
+      place: Place;
+      id?: string;
+      raise?: number;
+      moment?: Moment;
+    }
+  | { type: 'moveObject'; id: string; place: Place; raise?: number; moment?: Moment }
   | { type: 'removeObject'; id: string }
   /** Put a thing on a workbench; it may make something (sim/workbench.ts). */
   | BenchPut
@@ -218,6 +228,7 @@ export function apply(world: World, cmd: Command): boolean {
         placedBy: 'child',
         ...(cmd.raise ? { raise: cmd.raise } : {}),
       });
+      if (cmd.moment) gather(world, id, cmd.moment);
       return true;
     }
     case 'moveObject': {
@@ -230,6 +241,7 @@ export function apply(world: World, cmd: Command): boolean {
       // Once the child moves it, it is theirs: bots will not tidy it away.
       o.placedBy = 'child';
       delete o.madeBy;
+      if (cmd.moment) gather(world, o.id, cmd.moment);
       return true;
     }
     case 'removeObject': {

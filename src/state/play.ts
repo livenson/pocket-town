@@ -1,6 +1,7 @@
 // What the child is doing on the play stage right now: who is selected, what is
 // being carried, who the camera follows. Not saved.
 import { create } from 'zustand';
+import type { BurstKind } from '../content/placeIdeas';
 
 export type CarrySource =
   | { from: 'drawer' }
@@ -32,6 +33,8 @@ interface PlayStore {
   cameraOpen: boolean;
   /** A little making burst at the workbench (client px): sparkles, or a tool's knock. */
   burst: { x: number; y: number; id: number; made: string | null } | null;
+  /** A moment's burst where a thing was put in one of its places (client px). */
+  moment: { x: number; y: number; id: number; kind: BurstKind } | null;
   /** The garage car-fixing minigame: which car (`<roomId>:<pieceId>`), or null. */
   carFix: string | null;
 
@@ -46,6 +49,7 @@ interface PlayStore {
   markInvalid: (x: number, y: number) => void;
   setCameraOpen: (open: boolean) => void;
   showBurst: (x: number, y: number, made: string | null) => void;
+  showMoment: (x: number, y: number, kind: BurstKind) => void;
   setCarFix: (key: string | null) => void;
 }
 
@@ -61,6 +65,7 @@ export const usePlay = create<PlayStore>()((set) => ({
   invalidAt: null,
   cameraOpen: false,
   burst: null,
+  moment: null,
   carFix: null,
 
   select: (selectedBotId) => set({ selectedBotId }),
@@ -79,5 +84,6 @@ export const usePlay = create<PlayStore>()((set) => ({
   markInvalid: (x, y) => set({ invalidAt: { x, y, id: ++invalidId } }),
   setCameraOpen: (cameraOpen) => set({ cameraOpen, carrying: null }),
   showBurst: (x, y, made) => set({ burst: { x, y, made, id: ++invalidId } }),
+  showMoment: (x, y, kind) => set({ moment: { x, y, kind, id: ++invalidId } }),
   setCarFix: (carFix) => set({ carFix, carrying: null, cardOpen: false }),
 }));

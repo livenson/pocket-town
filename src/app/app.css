@@ -4404,3 +4404,83 @@ html[data-calm='true'] .critter__juggle {
 .portrait {
   touch-action: none;
 }
+
+/* A moment's burst (PlaceBurst.tsx): little pictures fly out from where a thing was
+   put in one of its places, then fade. Calm motion: they just appear and fade. */
+.place-burst {
+  position: fixed;
+  z-index: 70;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.place-burst__bit {
+  position: absolute;
+  left: -18px;
+  top: -18px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff);
+  opacity: 0;
+  animation: place-burst 1.6s var(--d) ease-out forwards;
+}
+
+.place-burst--confetti .place-burst__bit::before {
+  content: '';
+  width: 16px;
+  height: 11px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+.place-burst--bubbles .place-burst__bit::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--pt-ink);
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.8;
+}
+
+@keyframes place-burst {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(0) rotate(calc(-1 * var(--a))) scale(0.4);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(-95px) rotate(calc(-1 * var(--a))) translateY(-30px)
+      scale(1.2);
+  }
+}
+
+html[data-calm='true'] .place-burst__bit {
+  animation: place-burst-calm 1.3s ease-out forwards;
+  transform: rotate(var(--a)) translateY(-50px) rotate(calc(-1 * var(--a)));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .place-burst__bit {
+    animation: place-burst-calm 1.3s ease-out forwards;
+    transform: rotate(var(--a)) translateY(-50px) rotate(calc(-1 * var(--a)));
+  }
+}
+
+@keyframes place-burst-calm {
+  0%,
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

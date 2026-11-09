@@ -2,6 +2,7 @@
 // one does (eat, play, read...) and the needs it satisfies.
 import type { AnyIconName } from '../design/foodIcons';
 import { offers, type ActivityId } from './activities';
+import { placeIdea, type Moment } from './placeIdeas';
 import type { NeedKey } from './tuning';
 import { color, roomColor } from '../design/tokens';
 
@@ -485,11 +486,30 @@ export const objectKinds: ObjectKind[] = [
 
 /**
  * Furniture that suits a thing (the places that glow while carrying it): pieces
- * offering what the thing is for, like a table for food, the bookshelf for a book,
- * the toy box for a ball, the workbench for a tool.
+ * named for it in placeIdeas.ts (food on a table, a pillow on a bed, a book in bed
+ * or by the shelf), and pieces offering what the thing is for.
  */
 export function suitsThing(thingKind: string, furnitureKind: string): boolean {
+  return (
+    momentFor(thingKind, furnitureKind) !== null || offersItsActivity(thingKind, furnitureKind)
+  );
+}
+
+function offersItsActivity(thingKind: string, furnitureKind: string): boolean {
   const activity = giveEffects[thingKind]?.activity;
   if (!activity) return false;
   return (offers[furnitureKind] ?? []).some((o) => o.activity === activity);
+}
+
+/**
+ * What happens when a thing is put on or by a piece of furniture: its moment (a
+ * meal together, a jam, a party...), or null when the piece is not one of its places.
+ */
+export function momentFor(thingKind: string, furnitureKind: string): Moment | null {
+  const category = objectKinds.find((o) => o.id === thingKind)?.category;
+  const idea = placeIdea(thingKind, category);
+  if (idea?.places.includes(furnitureKind)) return idea.moment;
+  // A piece offering exactly what the thing is for (a ball by the toy box).
+  if (idea && offersItsActivity(thingKind, furnitureKind)) return idea.moment;
+  return null;
 }
