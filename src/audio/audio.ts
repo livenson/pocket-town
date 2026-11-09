@@ -10,6 +10,10 @@ const UNLOCK_EVENTS = ['pointerdown', 'touchend', 'mousedown', 'keydown'] as con
 /** ZzFX's own default master volume; the effects setting scales it. */
 const BASE_VOLUME = 0.3;
 
+export function audioContext(): AudioContext {
+  return ZZFX.audioContext;
+}
+
 function context(): AudioContext {
   return ZZFX.audioContext;
 }
