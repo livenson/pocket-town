@@ -37,6 +37,10 @@ function poseFor(bot: Bot): PegActivity {
   return activityLook[bot.now.activity].pose;
 }
 
+/** Sounds of the phone game on the toilet, in turn, and how many per game. */
+const PHONE_SOUNDS = ['gameBleep', 'gameJump', 'gameBleep', 'gameCoin'] as const;
+const PHONE_BEATS = 7;
+
 /** The character's tap area: around the figure, wherever it sits or lies. */
 function targetRect(look: PegLook | null, x: number, y: number, W: number) {
   const S = PEG_SIZE;
@@ -52,6 +56,8 @@ function targetRect(look: PegLook | null, x: number, y: number, W: number) {
 
 export class SimView {
   private readonly pegs = new Map<string, PegView>();
+  /** The phone game's last sound beat, per character playing it. */
+  private readonly phoneBeat = new Map<string, number>();
   private room: RoomView;
   private lastHappy = new Map<string, number>();
   private lastEmote = new Map<string, number>();
@@ -101,6 +107,9 @@ export class SimView {
         if (entry) playSfx('doorbell');
       } else if (!inRoom) {
         continue;
+      } else if (e.type === 'satisfied' && e.activity === 'phone') {
+        // The phone game is won.
+        playSfx('gameWin');
       } else if (
         (e.type === 'satisfied' || e.type === 'happy' || e.type === 'wishGranted') &&
         !jingled
@@ -109,11 +118,37 @@ export class SimView {
         jingled = true;
       } else if (e.type === 'start' && !chimed) {
         const a = e.activity;
-        playSfx(a === 'eat' ? 'eat' : a === 'sleep' || a === 'nap' ? 'sleep' : 'chime');
+        playSfx(
+          a === 'eat'
+            ? 'eat'
+            : a === 'sleep' || a === 'nap'
+              ? 'sleep'
+              : a === 'phone'
+                ? 'gameCoin'
+                : 'chime',
+        );
         chimed = true;
       }
     }
     this.seenSeq = latest;
+  }
+
+  /**
+   * Someone playing the phone game in this room: bleeps, jumps and coins as the
+   * game goes on (six over a game, by its progress: they follow game time, so a
+   * paused town is quiet and a fast one plays quicker).
+   */
+  private phoneGameSounds(bot: Bot): void {
+    const now = bot.now;
+    if (now?.activity !== 'phone' || now.phase !== 'doing') {
+      this.phoneBeat.delete(bot.id);
+      return;
+    }
+    const beat = Math.floor(now.progress * PHONE_BEATS);
+    const last = this.phoneBeat.get(bot.id);
+    this.phoneBeat.set(bot.id, beat);
+    if (last === undefined || beat === last || beat >= PHONE_BEATS) return;
+    playSfx(PHONE_SOUNDS[beat % PHONE_SOUNDS.length] ?? 'gameBleep');
   }
 
   /** Standing with a gesture, or sitting or lying on the piece being used. */
@@ -159,6 +194,7 @@ export class SimView {
       const walking = bot.moving && bot.mode !== 'frozen';
       const held = walking ? null : this.lookFor(world, bot, x);
       peg.setLook(held);
+      this.phoneGameSounds(bot);
       // Being moved by the child: the one on the floor fades while it rides along.
       const c = usePlay.getState().carrying;
       peg.alpha = c?.source.from === 'person' && c.source.botId === bot.id ? 0.3 : 1;
