@@ -1,7 +1,7 @@
 // Things in the object drawer, by category. Pure data. Milestone M4 adds what each
 // one does (eat, play, read...) and the needs it satisfies.
 import type { AnyIconName } from '../design/foodIcons';
-import type { ActivityId } from './activities';
+import { offers, type ActivityId } from './activities';
 import type { NeedKey } from './tuning';
 import { color, roomColor } from '../design/tokens';
 
@@ -482,3 +482,14 @@ export const objectKinds: ObjectKind[] = [
     tint: roomColor.bath,
   },
 ];
+
+/**
+ * Furniture that suits a thing (the places that glow while carrying it): pieces
+ * offering what the thing is for, like a table for food, the bookshelf for a book,
+ * the toy box for a ball, the workbench for a tool.
+ */
+export function suitsThing(thingKind: string, furnitureKind: string): boolean {
+  const activity = giveEffects[thingKind]?.activity;
+  if (!activity) return false;
+  return (offers[furnitureKind] ?? []).some((o) => o.activity === activity);
+}

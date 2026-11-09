@@ -6,6 +6,7 @@ import { game, useWorldTick } from './game';
 import { placeOn, useCarrySource } from '../input/carry';
 import { playSfx } from '../audio/audio';
 import { offers } from '../content/activities';
+import { suitsThing } from '../content/objects';
 import { surfaceOf } from '../content/furniture';
 import { findRoom } from '../content/rooms';
 import { strings, thingName } from '../i18n';
@@ -179,10 +180,41 @@ function SurfaceTargets({ roomId }: { roomId: string }) {
             className="stage-target stage-target--surface"
             data-target={`surface:${f.id}`}
             data-valid
+            // Only the places that suit the thing glow; any table still takes it.
+            data-suggested={suitsThing(carrying.kind, f.kind) || undefined}
             aria-label={strings.putOn(strings.furnitureNames[f.kind] ?? f.kind)}
             onClick={(e) =>
               placeOn(`surface:${f.id}`, e.clientX || undefined, e.clientY || undefined)
             }
+          />
+        ))}
+    </>
+  );
+}
+
+/**
+ * While carrying a thing: the floor in front of pieces it suits glows (a book by
+ * the bookshelf, a ball by the toy box). Anywhere else on the floor works too.
+ */
+function NearTargets({ roomId }: { roomId: string }) {
+  const carrying = usePlay((s) => s.carrying);
+  const room = findRoom(roomId);
+  if (!carrying || carrying.source.from === 'person' || !room) return null;
+  return (
+    <>
+      {room.furniture
+        .filter((f) => !surfaceOf(f) && suitsThing(carrying.kind, f.kind))
+        .map((f) => (
+          <button
+            key={`${roomId}-${f.id}`}
+            ref={(el) => registerTarget(`near:${f.id}`, el)}
+            type="button"
+            className="stage-target stage-target--near"
+            data-target={`near:${f.id}`}
+            data-valid
+            data-suggested
+            aria-label={strings.putBy(strings.furnitureNames[f.kind] ?? f.kind)}
+            onClick={() => placeOn(`near:${f.id}`)}
           />
         ))}
     </>
@@ -324,6 +356,7 @@ export function StageTargets() {
       <BoardTargets roomId={roomId} />
       <FloorTargets controlling={controlling} />
       <SurfaceTargets roomId={roomId} />
+      <NearTargets roomId={roomId} />
       {objects.map((o) => (
         <ObjectTarget key={o.id} object={o} />
       ))}

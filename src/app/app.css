@@ -1453,14 +1453,18 @@ html[data-layout='phone'] .gate__card {
 }
 
 /* Valid places for the carried thing: teal dashed outline plus a tick (never colour alone). */
-.stage-target[data-valid]:not(.stage-target--floor) {
+.stage-target--bot[data-valid],
+.stage-target[data-valid][data-suggested],
+.stage-target--spot[data-valid]:focus-visible {
   outline: 4px dashed var(--pt-teal-dark);
   outline-offset: -2px;
   background: rgba(15, 163, 148, 0.14);
   animation: target-glow 1.2s ease-in-out infinite;
 }
 
-.stage-target[data-valid]:not(.stage-target--floor)::after {
+.stage-target--bot[data-valid]::after,
+.stage-target[data-valid][data-suggested]::after,
+.stage-target--spot[data-valid]:focus-visible::after {
   content: '';
   position: absolute;
   top: -10px;
@@ -1478,7 +1482,8 @@ html[data-layout='phone'] .gate__card {
   border-radius: 18px;
 }
 
-.stage-target--spot[data-valid] {
+.stage-target--spot[data-valid],
+.stage-target--near[data-valid] {
   border-radius: 50%;
 }
 

@@ -41,6 +41,7 @@ export const lv: Strings = {
   walkTo: (name: string, where: string) => `${name}, ej šurp: ${where}`,
   useFurniture: (name: string) => `${name}: sūti kādu šurp`,
   putOn: (name: string) => `${name}: noliec šeit`,
+  putBy: (name: string) => `${name} – noliec blakus`,
   furnitureNames: {
     armchair: 'Atzveltnes krēsls',
     chair: 'Krēsls',

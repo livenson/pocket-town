@@ -2,7 +2,13 @@
 // element hosts it. Rooms are 900 × 560 logical units, scaled to fit.
 import 'pixi.js/unsafe-eval'; // no eval(): keeps the Content Security Policy strict
 import { offers } from '../content/activities';
-import { fixedKinds, furnitureKinds, surfaceOf, type FurnitureKind } from '../content/furniture';
+import {
+  fixedKinds,
+  furnitureKinds,
+  nearSpot,
+  surfaceOf,
+  type FurnitureKind,
+} from '../content/furniture';
 import {
   AccessibilitySystem,
   Application,
@@ -194,6 +200,9 @@ export class Stage {
       if (!offers[f.kind]) continue;
       const s = f.scale ?? 1;
       setTargetRect(`furniture:${f.id}`, { x: f.x, y: f.y, w: kind.w * s, h: kind.h * s });
+      // In front of it on the floor: where a thing that suits it goes (it glows).
+      const near = nearSpot(f);
+      setTargetRect(`near:${f.id}`, { x: near.x - 55, y: near.y - 30, w: 110, h: 50 });
     }
     return room;
   }

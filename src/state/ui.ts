@@ -105,7 +105,10 @@ export const useUi = create<UiStore>()((set, get) => ({
   setPlusSheetOpen: (plusSheetOpen) => set({ plusSheetOpen }),
   toast: (icon, label) => {
     const id = ++toastId;
-    set((s) => ({ toasts: [...s.toasts.slice(-2), { id, icon, label }] }));
+    // The same message again replaces the one showing (repeated taps never stack it).
+    set((s) => ({
+      toasts: [...s.toasts.filter((t) => t.label !== label).slice(-2), { id, icon, label }],
+    }));
     setTimeout(() => get().dismissToast(id), TOAST_MS);
   },
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),

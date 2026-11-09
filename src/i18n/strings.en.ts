@@ -41,6 +41,7 @@ export const en = {
   walkTo: (name: string, where: string) => `${name}, walk here: ${where}`,
   useFurniture: (name: string) => `${name}: send someone here`,
   putOn: (name: string) => `${name}: put it here`,
+  putBy: (name: string) => `By the ${name.toLowerCase()}: put it here`,
   furnitureNames: {
     armchair: 'Armchair',
     chair: 'Chair',

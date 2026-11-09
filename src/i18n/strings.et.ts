@@ -39,6 +39,7 @@ export const et: Strings = {
   walkTo: (name: string, where: string) => `${name}, kõnni siia: ${where}`,
   useFurniture: (name: string) => `${name}: saada keegi siia`,
   putOn: (name: string) => `${name}: pane siia`,
+  putBy: (name: string) => `${name} – pane selle juurde`,
   furnitureNames: {
     armchair: 'Tugitool',
     chair: 'Tool',
